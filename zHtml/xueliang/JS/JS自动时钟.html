@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS自动时钟</title>
+    <script>
+        //显示自动时钟
+        function autoClock(){
+            // 创建时间对象
+            var currDate = new Date();
+            // 取时分秒
+            var hour = currDate.getHours();
+            var minute = currDate.getMinutes();
+            var second = currDate.getSeconds();
+
+            //给title赋值
+            document.title = format(hour) + ":" + format(minute) + ":" + format(second);
+        }
+
+        //格式化输出；如果num<10,比如5，输出05;如果大于或等于10，那就原样输出
+        function format(num){
+            if(num < 10){
+                return "0" + num;
+            }
+            return num;
+        }
+
+        //开启定时器
+        setInterval(autoClock, 1000);
+    </script>
+</head>
+<body>
+
+</body>
+</html>

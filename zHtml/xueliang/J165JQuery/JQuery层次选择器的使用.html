@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery层次选择器的使用</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#btn").click(clickEvt);
+        });
+
+        function clickEvt(){
+            //alert(this.value);//this是代表自己的DOM对象
+            //alert($(this).val());//把我自己this转成JQuery对象
+
+            //设置div1元素中包含p元素的字体大小(普通包含)
+//            $("#div1 p").css({fontSize:"50px"});
+
+            //设置div元素的子元素p的字体大小(亲子包含)
+//            $("#div1 > p").css({fontSize:"50px"});
+
+            //设置div元素的相邻元素h1的字体颜色(相邻兄弟)
+//            $("#div1 + h1").css({color:"red"});
+
+            //设置div元素后面的所有兄弟h3的字体颜色(后面所有兄弟)
+//            $("#div1 ~ h3").css({color:"red"});
+
+            //设置div元素所有兄弟h2的字体颜色(所有兄弟（不管前后顺序）)
+            $("#div1").siblings("h2").css({color:"red"});
+        }
+    </script>
+</head>
+<body>
+    <h1>标题1</h1>
+    <h2>标题2</h2>
+    <h3>标题3</h3>
+    <div id="div1">
+        <p class="title">JQuery层次选择器的使用</p>
+        <span id="div2">
+            <p>层次选择器的使用</p>
+        </span>
+    </div>
+    <h1>标题1-1</h1>
+    <h2>标题2-1</h2>
+    <h2>标题2-2</h2>
+    <h3>标题3-1</h3>
+    <h3>标题3-2</h3>
+    <input type="button" id="btn" value="确定">
+</body>
+</html>

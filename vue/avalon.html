@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>avalon</title>
+    <script src="avalon.js"></script>
+</head>
+<body>
+<script>
+    var vmm = avalon.define({
+        $id: "filterBy",
+        array: ['aaaa', 'aab', 'acb', 'ccc', 'dddd'],
+        object: {a: 'aaaa', b: 'aab', c: 'acb', d: 'ccc', e: 'dddd'},
+        searchs: "a",
+        search: "1",
+        num: 4,
+        prt: function(s){
+            console.log(s);
+        },
+        fun1: function(){
+            this.prt("function");
+        },
+        fun2:()=>{
+            this.prt("=>");
+        },
+        searchFn: function (el, i) {
+            return i > 2
+        },
+        searchFn2: function (el, i) {
+            return el.length < vmm.num;
+        },
+        searchFn3: function (el, i) {
+            return i === 'b' || i === 1
+        }
+    })
+</script>
+<div ms-controller='filterBy'>
+    <input :duplex-number="num"/>
+    <select ms-duplex='@search'>
+        <option>a</option>
+        <option>b</option>
+        <option>c</option>
+    </select>
+    <p>
+        <button ms-click="@search = @searchFn | prevent">变成过滤函数</button>
+    </p>
+    <p>
+        <button ms-click="@search = @searchFn2 | prevent">变成过滤函数2</button>
+    </p>
+    <p>
+        <button ms-click="@search = @searchFn3 | prevent">变成过滤函数3</button>
+    </p>
+    <ul>
+        <li ms-for='el in @array | filterBy(@searchFn2)'>{{el}}</li>
+    </ul>
+    <ul>
+        <li ms-for='el in @array | filterBy(@search)'>{{el}}</li>
+    </ul>
+    <ul>
+        <li ms-for='el in @object | filterBy(@search)'>{{el}}</li>
+    </ul>
+</div>
+<script>
+    avalon.define({
+        $id: "limitBy",
+        array: [1, 2, 3, 4, 5, 6],
+        object: {a: 1, b: 2, c: 3, d: 4, e: 5},
+        num: 3
+    });
+    avalon.define({
+        $id: 'test111',
+        firstName: '333',
+        lastName: 'xxx',
+        $computed: {
+            //fullName依赖于firstName与lastName
+            fullName: {
+                get: function () {
+                    return this.firstName + ' ' + this.lastName
+                },
+                set: function (val) {
+                    var arr = val.split(' ')
+                    this.firstName = arr[0]
+                    this.lastName = arr[1]
+                }
+            }
+        }
+    })
+</script>
+<div :controller="test111">
+    <input :duplex="firstName"/>
+    <input :duplex="lastName"/>
+    <input :duplex="fullName"/>
+</div>
+<div ms-controller='limitBy'>
+    <select ms-duplex-number='@num'>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+    </select>
+    <ul>
+        <li ms-for='el in @array | limitBy(@num)'>{{el}}</li>
+    </ul>
+    <ul>
+        <li ms-for='el in @object | limitBy(@num)'>{{el}}</li>
+    </ul>
+</div>
+</body>
+</html>

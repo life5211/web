@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>home</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script src="bootstrap-4.0.0-dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap.css">
+    <style>
+        .container > div {
+            border: deepskyblue solid 1px;
+            text-align: center;
+        }
+    </style>
+    <script>
+
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            森林病虫害防治系统
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <div id="accordion">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne"
+                                    aria-expanded="true" aria-controls="collapseOne">
+                                灾情一览
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body btn-link">虫害一览</div>
+                        <div class="card-body btn-link">病害一览</div>
+                        <div class="card-body btn-link">鼠害一览</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingTwo">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo"
+                                    aria-expanded="false" aria-controls="collapseTwo">
+                                灾情防治
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                        <div class="card-body btn-link">区域一览</div>
+                        <div class="card-body btn-link">小班管理</div>
+                        <div class="card-body btn-link">事件记录</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingThree">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree"
+                                    aria-expanded="false" aria-controls="collapseThree">
+                                专家会商
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                        <div class="card-body btn-link">专家一览</div>
+                        <div class="card-body btn-link">会商灾情</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingFour">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour"
+                                    aria-expanded="false" aria-controls="collapseFour">
+                                药剂器械出库管理
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+                        <div class="card-body btn-link">药剂器械管理</div>
+                        <div class="card-body btn-link">出库管理</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingFive">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFive"
+                                    aria-expanded="false" aria-controls="collapseFive">
+                                系统日志
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
+                        <div class="card-body btn-link">用户管理</div>
+                        <div class="card-body btn-link">日志一览</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <br/>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery节点访问</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(function(){
+            alert(1);
+            //遍历第一个div里面所有的子元素
+//            var childList =  $("#div1").children();//返回的数组里面装的是DOM对象
+//            alert(childList.length);
+//            for(var i = 0; i < childList.length; i++){
+//                alert(childList[i].title);
+//            }
+
+            //通过div2获取下一个兄弟
+//            alert($("#div2").next().attr("id"));
+
+            //通过div2获取上一个兄弟
+//            alert($("#div2").prev().attr("id"));
+
+            //通过span元素访问父元素
+//            alert($("span").parent().attr("id"));
+
+            //练习:通过第二个p元素访问div3
+            alert($("p:eq(1)").parent().next().next().attr("id"));
+        });
+    </script>
+</head>
+<body>
+    <div id="div1">
+        <p title="标题1">段落1</p>
+        <p title="标题2">段落2</p>
+        <p title="标题3">段落3</p>
+        <span title="标题4">标题4</span>
+    </div>
+    <div id="div2">DIV2</div>
+    <div id="div3">DIV3</div>
+</body>
+</html>

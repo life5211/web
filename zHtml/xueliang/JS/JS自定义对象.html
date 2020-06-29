@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS自定义对象</title>
+    <script>
+        /* 创建了一个person对象 */
+        var person = new Object();
+        person.name = "张三";
+        person.age = 18;
+        //定义方法
+        person.say = function(){
+            //this关键字代表当前对象
+            alert("我的名字叫:" + this.name + ", 今年" + this.age + "岁" );
+        }
+
+        alert(person.name + " : " + person.age);
+
+        person.sex = "男";
+
+        alert(person.sex);
+
+        person.say();//调用方法
+    </script>
+</head>
+<body>
+
+</body>
+</html>

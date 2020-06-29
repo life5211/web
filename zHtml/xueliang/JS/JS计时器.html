@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS计时器</title>
+    <script>
+
+        var id = 0;
+
+        function start(){
+            //参数一 要执行的代码(方法名)  参数二  计时时间,单位：毫秒
+            //2秒钟以后调用show()
+           id = window.setTimeout(show, 2000);
+            alert(id)
+        }
+        function stop(){
+            //清除计时器
+            clearTimeout(id);
+        }
+        function show(){
+            document.write("<h3>*</h3>");
+        }
+    </script>
+</head>
+<body>
+    <input type="button" value="开始" onclick="start()">
+    <input type="button" value="停止" onclick="stop()">
+</body>
+</html>

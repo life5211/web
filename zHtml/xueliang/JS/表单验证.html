@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>表单验证</title>
+    <script>
+        window.onload = function(){
+            var btn = document.getElementsByName("btn")[0];
+            var uname = document.getElementById("username");
+            var pwd = document.getElementById("password");
+
+            btn.onclick = checkInput;
+            //用户名与密码框在失去焦点的时候进行验证
+            uname.onblur = checkUserName;
+            pwd.onblur = checkPassword;
+        }
+
+        function checkUserName(){
+            var uname = document.getElementById("username");
+            var uspan = document.getElementsByTagName("span")[0];
+            if(uname.value.length == 0){//判断用户是否输入值
+                uspan.innerHTML = "用户名不能为空";//设置提示信息
+                //设置字体颜色（红色）和字体样式（粗体）
+                uspan.style.color = "red";
+                uspan.style.fontWeight = "bold";
+                return false;
+            } else {
+                uspan.innerHTML = "";
+                return true;
+            }
+        }
+
+        function checkPassword(){
+            var pwd = document.getElementById("password");
+            var pspan = document.getElementsByTagName("span")[1];
+            if(pwd.value.length < 6 || pwd.value.length > 11){//判断输入的密码是否小于6位，或者大于11位
+                pspan.innerHTML = "密码无效";
+                pspan.style.color = "red";
+                pspan.style.fontWeight = "bold";
+                return false;
+            } else {
+                pspan.innerHTML = "";
+                return true;
+            }
+        }
+
+       /* function checkInput(){
+            var uname = document.getElementById("username");
+            var pwd = document.getElementById("password");
+            var uspan = document.getElementsByTagName("span")[0];
+            var pspan = document.getElementsByTagName("span")[1];
+
+            if(uname.value.length == 0){//判断用户是否输入值
+                uspan.innerHTML = "用户名不能为空";//设置提示信息
+                //设置字体颜色（红色）和字体样式（粗体）
+                uspan.style.color = "red";
+                uspan.style.fontWeight = "bold";
+                return false;
+            } else {
+                uspan.innerHTML = "";
+            }
+
+            if(pwd.value.length < 6 || pwd.value.length > 11){//判断输入的密码是否小于6位，或者大于11位
+                pspan.innerHTML = "密码无效";
+                pspan.style.color = "red";
+                pspan.style.fontWeight = "bold";
+                return false;
+            } else {
+                pspan.innerHTML = "";
+            }
+
+            return true;
+        }*/
+    </script>
+</head>
+<body>
+    <!--
+        验证规则：如果用户名为空，或者填写的密码长度 小于6或者 大于 11，那就不能提交表单数据
+            细节：如果用户名为空，后面显示用户名不能为空，字体颜色红色，粗体
+                  如果密码长度 小于6或者 大于 11，后面显示密码无效，字体颜色红色，粗体
+     -->
+    <form action="login.jsp" method="post">
+        用户名：<input type="text" name="username" id="username"><span></span><br><br>
+        密码：<input type="password" name="password" id="password"><span></span><br><br>
+        <input type="submit" name="btn" value="登录">
+    </form>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyTest</title>
+    <style>
+        body {
+            width: 700px;
+            margin: auto;
+        }
+
+        .content {
+            border: red solid 1px;
+        }
+
+        textarea {
+            width: 99%;
+            margin: auto;
+        }
+
+        button {
+            display: block;
+            text-align: right;
+        }
+    </style>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+
+        $(function () {
+            $("p:eq(1)")[0].style.textIndent = "2em";
+            $("p:eq(1)")[0].style.fontWeight = "bold";
+            $("p:eq(2)")[0].style.textDecoration = "underline";
+            $(".right")[0].style.textAlign = "right";
+            $("p:eq(2)").click(function () {
+                $replaybox = $("<textarea></textarea><div class='right' style='text-align: right'><input type='button' class='replay' value='评论'/></div>");
+                $("p:eq(2)").after($replaybox);
+                $(".replay:button").click(function () {
+                    $("p.right").before($("textarea").val());
+                    $("p.right").before($("<hr/>"));
+                    $("textarea,div.right").remove();
+                });
+            });
+
+        })
+    </script>
+</head>
+<body>
+<div class="content">
+    <p>老师说：</p>
+    <p>今天考试客户端</p>
+    <hr/>
+    <p class="right">回复</p>
+</div>
+</body>
+</html>

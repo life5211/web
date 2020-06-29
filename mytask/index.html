@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>home</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script src="bootstrap-4.0.0-dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap.css">
+    <style>
+        .container > div {
+            border: deepskyblue solid 1px;
+            text-align: center;
+        }
+
+        div.hidden {
+            display: none;
+        }
+
+        .sel {
+            margin: auto;
+        }
+
+        .current {
+            width: 40px;
+        }
+    </style>
+    <script>
+        $(function () {
+            $(".card-body").click(function () {
+                $(".sel").addClass("hidden");
+            });
+            $(".card-body").each(function (i) {
+                $(this).click(function () {
+                    $(".sel").eq(i + 1).removeClass("hidden");
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            森林病虫害防治系统
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <div id="accordion">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne"
+                                    aria-expanded="true" aria-controls="collapseOne">
+                                灾情一览
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body btn-link">虫害一览</div>
+                        <div class="card-body btn-link">病害一览</div>
+                        <div class="card-body btn-link">鼠害一览</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingTwo">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo"
+                                    aria-expanded="false" aria-controls="collapseTwo">
+                                灾情防治
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                        <div class="card-body btn-link">区域一览</div>
+                        <div class="card-body btn-link">小班管理</div>
+                        <div class="card-body btn-link">事件记录</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingThree">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree"
+                                    aria-expanded="false" aria-controls="collapseThree">
+                                专家会商
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                        <div class="card-body btn-link">专家一览</div>
+                        <div class="card-body btn-link">会商灾情</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingFour">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour"
+                                    aria-expanded="false" aria-controls="collapseFour">
+                                药剂器械出库管理
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+                        <div class="card-body btn-link">药剂器械管理</div>
+                        <div class="card-body btn-link">出库管理</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingFive">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFive"
+                                    aria-expanded="false" aria-controls="collapseFive">
+                                系统日志
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
+                        <div class="card-body btn-link">用户管理</div>
+                        <div class="card-body btn-link">日志一览</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div class="row" id="main">
+                <div class="sel  row">
+                    <div class="col-sm-6">
+                        <img class="img-fluid" src="img/2.jpg" style="width: 100%;height: 100%">
+                    </div>
+                    <div class="col-sm-6">
+                        <img class="img-fluid" src="img/3.jpg" style="width: 100%;height: 100%">
+                    </div>
+                    <div class="col-sm-6">
+                        <img class="img-fluid" src="img/4.jpg" style="width: 100%;height: 100%">
+                    </div>
+                    <div class="col-sm-6">
+                        <img class="img-fluid" src="img/5.jpg" style="width: 50%;height: 100%">
+                    </div>
+                </div>
+
+                <div class="sel hidden row" id="wormPanel">
+
+                    害虫名称<input type="text" class="text-center"> &nbsp;&nbsp;
+                    害虫寄主<input type="text" class="text-center">
+                    <button class="btn query">查询</button>
+                    <br/>
+
+                    <table class="table">
+                        <caption>害虫一览</caption>
+                        <tr>
+                            <th>名称</th>
+                            <th>寄主</th>
+                            <th>主要危害</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr>
+                            <td>花刺蛾</td>
+                            <td>法桐等</td>
+                            <td>啃食叶片，影响植物生长</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal" data-target="#modelWormInfo">
+                                    详情
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>花刺蛾</td>
+                            <td>法桐等</td>
+                            <td>啃食叶片，影响植物生长</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal" data-target="#modelWormInfo">
+                                    详情
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                    <button type="button" class="btn-link" data-toggle="modal" data-target="#modelWormAdd">新增害虫</button>
+                    <br/>
+                    <button class="btn-link homePage">首页</button>
+                    <button class="btn-link prevPage">上一页</button>
+                    <button class="btn-link nextPage">下一页</button>
+                    <button class="btn-link endPage">尾页</button>
+                    Page<input type="number" class="current" placeholder="page">
+                    Size<select class="size"></select>
+                    Total <label class="total"></label><br/>
+
+                </div>
+                <div class="sel hidden row" id="diseasePanel">
+                    病害名称<input type="text">
+                    发病症状<input type="text">
+                    <button class="btn query">查询</button>
+                    <table class="table">
+
+                        <caption>病害一览</caption>
+                        <tr>
+                            <th>名称</th>
+                            <th>主要危害</th>
+                            <th>发病规律</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr>
+                            <td>大叶黄杨白粉病</td>
+                            <td>影响生长</td>
+                            <td>春秋严重</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelDiseaseInfo">
+                                    详情
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                    <button type="button" class="btn-link" data-toggle="modal" data-target="#modelDiseaseAdd">新增病害
+                    </button>
+                    <br/>
+                    <button class="btn-link homePage">首页</button>
+                    <button class="btn-link prevPage">上一页</button>
+                    <button class="btn-link nextPage">下一页</button>
+                    <button class="btn-link endPage">尾页</button>
+                    Page<input type="number" class="current" placeholder="page">
+                    Size<select class="size"></select>
+                    Total <label class="total"></label><br/>
+                </div>
+                <div class="sel hidden row" id="mousePanel">
+                    鼠害名称<input type="text" class="text-center">
+                    <button class="btn query">查询</button>
+                    <table class="table">
+                        <caption>鼠害一览</caption>
+                        <tr>
+                            <th>名称</th>
+                            <th>食物</th>
+                            <th>主要危害</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr>
+                            <td>中华鼹鼠</td>
+                            <td>植物根茎</td>
+                            <td>坑食林木根系，水土流失</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelMouseInfo">
+                                    详情
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>中华鼹鼠</td>
+                            <td>植物根茎</td>
+                            <td>坑食林木根系，水土流失</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelMouseInfo">
+                                    详情
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                    <button type="button" class="btn-link" data-toggle="modal" data-target="#modelMouseAdd">新增鼠害
+                    </button>
+                    <br/>
+                    <button class="btn-link homePage">首页</button>
+                    <button class="btn-link prevPage">上一页</button>
+                    <button class="btn-link nextPage">下一页</button>
+                    <button class="btn-link endPage">尾页</button>
+                    Page<input type="number" class="current" placeholder="page">
+                    Size<select class="size"></select>
+                    Total <label class="total"></label><br/>
+                </div>
+                <div class="sel hidden row" id="areaPanel">
+                    区域名称<input type="text">
+                    林种<input type="text">
+                    负责小班<input type="text">
+                    <input type="submit" value="查询">
+                    <table class="table">
+
+                        <caption>区域一览</caption>
+                        <tr>
+                            <th>区域名称</th>
+                            <th>林种</th>
+                            <th>地类</th>
+                            <th>优势树种</th>
+                            <th>负责小班</th>
+                        </tr>
+                        <tr>
+                            <td>雅安一号地区</td>
+                            <td>柏杨林</td>
+                            <td>林地</td>
+                            <td>柏树</td>
+                            <td>雅安一班</td>
+                        </tr>
+                        <tr>
+                            <td>雅安一号地区</td>
+                            <td>柏杨林</td>
+                            <td>林地</td>
+                            <td>柏树</td>
+                            <td>雅安一班</td>
+                        </tr>
+
+                    </table>
+
+                    <button type="button" class="btn-link" data-toggle="modal" data-target="#modelAreaAdd">新增区域</button>
+                    <br/>
+                    <button class="btn-link homePage">首页</button>
+                    <button class="btn-link prevPage">上一页</button>
+                    <button class="btn-link nextPage">下一页</button>
+                    <button class="btn-link endPage">尾页</button>
+                    Page<input type="number" class="current" placeholder="page">
+                    Size<select class="size"></select>
+                    Total <label class="total"></label><br/>
+
+                </div>
+                <div class="sel hidden row" id="classPanel">
+                    小班名称<input type="text">
+                    负责区域<input type="text">
+                    <input type="submit" value="查询">
+                    <table class="table">
+
+                        <caption>小班管理</caption>
+                        <tr>
+                            <th>小班名称</th>
+                            <th>负责人</th>
+                            <th>负责人电话</th>
+                            <th>负责区域</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr>
+                            <td>雅林一班</td>
+                            <td>林柏洋</td>
+                            <td>1385936556</td>
+                            <td>雅安一号地区</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelClassShow">
+                                    详情
+                                </button>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelClassUpdate">
+                                    修改
+                                </button>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                    <button type="button" class="btn-link" data-toggle="modal" data-target="#modelClassAdd">新增小班</button>
+                    <br/>
+                    <button class="btn-link homePage">首页</button>
+                    <button class="btn-link prevPage">上一页</button>
+                    <button class="btn-link nextPage">下一页</button>
+                    <button class="btn-link endPage">尾页</button>
+                    Page<input type="number" class="current" placeholder="page">
+                    Size<select class="size"></select>
+                    Total <label class="total"></label><br/>
+
+                </div>
+                <div class="sel hidden row" id="thingPanel">
+                    事件名称<input type="text">
+                    灾情状态<input type="text">
+                    发生位置<input type="text">
+                    <br/>
+                    起始日期<input type="date">
+                    结束日期<input type="date">
+                    <input type="submit" value="查询">
+
+                    <table class="table">
+                        <caption>事件记录</caption>
+                        <tr>
+                            <th>事件名称</th>
+                            <th>日期</th>
+                            <th>发生位置</th>
+                            <th>防治方案</th>
+                            <th>灾情状态</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr>
+                            <td>滇西松毛虫事件</td>
+                            <td>2011-2-3</td>
+                            <td>雅安一号地区</td>
+                            <td>喷洒敌百虫</td>
+                            <td>已经得到控制</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelThingInfo">
+                                    详情
+                                </button>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelThingUpdate">
+                                    修改
+                                </button>
+                                <button type="button" class="btn-link">
+                                    申请专家会审
+                                </button>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                    <button type="button" class="btn-link" data-toggle="modal" data-target="#modelThingAdd">新增事件
+                    </button>
+                    <br/>
+                    <button class="btn-link homePage">首页</button>
+                    <button class="btn-link prevPage">上一页</button>
+                    <button class="btn-link nextPage">下一页</button>
+                    <button class="btn-link endPage">尾页</button>
+                    Page<input type="number" class="current" placeholder="page">
+                    Size<select class="size"></select>
+                    Total <label class="total"></label><br/>
+
+                </div>
+                <div class="sel hidden row" id="proficientPanel">
+                    专家姓名<input type="text">
+                    专长<input type="text">
+                    工作单位<input type="text">
+                    <input type="submit" value="查询">
+                    <table class="table">
+
+                        <caption>专家一览</caption>
+                        <tr>
+                            <th>姓名</th>
+                            <th>工作单位</th>
+                            <th>专长</th>
+                            <th>职务</th>
+                            <th>电话</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr>
+                            <td>李健</td>
+                            <td>成都防治中心</td>
+                            <td>虫害防治</td>
+                            <td>研究员</td>
+                            <td>1382992929</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelProficientShow">
+                                    详情
+                                </button>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelProficientUpdate">
+                                    修改
+                                </button>
+                                <button type="button" class="btn-link">
+                                    删除
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>李健</td>
+                            <td>成都防治中心</td>
+                            <td>虫害防治</td>
+                            <td>研究员</td>
+                            <td>1382992929</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelProficientInfo">
+                                    详情
+                                </button>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modeProficientUpdate">
+                                    修改
+                                </button>
+                                <button type="button" class="btn-link">
+                                    删除
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                    <button type="button" class="btn-link" data-toggle="modal" data-target="#modelProficientAdd">新增专家
+                    </button>
+                    <br/>
+                    <button class="btn-link homePage">首页</button>
+                    <button class="btn-link prevPage">上一页</button>
+                    <button class="btn-link nextPage">下一页</button>
+                    <button class="btn-link endPage">尾页</button>
+                    Page<input type="number" class="current" placeholder="page">
+                    Size<select class="size"></select>
+                    Total <label class="total"></label><br/>
+
+                </div>
+                <div class="sel hidden row" id="conferPanel">
+                    <table class="table">
+                        <caption>事件记录</caption>
+
+                        <tr>
+                            <th>事件名称</th>
+                            <th>日期</th>
+                            <th>发生位置</th>
+                            <th>防治方案</th>
+                            <th>灾情状态</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr>
+                            <td>卧龙鼠害事件</td>
+                            <td>2013-05-29</td>
+                            <td>卧龙自然保护区</td>
+                            <td>放置鼠笼，定期清理</td>
+                            <td>无法解决，申请专家会商</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelConfertAdd">
+                                    专家会商
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>卧龙鼠害事件</td>
+                            <td>2013-05-29</td>
+                            <td>卧龙自然保护区</td>
+                            <td>放置鼠笼，定期清理</td>
+                            <td>无法解决，申请专家会商</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelConfertAdd">
+                                    专家会商
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                    <button class="btn-link homePage">首页</button>
+                    <button class="btn-link prevPage">上一页</button>
+                    <button class="btn-link nextPage">下一页</button>
+                    <button class="btn-link endPage">尾页</button>
+                    Page<input type="number" class="current" placeholder="page">
+                    Size<select class="size"></select>
+                    Total <label class="total"></label><br/>
+
+                </div>
+                <div class="sel hidden row" id="drugPanel">
+                    药剂名称<input type="text">
+                    防治类型
+                    <select name="">
+                        <option value="">鼠害</option>
+                        <option value="">虫害</option>
+                        <option value="">病害</option>
+                    </select>
+
+                    类别
+                    <select name="">
+                        <option value="">药剂</option>
+                        <option value="">器械</option>
+                    </select>
+                    <input type="submit" value="查询">
+                    <table class="table">
+                        <caption>药剂/器械一览</caption>
+                        <tr>
+                            <th>名称</th>
+                            <th>防治类型</th>
+                            <th>类别</th>
+                            <th>主要用途</th>
+                        </tr>
+                        <tr>
+                            <td>杀鼠迷</td>
+                            <td>鼠害</td>
+                            <td>药剂</td>
+                            <td>用于捕杀鼠类</td>
+                        </tr>
+                    </table>
+
+                    <button type="button" class="btn-link" data-toggle="modal" data-target="#modelDrugAdd">新增药剂</button>
+                    <br/>
+                    <button class="btn-link homePage">首页</button>
+                    <button class="btn-link prevPage">上一页</button>
+                    <button class="btn-link nextPage">下一页</button>
+                    <button class="btn-link endPage">尾页</button>
+                    Page<input type="number" class="current" placeholder="page">
+                    Size<select class="size"></select>
+                    Total <label class="total"></label><br/>
+
+                </div>
+                <div class="sel hidden row" id="outWareHousePanel">
+                    起始日期<input type="date">
+                    结束日期<input type="date">
+                    领用小班<input type="text">
+                    <input type="submit" value="查询">
+                    <table class="table">
+                        <caption>药剂器械出库管理</caption>
+                        <tr>
+                            <td>日期</td>
+                            <td>领用小班</td>
+                            <td>出库人</td>
+                            <td>操作</td>
+                        </tr>
+
+                        <tr>
+                            <td>2013-05-29</td>
+                            <td>卧龙一班</td>
+                            <td>赵小红</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelOutWarehouseInfo">
+                                    详情
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2013-05-29</td>
+                            <td>卧龙一班</td>
+                            <td>赵小红</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelOutWarehouseInfo">
+                                    详情
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                    <button type="button" class="card-body btn-link col-sm-3">
+                        新增出库信息
+                    </button>
+                    <div class="col-sm-9">
+                        <button class="btn-link homePage">首页</button>
+                        <button class="btn-link prevPage">上一页</button>
+                        <button class="btn-link nextPage">下一页</button>
+                        <button class="btn-link endPage">尾页</button>
+                        Page<input type="number" class="current" placeholder="page">
+                        Size<select class="size"></select>
+                        Total <label class="total"></label><br/>
+                    </div>
+                </div>
+                <div class="sel hidden row" id="userPanel">
+                    <select name="">
+                        <option value="">所有用户</option>
+                        <option value="">超级管理员</option>
+                        <option value="">资料管理员</option>
+                        <option value="">灾情管理员</option>
+                        <option value="">专家管理员</option>
+                        <option value="">库房管理员</option>
+                    </select>
+                    <input type="submit" value="查询">
+                    <table class="table">
+
+                        <caption>用户管理</caption>
+                        <tr>
+                            <th>用户名</th>
+                            <th>密码</th>
+                            <th>等级</th>
+                            <th>姓名</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr>
+                            <td>admin</td>
+                            <td>admin</td>
+                            <td>超级管理员</td>
+                            <td>赵大海</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelUserUpdate">
+                                    修改
+                                </button>
+                                <button type="button" class="btn-link">
+                                    删除
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>admin</td>
+                            <td>admin</td>
+                            <td>超级管理员</td>
+                            <td>赵大海</td>
+                            <td>
+                                <button type="button" class="btn-link" data-toggle="modal"
+                                        data-target="#modelUserUpdate">
+                                    修改
+                                </button>
+                                <button type="button" class="btn-link">
+                                    删除
+                                </button>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                    <button type="button" class="btn-link" data-toggle="modal" data-target="#modelUserAdd">新增用户</button>
+                    <br/>
+                    <button class="btn-link homePage">首页</button>
+                    <button class="btn-link prevPage">上一页</button>
+                    <button class="btn-link nextPage">下一页</button>
+                    <button class="btn-link endPage">尾页</button>
+                    Page<input type="number" class="current" placeholder="page">
+                    Size<select class="size"></select>
+                    Total <label class="total"></label><br/>
+
+                </div>
+                <div class="sel hidden row" id="logsPanel">
+                    起始日期<input type="date">
+                    结束日期<input type="date">
+                    <input type="submit" value="查询">
+                    <table class="table">
+
+                        <caption>日志信息</caption>
+                        <tr>
+                            <th>日志内容</th>
+                            <th>日期</th>
+                        </tr>
+                        <tr>
+                            <td>用户admin再12：30登录系统</td>
+                            <td>2015-04-28</td>
+                        </tr>
+                        <tr>
+                            <td>用户admin再12：30登录系统</td>
+                            <td>2015-04-28</td>
+                        </tr>
+                        <tr>
+                            <td>用户admin再12：30登录系统</td>
+                            <td>2015-04-28</td>
+                        </tr>
+
+
+                    </table>
+
+                    <button class="btn-link homePage">首页</button>
+                    <button class="btn-link prevPage">上一页</button>
+                    <button class="btn-link nextPage">下一页</button>
+                    <button class="btn-link endPage">尾页</button>
+                    Page<input type="number" class="current" placeholder="page">
+                    Size<select class="size"></select>
+                    Total <label class="total"></label><br/>
+                </div>
+                <div class="sel hidden row" id="outWarehouseAdd">
+                    领用小班
+                    <select name="">
+                        <option value="one">亚林一班</option>
+                        <option value="two">亚林二班</option>
+                        <option value="three">亚三一班</option>
+                    </select>
+                    出库人<input type="text" value="赵小红">
+                    <table class="table">
+
+                        <caption>添加出库信息</caption>
+
+                        <tr>
+                            <th>物品名称</th>
+                            <th>类型</th>
+                            <th>防止类型</th>
+                            <th>领用数量</th>
+                            <th>操作</th>
+                        </tr>
+
+                        <tr>
+                            <td>捕鼠笼</td>
+                            <td>器械</td>
+                            <td>鼠害</td>
+                            <td><input type="text" value="100"></td>
+                            <td>
+                                <button type="button" class="btn-link">
+                                    移除
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>捕鼠笼</td>
+                            <td>器械</td>
+                            <td>鼠害</td>
+                            <td><input type="text" value="100"></td>
+                            <td>
+                                <button type="button" class="btn-link">
+                                    移除
+                                </button>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                    <button type="button" class="btn-link" data-toggle="modal"
+                            data-target="#modelOutWareHouseAddObj">
+                        添加
+                    </button>
+                    <button type="button" class="btn-link">
+                        出库
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            J165研究室版权所有 蜀ICP备51201903060907号 蜀公网安备510120181016090653
+        </div>
+    </div>
+</div>
+<!-- Modal-AreaAdd -->
+<div class="modal fade" id="modelAreaAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">添加区域</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="areaAdd">
+                    <tr>
+                        <td>名称</td>
+                        <td><input type="text"></td>
+                    </tr>
+                    <tr>
+                        <td>林种</td>
+                        <td><input type="text"></td>
+                    </tr>
+                    <tr>
+                        <td>优势树种</td>
+                        <td><input type="text"></td>
+                    </tr>
+                    <tr>
+                        <td>地类</td>
+                        <td>
+                            <select name="">
+                                <option value="">林地</option>
+                                <option value="">疏林地</option>
+                                <option value="">灌木林</option>
+                                <option value="">苗圃地</option>
+                            </select>
+                        </td>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="insert" onclick="">AreaAdd</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-ClassAdd -->
+<div class="modal fade" id="modelClassAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">添加小班</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="classAdd">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="" onclick="">ClassAdd</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-ClassShow -->
+<div class="modal fade" id="modelClassShow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">小班信息</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="classShow">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-ClassUpdate -->
+<div class="modal fade" id="modelClassUpdate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">小班信息</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="classUpdate">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnClassUpdate" onclick="">class update</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-ConferAdd -->
+<div class="modal fade" id="modelConferAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">申请专家会商</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="conferAdd">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnConferAdd" onclick="">ConferAdd</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-DiseaseAdd -->
+<div class="modal fade" id="modelDiseaseAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">添加病害</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="diseaseAdd">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnDiseaseAdd" onclick="">DiseaseAdd</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-DiseaseInfo -->
+<div class="modal fade" id="modelDiseaseInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">病害详细信息</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="diseaseInfo">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-DrugAdd -->
+<div class="modal fade" id="modelDrugAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">添加药剂/器械</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="drugAdd">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnDrugAdd" onclick="">DrugAdd</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-MouseAdd -->
+<div class="modal fade" id="modelMouseAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">添加鼠害</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="mouseAdd">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnMouseAdd" onclick="">MouseAdd</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-MouseInfo -->
+<div class="modal fade" id="modelMouseInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">鼠害详情</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="mouseInfo">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-OutWarehouseAddObj -->
+<div class="modal fade" id="modelOutWarehouseAddObj" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">添加物品</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="outWarehouseAddObj">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnOutWarehouseAddObj" onclick="">OutWarehouseAddObj
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-OutWarehouseInfo -->
+<div class="modal fade" id="modelOutWarehouseInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">查看出库信息</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="outWarehouseInfo">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-ProficientAdd -->
+<div class="modal fade" id="modelProficientAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">添加专家信息</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="proficientAdd">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnProficientAdd" onclick="">ProficientAdd</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-ProficientShow -->
+<div class="modal fade" id="modelModelProficientShow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">查看专家信息</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="ModelProficientShow">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-ProficientUpdate -->
+<div class="modal fade" id="modelProficientUpdate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">修改专家信息</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="proficientUpdate">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnProficientUpdate" onclick="">ProficientUpdate
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-ThingAdd -->
+<div class="modal fade" id="modelThingAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">添加事件</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="thingAdd">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnThingAdd" onclick="">ThingAdd</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-ThingInfo -->
+<div class="modal fade" id="modelThingInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">事件信息记录</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="thingInfo">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-ThingUpdate -->
+<div class="modal fade" id="modelThingUpdate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">修改事件信息</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="thingUpdate">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnThingUpdate" onclick="">ThingUpdate</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-UserAdd -->
+<div class="modal fade" id="modelUserAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">添加用户信息</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="userAdd">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnUserAdd" onclick="">UserAdd</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-UserUpdate -->
+<div class="modal fade" id="modelUserUpdate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">修改用户信息</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="userUpdate">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnUserUpdate" onclick="">UserUpdate</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-WormInfo -->
+<div class="modal fade" id="modelWormInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">虫害详细信息</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="wormInfo">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal-WormAdd -->
+<div class="modal fade" id="modelWormAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">添加害虫</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="WormAdd">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnWormAdd" onclick="">WormAdd</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

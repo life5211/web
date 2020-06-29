@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS默认行为练习</title>
+    <script>
+        // 用户名不能为空
+        // 密码不能为空并且长度至少6位
+        window.onload = function(){
+            var sub = document.getElementsByTagName("input")[2];
+            sub.onclick = function(){
+                var username = document.getElementById("name").value;
+                var password = document.getElementById("pwd").value;
+
+                if(username.length == 0 || password.length < 6){
+                    return false;
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <form action="test.html" method="post">
+        用户名：<input type="text" name="username" id="name"><br><br>
+        密码：<input type="password" name="password" id="pwd"><br><br>
+        <input type="submit" value="登录">
+    </form>
+</body>
+</html>

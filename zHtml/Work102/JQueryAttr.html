@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jQ属性操作</title>
+    <style>
+        .another {
+            background-color: red;
+        }
+    </style>
+    <script src="jquery-1.7.2.js"></script>
+    <script>
+        $("document").ready(function () {
+            $(":button").eq(1).click(setclass);
+            $(":button").eq(0).hover(function () {
+                $("ul").hide();
+            }, function () {
+                $("ul").show();
+            });
+            $(":button").eq(2).toggle(function () {
+                $("ul").hide();
+            }, function () {
+                $("ul").show();
+            });
+            $(":button:eq(3)").click(function () {
+                $("ul").toggle();
+            });
+
+            $(":button").eq(7).click(function () {
+                // $("ul").replaceWith("<p>被替换</p>");
+                $("<p>被替换2</p>").replaceAll("ul");
+                alert();
+            });
+
+        });
+
+        function setclass() {
+            $("p").eq(1).attr("class", "another")
+        }
+
+    </script>
+</head>
+<body>
+<p class="问卷调查"><strong>问卷调查文本</strong></p>
+<p class="选择你喜欢的水果"><strong>你喜欢的水果？</strong></p>
+<ul>
+    <li title="苹果">苹果</li>
+    <li title="橘子">橘子</li>
+    <li title="菠萝">菠萝</li>
+</ul>
+<div style="text-align: center;background-color: blue;content: '#ffffff'"></div>
+
+<input type="button" value="获取">
+<input type="button" value="设置">
+<input type="button" value="追加">
+<input type="button" value="delAll">
+<input type="button" value="delSEL">
+<input type="button" value="切换">
+<input type="button" value="删除">
+<input type="button" value="替换">
+<input type="button" value="替换2">
+</body>
+</html>

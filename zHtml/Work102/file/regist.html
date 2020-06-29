@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>register</title>
+    <style>
+        div {
+            text-align: center;
+        }
+    </style>
+
+</head>
+<body>
+<br/> <br/><br/> <br/><br/> <br/><br/> <br/>
+<div>
+    <form action="/regist" method="post" enctype="multipart/form-data">
+        用户名 <input type="text" name="username"><br/> <br/>
+        密码 <input type="password" name="password"><br/> <br/>
+        电话 <input type="tel" name="tel"><br/> <br/>
+        地址 <input name="address"><br/> <br/>
+        邮箱 <input type="email" name="email"><br/> <br/>
+        性别
+        <label>男<input type="radio" name="sex" value="male"></label>
+        <label>女<input type="radio" name="sex" value="female"></label><br/><br/> <br/>
+
+        爱好
+        <label><input type="checkbox" name="hobby" value="basketball">篮球</label>
+        <label><input type="checkbox" name="hobby" value="football">足球</label>
+        <label><input type="checkbox" name="hobby" value="internetGame">网游</label> <br/><br/>
+
+        头像
+        <input type="file" name="img"> <br/><br/>
+        <input type="submit" value="注册">
+        <input type="reset" value="reset">
+
+    </form>
+</div>
+<div>
+    <table border="2" style="border-collapse:collapse;border: red" align="center">
+        <tr>
+            <td>用户名</td><td>密码</td><td>电话</td><td>地址</td><td>邮箱</td><td>性别</td><td>爱好</td><td>头像</td>
+        </tr>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td><img src="" ></td>
+        </tr>
+
+
+    </table>
+</div>
+<script>
+
+    window.onload = function () {
+
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery事件绑定</title>
+    <script src="jquery-1.7.2.js"></script>
+    <script>
+        $(function(){
+            //事件绑定方式1（最常用）
+//            $("#div1").mouseover(function(){
+//                alert(1);
+//            });
+            //事件绑定方式2（次常用）
+//            $("#div1").on("click", function(){
+//                alert(1);
+//            });
+//
+//            $("#div1").on("click", function(){
+//                alert(2);
+//            });
+            //事件绑定方式3
+//            $("#div1").bind("click", function(){
+//                alert(1);
+//            });
+            //解除绑定
+//            $("#div1").unbind("click");
+
+            //合成事件(鼠标移上去触发第一个方法，移走触发第二个方法)
+//            $("#div1").hover(over, out);
+
+            //事件切换
+//            $("#div1").toggle(test1, test2, test3);
+//              $("#div1").click(function(){
+//                  $(this).next().toggle();
+//              });
+
+            //one事件(只执行一次，后面不再触发)
+            $("#div1").one("click", function(){
+                alert(1);
+            });
+        });
+
+        function test1(){
+            alert(1);
+        }
+
+        function test2(){
+            alert(2);
+        }
+
+        function test3(){
+            alert(3);
+        }
+
+        function over(){
+            $(this).next().hide();
+        }
+
+        function out(){
+            $(this).next().show();
+        }
+    </script>
+</head>
+<body>
+    <div id="div1">点我</div>
+    <p>
+        实践活动开发计划书看到了房价数量肯定积分快乐圣诞节饭快乐圣诞节饭考虑到设计费卡拉的世界<br>
+        实践活动开发计划书看到了房价数量肯定积分快乐圣诞节饭快乐圣诞节饭考虑到设计费卡拉的世界<br>
+        实践活动开发计划书看到了房价数量肯定积分快乐圣诞节饭快乐圣诞节饭考虑到设计费卡拉的世界<br>
+    </p>
+</body>
+</html>

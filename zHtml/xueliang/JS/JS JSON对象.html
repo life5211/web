@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JSON对象</title>
+    <script>
+        //JSON对象(JSON数据格式)
+        var person = { name:"张三",
+                        age:18,
+                        hobby:["踢球","听歌","旅游"],
+                        say: function(){
+                                alert(this.name);
+                              }
+                        };
+
+        //访问对象属性
+//        alert(person.name);
+
+        /*var hobbies = person.hobby;
+
+        for(var i = 0; i < hobbies.length; i++){
+            document.write(hobbies[i] + "<br>");
+        }*/
+
+       /* function test(obj){
+            alert(obj.name + " , " + obj.age);
+        }*/
+
+        /*test(person);*/
+
+        person.say();
+    </script>
+</head>
+<body>
+
+</body>
+</html>

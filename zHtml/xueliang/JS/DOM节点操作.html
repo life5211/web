@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>DOM节点操作</title>
+    <script>
+        function addNode(){
+            /* 添加节点一 */
+            /*var first = document.getElementById("first");
+            var second = document.getElementById("second");
+            first.appendChild(second);//把第二个div添加到第一个div里面去*/
+
+            /* 添加节点二 */
+            /*var first = document.getElementById("first");
+            first.innerHTML = "<span>添加了span元素</span>";//在第一个div里面添加一个span元素*/
+
+//            alert(first.innerHTML);//连带标签一起获取
+//            alert(first.innerText);//只获取文本，没有HTML元素
+
+            /* 添加节点三 */
+            /*var p = document.createElement("p");//创建一个p元素 <p></p>
+             var text = document.createTextNode("这是一个段落");//创建文本节点
+             p.appendChild(text);//把文本节点添加到p元素里面去  <p>这是一个段落</p>
+             first.appendChild(p);*/
+
+            /* 练习：第一个div里面加一个按钮 */
+            var first = document.getElementById("first");
+            first.innerHTML = "<input type=button value=确定 onclick='test()'>";
+        }
+
+        function test(){
+            alert(1);
+        }
+
+        function delNode(){
+            var second = document.getElementById("second");
+            var a1 = document.getElementById("a1");
+//            second.removeChild(a1);//通过父元素删子元素
+//            alert(a1.parentNode.id);
+//            a1.parentNode.removeChild(a1);//parentNode 访问父元素
+            a1.remove();//删除自己
+        }
+
+        function accessNode(obj){
+//            alert(obj.id);
+//            alert(obj.parentNode.id);//访问父元素
+//            alert(obj.previousSibling.previousSibling.id);//访问前一个兄弟节点
+//            alert(obj.nextSibling.id);//访问下一个兄弟节点
+
+            var second = document.getElementById("second");
+//            alert(second.firstChild.id);//访问第一个子元素
+//            alert(second.lastChild.id);//访问最后一个子元素
+            alert(second.lastChild.previousSibling.id);//访问最后一个子元素
+        }
+
+        function replaceNode(){
+            var first = document.getElementById("first");
+            var third = document.getElementById("third");
+            //用参数一元素替换掉参数二元素
+            first.parentNode.replaceChild(first, third);//通过父元素来替换子元素节点
+        }
+
+        function copyNode(){
+            var fourth = document.getElementById("fourth");
+            var newFourth = fourth.cloneNode(true);//复制节点 true表示完全复制（所有后代都会复制）false表示只复制自己，不会复制后代
+            fourth.parentNode.appendChild(newFourth);
+        }
+
+        function insertNode(){
+            var first = document.getElementById("first");
+            var p = document.createElement("p");
+            var t = document.createTextNode("文本内容");
+            p.appendChild(t);
+            //把参数一元素插入到参数二元素的前面
+            first.parentNode.insertBefore(p,first);
+        }
+
+        function getAttr(){
+            var a = document.getElementById("a1");
+            var href = a.getAttribute("href");
+            alert(href);
+        }
+
+        function delAttr(){
+            var a = document.getElementById("a1");
+            a.removeAttribute("href");
+        }
+
+        function setAttr(){
+            var a = document.getElementById("a1");
+            a.setAttribute("title", "这是一个超链接");
+        }
+
+        function iterate(){
+            var second = document.getElementById("second");
+            var allChild = second.childNodes;
+            for(var i = 0; i< allChild.length; i++){
+                alert("节点名字：" + allChild[i].nodeName + "/节点类型：" + allChild[i].nodeType);
+            }
+        }
+    </script>
+</head>
+<body>
+<!--fsdgsdg-->
+    <input id="add" type="button" value="添加节点" onclick="addNode()"/>
+    <input id="del" type="button" value="删除节点" onclick="delNode()"/>
+    <input id="rep" type="button" value="替换节点" onclick="replaceNode()"/>
+    <input id="copy" type="button" value="复制节点" onclick="copyNode()"/>
+    <input id="insert" type="button" value="插入节点" onclick="insertNode()"/>
+    <input id="getAttr" type="button" value="获取属性" onclick="getAttr()"/>
+    <input id="delAttr" type="button" value="删除属性" onclick="delAttr()"/>
+
+    <div id="first">DIV块1</div>
+    <div id="second" onclick="iterate()">
+        <span id="span1">span1</span>
+        <a href="test.html" id="a1" onclick="accessNode(this)">要删除的a标签</a>
+        <span id="span2">span2</span>
+    </div>
+    <div id="third"><p>时间看到了房价上课了的纠纷看电视</p></div>
+    <div id="fourth" style="background-color: red">DIV块4</div>
+</body>
+</html>

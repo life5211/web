@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS学习</title>
+    <link rel="stylesheet" href="externalCSS.css">
+    <style>
+        /*元素选择器*/
+        h1 {
+            color: greenyellow;
+            font-size: 20px;
+        }
+
+        h1, h2 {
+            color: aqua;
+        }
+
+        p {
+            color: red; /*修改字体颜色*/
+            font-weight: bold; /*字体加粗*/
+        }
+
+        /*类选择器*/
+        .test {
+            color: red;
+        }
+
+        span.t {
+            font-size: 40px;
+        }
+
+        /*ID选择器*/
+        #div1 {
+            width: 500px;
+            height: 30px;
+            background-color: #654eff; /*背景色*/
+        }
+
+        /*属性选择器*/
+        p[id] {
+            color: #654eff;
+        }
+
+        p[id="panme"] {
+            color: aquamarine;
+        }
+
+        span[class] {
+            color: blue;
+            font-size: 20px;
+            text-decoration: line-through;
+        }
+
+        a[title="title2"] {
+            color: green;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        li[name]{
+            list-style-type: none;
+        }
+        /*包含选择器*/
+        /*div a{*/
+            /*color: red;*/
+        /*}*/
+       /* div>a{
+            color: red;
+        } */
+       /* div+a{
+            color: red;
+        } */
+      /*  div~a{
+            color: red;
+        }*/
+
+        /*伪类选择器*/
+
+        a:link{ color:red}
+        a:visited{color: blue}
+        a:hover{color: #654eff}
+        a:active{color: aquamarine}
+        
+        *{
+            color: #000;}
+
+    </style>
+
+</head>
+<body>
+
+<center>
+    <a href="#end" id="start">end</a>
+</center>
+
+<h1>Title001</h1>
+<h2>Title002</h2>
+<p>段落001</p>
+<p>段落002</p>
+<p id="p003">段落003</p>
+<p id="panme">段落004</p>
+<h3><p>Titleh3</p></h3>
+<h1 class="test">标题1</h1>
+<a title="title1" href="#">超链接1</a><br/>
+<a title="title2" href="#">超链接2</a><br/>
+<span class="t test">this is in span</span>
+<span class="t">this is in span</span>
+<span class="test">this is in span</span>
+
+<div id="div1">
+    DIV块
+</div>
+<ul>
+    <li name>football</li>
+    <li>篮球</li>
+    <li>排球</li>
+</ul>
+
+<div id="div2">
+    <a href="#">superLINK</a>
+    <p>
+        <a href="#">superLINK超链接</a>
+    </p>
+</div>
+<a href="#">超链接</a>
+
+<br/>
+<center>
+    <a href="#sTART" ID="END">home</a>
+</center>
+
+</body>
+</html>

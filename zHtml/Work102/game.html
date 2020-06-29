@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Point21</title>
+    <style>
+        div {
+            width: 30%;
+            margin: 20% auto;
+        }
+    </style>
+    <script>
+        onload = function () {
+
+            var bossNo, userNo;
+
+            replay.onclick = function () {
+                bossNo = r();
+                userNo = r();
+                while (userNo > bossNo) {
+                    bossNo += r();
+                }
+                boss.value = "Gaming";
+                user.value = userNo;
+                onemore.onclick = paly;
+            }
+
+            result.onclick = function () {
+                boss.value = bossNo;
+                user.value = userNo;
+                onemore.onclick = false;
+                if (bossNo > 21) {
+                    alert("庄家爆了，你赢了！")
+                } else {
+                    alert("你输了！！")
+                }
+            }
+
+            function paly() {
+                userNo += r();
+                user.value = userNo;
+                while (userNo > bossNo) {
+                    bossNo += r();
+                }
+                if (userNo > 21) {
+                    boss.value = bossNo;
+                    alert("你爆了，你输了");
+                    onemore.onclick = false;
+                }
+            }
+        }
+
+
+        function r() {
+            return Math.floor(Math.random() * 11 + 1);
+        }
+    </script>
+
+</head>
+<body>
+<div>
+    庄家 <input type="text" id="boss" readonly>点<br/>
+    玩家 <input type="text" id="user" readonly>点<br/>
+    <input type="button" id="onemore" value="再来一张">
+    <input type="button" id="result" value="查看结果">
+    <input type="button" id="replay" value="New Game">
+</div>
+
+</body>
+</html>

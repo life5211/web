@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>DOM树</title>
+    <script>
+        function getTitle(){
+            //获取h1的DOM对象
+            var h = document.getElementById("head");
+            //获取title属性值
+            alert(h.title);
+        }
+
+        function getClass(){
+            var div = document.getElementById("div1");
+            //如果是访问class属性，由于class是关键字，所以只能通过className来访问
+            alert(div.className);
+            //获取标签包裹的文本
+            var htmlText = div.innerHTML;
+            alert(htmlText);
+        }
+
+        function test(){
+            var sp = document.getElementById("sp");
+            alert(sp.innerHTML);//innerHTML 连带标签元素和文本全部获取到
+            alert(sp.innerText);//innerText 只获取文本
+        }
+
+        function replaceText(){
+            var sp = document.getElementById("sp");
+            sp.innerHTML = "内容被替换了";
+        }
+
+        function testCSS(){
+            var sp = document.getElementById("sp");
+            sp.style.color = "red";
+            sp.style.fontSize = "50px";
+            var div = document.getElementById("div1");
+            div.style.backgroundColor = "yellow";
+        }
+    </script>
+</head>
+<body>
+    <h1 id="head" title="测试" onclick="getTitle()">标题1</h1>
+    <div id="div1" class="test" onclick="getClass()">练习</div>
+    <span id="sp" onclick="test()"><p>段落1</p></span>
+    <input type="button" value="替换span元素中的内容" onclick="replaceText()">
+    <input type="button" value="把span元素中的内容字体大小改成50px，字体颜色设置成红色" onclick="testCSS()">
+</body>
+</html>

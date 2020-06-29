@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery简单动画</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(function(){
+            $("div").click(function(){
+                var $p = $(this).next();
+//                $p.hide(1000);
+
+//                $p.slideUp(800);//滑动效果（向上）
+
+                $p.fadeOut(1000);//淡出
+            });
+        });
+    </script>
+</head>
+<body>
+    <div>点我</div>
+    <p>
+        就撒宽带缴费圣诞快乐放假数量肯定积分蓝色肯德基发数量肯定积分蓝色肯德基发空间大三付款了时间付款了圣诞节发<br>
+        就撒宽带缴费圣诞快乐放假数量肯定积分蓝色肯德基发数量肯定积分蓝色肯德基发空间大三付款了时间付款了圣诞节发<br>
+        就撒宽带缴费圣诞快乐放假数量肯定积分蓝色肯德基发数量肯定积分蓝色肯德基发空间大三付款了时间付款了圣诞节发<br>
+    </p>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS现代事件处理</title>
+    <script>
+        window.onload = function(){
+            var div = document.getElementsByTagName("div")[0];
+            var p = document.getElementsByTagName("p")[0];
+
+            /*
+                参数一 事件类型，比如onclick,把on去掉，只有后面
+                参数二 执行方法名
+                参数三 事件流处理方式，true 捕获   false 冒泡
+             */
+            /*div.addEventListener("click",clickEvt, false);//绑定事件
+            div.removeEventListener("click",clickEvt, false);//解除绑定*/
+
+            //传统事件处理程序不支持对同一事件绑定多个执行方法
+            /*div.onclick = clickEvt1;
+            div.onclick = clickEvt2;*/
+            //现代事件处理程序支持对同一事件绑定多个执行方法，依次执行
+            div.addEventListener("click",clickEvt1, false);
+            div.addEventListener("click",clickEvt2, false);
+
+        }
+
+        function clickEvt1(){
+            alert(1);
+        }
+
+        function clickEvt2(){
+            alert(2);
+        }
+    </script>
+</head>
+<body>
+    <div>传统事件处理</div>
+    <p>
+        手机打开房间时刻到了房间深刻的龙卷风快速登录积分看电视机房亏了多少积分亏了多少积分抗裂砂浆开发发<br>
+        手机打开房间时刻到了房间深刻的龙卷风快速登录积分看电视机房亏了多少积分亏了多少积分抗裂砂浆开发发<br>
+        手机打开房间时刻到了房间深刻的龙卷风快速登录积分看电视机房亏了多少积分亏了多少积分抗裂砂浆开发发<br>
+        手机打开房间时刻到了房间深刻的龙卷风快速登录积分看电视机房亏了多少积分亏了多少积分抗裂砂浆开发发<br>
+    </p>
+</body>
+</html>

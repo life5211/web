@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>DOM节点访问</title>
+    <style>
+        #div1{
+            width: 100%;
+            height: 60px;
+            background-color: yellow;
+        }
+        #div2{
+            width: 100%;
+            height: 500px;
+            background-color: red;
+        }
+        #div3{
+            width: 100%;
+            height: 40px;
+            background-color: blue;
+        }
+    </style>
+    <script>
+        window.onload = function(){
+            var btn = document.getElementById("btn");
+            btn.onclick = function(){
+//               var divList = document.getElementsByTagName("div");//通过元素名字访问节点
+//                var divList = document.getElementsByName("head");//通过name属性值访问节点
+//               for(var i = 0; i < divList.length; i++){
+//                   alert(divList[i].id);
+//               }
+
+              /*  var divList = document.getElementsByTagName("div");
+                for(var i = 0; i < divList.length; i++){
+                    divList[i].onclick = function(){//为每一个div绑定事件
+                        alert(this.id);
+                    }
+                }*/
+            }
+        }
+
+        function testInnerHTML(){
+            var div3 = document.getElementById("div3");
+            div3.innerHTML = "sdfsdf";
+        }
+
+    </script>
+</head>
+<body>
+    <input type="button" value="按钮" id="btn">
+    <div id="div1" name="head">DIV1</div>
+    <div id="div2" name="head">DIV2</div>
+    <div id="div3" name="foot" onclick="testInnerHTML()">DIV3</div>
+</body>
+</html>

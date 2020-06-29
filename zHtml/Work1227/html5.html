@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>html第二天</title>
+</head>
+<body>
+<center>
+    <a href="#end" id="start" style="font-size: 200px;font-family: 华文行楷  ">end</a>
+</center>
+
+<br/>
+<video src="source/3.数组的插入算法.mp4" autoplay controls> ERROR</video>
+<br/>
+<a href="../work1226/personal.html">
+    <img src="source\test.jpg "/>
+</a>
+
+
+<br/>
+<table border="1" style="border-collapse: collapse">
+    <tr>
+        <th> id</th>
+        <th>name</th>
+        <th>age</th>
+        <th>action</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>tom</td>
+        <td>25</td>
+        <td>...</td>
+    </tr>
+</table>
+<br/>
+<table border="2" style="border-collapse: collapse " align="center">
+    <tr>
+        <th colspan="3"> 学生基本信息</th>
+        <th colspan="2">成绩</th>
+    </tr>
+    <tr>
+        <th> 姓名</th>
+        <th> 性别</th>
+        <th> 专业</th>
+        <th> 课程</th>
+        <th> 分数</th>
+    </tr>
+    <tr>
+        <td>李华</td>
+        <td>男</td>
+        <td rowspan="2">计算机</td>
+        <td rowspan="2">程序设计</td>
+        <td>68</td>
+    </tr>
+    <tr>
+        <td>王明丽</td>
+        <td>女</td>
+        <td>89</td>
+    </tr>
+</table>
+<br/>
+
+<form action="login.jsp" method="post" enctype="multipart/form-data">
+    <label for="username">
+        用户名：<input type="text"id="username" name="username"placeholder="请输入用户名"accesskey="J"><br/>
+    </label>
+
+    密码：<input type="password" name="password"><br/>
+    性别：
+    <label for="man">
+        男 <input type="radio" name="sex" value="0" id="man" checked="checked">
+    </label>
+
+    女 <input type="radio" name="sex" value="1" id="woman">
+    <br/>
+    <br/>
+    省份<select name="provience">
+    <option value="sichuan">四川</option>
+    <option value="yunan" selected="selected">云南</option>
+    <option value="guizhou">贵州</option>
+</select>
+    <br/>
+    喜欢的明星<select name="star" multiple="multiple">
+    <option value="baqiao">巴乔</option>
+    <option value="jigesi"selected="selected">吉格斯</option>
+</select>
+    <br/>
+    爱好:
+    体育<input type="checkbox" name="hobby" value="sport" checked="checked">
+    音乐<input type="checkbox" name="hobby" value="music"/>
+    <br/>
+    文件上传：<input type="file" name="unloadfile"/> <br/>
+    <br/>邮箱：<input type="email"name="email"/><br/>
+    <br/>范围：<input type="range"name="range"min="0"max="100"value="25"/><br/>
+    <br/>日期：<input type="date"name="date"/><br/>
+    <input type="textarea" name="textarea"><br/>
+    输入框<textarea name="suggertion" placeholder="morenxianshi" style="resize: none" rows="020"cols="50"></textarea><BR/>
+    <input type="submit" name="sub" value="登录">
+    <input type="reset" name="cancel" value="取消">
+    <input type="image" src="source/test.jpg" name=" btnimage" width="100">
+    <input type="button" name="btn" value="普通按钮">
+</form>
+
+<br/>
+<form action="login.jsp" method="post" enctype="multipart/form-data">
+    你最喜欢的男明星<select name="starman">
+    <option value="liuzai">刘德华</option>
+    <option value="xuhz"selected="selected">许洪智</option>
+</select>
+    <br/>
+    who're your womenstar?<select name="starwomen" multiple>
+    <option value="tom">Tom</option>
+    <option value="Lily">Lily</option>
+</select>
+
+</form>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<a href="#start" id="end">start</a>
+</body>
+</html>

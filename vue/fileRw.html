@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Javascript文件读写</title>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+
+</head>
+<body>
+<div>
+  <input type="file" id="files" style="display:none" onchange="importF();"/>
+  <input type="button" id="import" value="导入"/>
+</div>
+<script>
+    $("#import").click(function () {//点击导入按钮，使files触发点击事件，然后完成读取文件的操作。
+        $("#files").click();
+    });
+
+    function importTxt() {
+        var selectedFile = document.getElementById("files").files[0];//获取读取的File对象
+        var name = selectedFile.name;//读取选中文件的文件名
+        var size = selectedFile.size;//读取选中文件的大小
+        console.log("文件名:" + name + "大小：" + size);
+        var reader = new FileReader();//这里是核心！！！读取操作就是由它完成的。
+        reader.readAsText(selectedFile);//读取文件的内容
+
+        reader.onload = function () {
+            console.log(this.result);//当读取完成之后会回调这个函数，然后此时文件的内容存储到了result中。直接操作即可。
+        };
+    }
+
+    function importPic() {
+        const input = document.getElementById("files");
+
+        const reader = new FileReader()
+        reader.readAsDataURL(input.files[0]) // input.files[0]为第一个文件
+        reader.onload = () => {
+            const img = new Image()
+            img.src = reader.result
+            document.body.appendChild(img)  // reader.result为获取结果
+        }
+
+    }
+
+
+    function downloadF(filename, text) {
+        var pom = document.createElement('a');
+        pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        pom.setAttribute('download', filename);
+        if (document.createEvent) {
+            var event = document.createEvent('MouseEvents');
+            event.initEvent('click', true, true);
+            pom.dispatchEvent(event);
+        } else {
+            pom.click();
+        }
+    }
+
+    function downloadChrome(filename, content, contentType) {
+        contentType = contentType || 'application/octet-stream';
+        var a = document.createElement('a');
+        var blob = new Blob([content], {'type': contentType});
+        a.href = window.URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+    }
+
+    $("#files").change(function () {
+        var objUrl = getObjectURL(this.files[0]);
+        console.log("objUrl = " + objUrl);
+        if (objUrl) {
+            $("#img0").attr("src", objUrl);
+        }
+    });
+
+    //取得该文件的url
+    function getObjectURL(file) {
+        var url = null;
+        if (window.createObjectURL) {
+            url = window.createObjectURL(file);
+        } else if (window.URL) {
+            url = window.URL.createObjectURL(file);
+        } else if (window.webkitURL) {
+            url = window.webkitURL.createObjectURL(file);
+        }
+        return url;
+    }
+</script>
+</body>
+</html>

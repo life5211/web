@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JSBOM对象</title>
+    <script>
+
+        var myWindow = null;
+
+        //打开窗口
+        function openWindow(){
+            /* 参数一：URL  参数二：窗口名字  参数三:窗口特性，比如长，宽... */
+            myWindow = window.open("test.html", "测试窗口","width=500,height=500");
+        }
+
+        // 关闭窗口
+        function closeWindow(){
+            myWindow.close();
+        }
+
+    </script>
+</head>
+<body>
+     <!--事件绑定-->
+    <div onclick="openWindow()">打开窗口</div>
+    <div onclick="closeWindow()">关闭窗口</div>
+</body>
+</html>

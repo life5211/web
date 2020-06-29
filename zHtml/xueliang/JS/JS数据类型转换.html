@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS数据类型转换</title>
+    <script>
+        var num1 = "123";
+        var num2 = "12.5";
+        var num3 = "sdf";
+        var num4 = 123;
+
+        // 把数字的字符串转成number类型
+        /*var result = parseInt(num1);//转成整数
+        alert(typeof(result) + ", " + result );*/
+
+       /* var result = parseFloat(num2);//转成小数
+        alert(typeof(result) + ", " + result );*/
+
+//        alert(parseInt(num3));
+
+        var bool = new Boolean(true);
+        var flag = bool.toString();//flag是string类型
+
+       /* if(flag == "true"){
+            alert(1);
+        } else {
+            alert(2);
+        }*/
+
+        /*
+               == 只比较内容,不比较类型
+               === 除了比较内容，还会比较类型
+          */
+        if(num1 === num4){
+            alert(1);
+        } else {
+            alert(2);
+        }
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

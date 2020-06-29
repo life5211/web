@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery创建节点和插入节点</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        /*$(document).ready(function(){
+            alert(1);
+        });*/
+
+        $(function(){//等价于上面的ready事件
+            //创建节点(必须符合DOM标准)
+            var $li_1 = $("<li title=香蕉>香蕉</li>");
+            var $li_2 = $("<li title=西瓜>西瓜</li>");
+            var $li_3 = $("<li title=葡萄>葡萄</li>");
+            var $li_4 = $("<li title=梨子>梨子</li>");
+
+            //获取ul对象
+            var $ul = $("ul");
+
+            //插入节点(父子插入)
+            $ul.append($li_1);//尾部插入
+            $ul.prepend($li_2);//前面插入
+            $li_3.appendTo($ul);//把li添加到ul里面（尾部插入）
+            $li_4.prependTo($ul);//把li添加到ul里面（前面插入）
+
+            //插入节点(同辈插入)
+//            $("span[class=hello]").after("JQuery!");
+//            $("span[class=hello]").before("Hello JS!");
+//            $("<span>HTML</span>").insertAfter( $("span[class=hello]"));
+            $("<span>HTML</span>").insertBefore($("span[class=hello]"));
+        });
+    </script>
+</head>
+<body>
+    <p title="JQ属性值"></p>
+    <ul>
+        <li title="苹果">苹果</li>
+        <li title="橘子">橘子</li>
+        <li title="菠萝">菠萝</li>
+    </ul>
+    <span class="hello">Hello</span>
+    <span class="hello2"></span>
+</body>
+</html>

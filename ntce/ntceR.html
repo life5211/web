@@ -1,0 +1,372 @@
+
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSS-->
+    <link rel="stylesheet" type="text/css" href="http://sso.jszg.edu.cn/ssostatics/styles/main.min.css">
+
+    <link rel="stylesheet" href="http://sso.jszg.edu.cn/ssostatics/styles/slide.min.css">
+
+    <title>中国教师资格网—登录页面</title>
+
+
+    <!-- Javascripts-->
+    <script src="http://sso.jszg.edu.cn/ssostatics/scripts/jquery.min.js" type="text/javascript"></script>
+
+    <script src="http://sso.jszg.edu.cn/ssostatics/scripts/jquery.lgyslide.js" type="text/javascript"></script>
+
+    <script src="http://sso.jszg.edu.cn/ssostatics/scripts/currency.min.js" type="text/javascript"></script>
+    <script src="http://sso.jszg.edu.cn/ssojs/tool/md5.min.js" type="text/javascript"></script>
+    <script src="http://sso.jszg.edu.cn/ssojs/rsa/jsencrypt.js" type="text/javascript"></script>
+    <script src="http://sso.jszg.edu.cn/ssojs/tool/base64.min.js" type="text/javascript"></script>
+    <script src="http://sso.jszg.edu.cn/ssojs/tool/bin2hex.min.js" type="text/javascript"></script>
+    <script src="http://sso.jszg.edu.cn/ssojs/rollups/tripledes.js" type="text/javascript"></script>
+    <script src="http://sso.jszg.edu.cn/ssojs/components/format-hex.min.js" type="text/javascript"></script>
+    <script src="http://sso.jszg.edu.cn/ssojs/message.js" type="text/javascript"></script>
+    <script src="http://sso.jszg.edu.cn/ssojs/data.min.js" type="text/javascript"></script>
+    <script src="http://sso.jszg.edu.cn/ssojs/ajax.min.js" type="text/javascript"></script>
+
+    <script>
+        function init1() {
+            var ran =randomFrom(1,10);
+            // if(ran<3 & window.location.href.indexOf('sso') > -1){
+            //    window.location.href ="http://60.247.18.167/sso/login.html";
+            // }
+            localStorage.removeItem("rootPath");
+            localStorage.removeItem("domain");
+            clear_data();
+            getRootPath_dc();
+            getDomain_dc();
+        }
+        function randomFrom(lowerValue,upperValue)
+        {
+            return Math.floor(Math.random() * (upperValue - lowerValue + 1) + lowerValue);
+        }
+    </script>
+</head>
+<body class="sidebar-mini fixed  pace-done" style="background:url(http://sso.jszg.edu.cn/sso/statics/images/logleft2560.jpg) no-repeat   center;" onload="init1()">
+<table width='98%' height="100%" align="center">
+    <!-顶部-->
+    <tr >
+        <td width='98%' height="40" align="center">&nbsp;</td>
+    </tr>
+    <!--logo-->
+    <tr width='98%' height="40" >
+        <td   align="center">&nbsp;
+            <image src="http://sso.jszg.edu.cn/ssostatics/images/logo.png"/>
+            &nbsp;&nbsp;
+            <font color="#009688" size="5px">欢迎使用中国教师资格网</font>
+        </td>
+    </tr>
+    <!--中部-->
+    <tr width="100%" height="320" >
+        <td>
+            <table width="100%">
+                <tr>
+                    <td width="30%" height="320"></td>
+                    <td width="40%" height="320" style="background:rgba(255,255,255,0.7)">
+                        <!--登录框-->
+                        <table width="100%" height="100%">
+
+                            <tr  width="100%" height="40">
+                                <td>&nbsp;</td>
+                            </tr>
+
+                            <!--id-->
+                            <tr>
+                                <td width="20%" ></td>
+                                <td width="60%" >
+                                    <div class="input-group"><span class="input-group-addon">
+                        	                                <image src="http://sso.jszg.edu.cn/ssostatics/images/dengluzhanghao.png"/>
+                        	                                </span>
+                                        <input id="idNum" class="form-control" type="text" value="" placeholder="请填写证件号码">
+                                        <span class="input-group-btn">
+
+                        	                                </span>
+                                    </div>
+                                </td>
+                                <td width="20%" ></td>
+                            </tr>
+
+                            <tr  width="100%" height="5">
+                                <td>&nbsp;</td>
+                            </tr>
+
+                            <!--password-->
+                            <tr>
+                                <td width="20%" ></td>
+                                <td width="60%" >
+                                    <div class="input-group"><span class="input-group-addon">
+                        	                                <image src="http://sso.jszg.edu.cn/ssostatics/images/key.png"/> </span>
+                                        <input id="password" class="form-control" type="password" value="" placeholder="请输入密码">
+                                        <span class="input-group-btn"></span>
+                                    </div>
+                                </td>
+                                <td width="20%" ></td>
+                            </tr>
+
+                            <tr  width="100%" height="5">
+                                <td>&nbsp;</td>
+                            </tr>
+
+                            <!--验证码-->
+                            <!-- <tr>
+                                 <td width="20%" ></td>
+                                 <td width="60%" >
+                                     <div id="captcha" style="position: relative;"></div>
+                                 </td>
+                                 <td width="20%" >
+
+                                     <img id="info" style="display:none;" src="http://sso.jszg.edu.cn/ssostatics/images/xuanzhong.png">
+
+                                 </td>
+                             </tr>
+                             -->
+                            <tr>
+                                <td align='center' colspan="3" >验证码已经取消，请直接点击按钮登录。</td>
+
+                            </tr>
+
+
+                            <tr  width="100%" height="5">
+                                <td>&nbsp;</td>
+                            </tr>
+
+                            <!--button-->
+                            <tr>
+                                <td width="20%" ></td>
+                                <td width="60%" >
+                                    <table width="100%">
+                                        <td width="40%" >
+                                            <button  class="btn btn-info btn-lg btn-block" onclick="window.location.href=('http://sso.jszg.edu.cn/sso/registerIndex.html')" >注&nbsp;册</button>
+                                        <td width="20%"> </td>
+                                        </td>
+                                        <td width="40%" align="right">
+                                            <button class="btn btn-primary btn-lg btn-block"  id="btnvalid" name="btnvalid" onclick="login()" align="right">登&nbsp;录</button>
+                                        </td>
+                                        </tr>
+
+                                    </table>
+                                </td>
+                                <td width="20%" ></td>
+                            </tr>
+
+                            <!--<tr  width="100%" height="5">
+                                <td>&nbsp;</td>
+                            </tr>-->
+
+                            <!--forget-->
+                            <tr>
+                                <td width="20%" ></td>
+                                <td width="60%" >
+
+                                    <!--<td align="left">
+                                        &lt;!&ndash; <a href="">用户手册</a>&ndash;&gt;
+                                    </td>-->
+
+                                <td align="right">
+
+
+                                </td>
+                                <td width="20%" height="10"></td>
+                            </tr>
+
+                            <tr  width="100%" height="5">
+                                <td width="20%" ></td>
+                                <td width="60%" align="right">
+                                    <font color="#00ac49">
+                                        <a href="forgetpass.html">   <image src="http://sso.jszg.edu.cn/ssostatics/images/wangjimima.png"/>
+                                            忘记密码</a>
+                                    </font>
+                                </td>
+                                <td width="20%" ></td>
+                            </tr>
+
+
+                            <tr  width="100%" height="10">
+                                <td>&nbsp;</td>
+                            </tr>
+
+                        </table>
+
+                    </td>
+
+                    <td width="30%" height="320">&nbsp;</td>
+                    <!-- <tr align="center">
+                     <td colspan="3" style="color:#009688; ">版权所有：中国教师资格网&nbsp;&nbsp;&nbsp;&nbsp;技术支持：北京广通信达软件股份有限公司</td>
+                 </tr>-->
+                </tr>
+            </table>
+        </td>
+
+    </tr>
+
+
+    </td>
+    </tr>
+
+    <!--底部-->
+    <tr height="40">
+        <td  align="center">
+            <div align="center" style="font-size:18px" >
+                <!-- 本系统于2019年3月启用。首次使用者请先注册，
+                 注册成功后， 本账号将是您登录本系统办理相关业务的唯一永久账号。-->
+                首次使用者请先注册，注册成功后再登录系统办理相关业务。
+            </div>
+
+            <div align="center" style="font-size:18px">
+                建议使用谷歌、IE9及以上版本浏览器。
+            </div>
+        </td>
+    </tr>
+
+    <tr width='98%' height="110" style="overflow:hidden;">
+        <td  align="center">
+            <div style="color:#009688">版权所有：教育部教师资格认定指导中心</div>
+        </td>
+    </tr>
+
+
+    <!-- <tr width='98%' height="90" >
+         <td >
+             &nbsp;
+         </td>
+     </tr>-->
+
+</table>
+
+<script>
+
+    //数据是否通过验证
+    var avail = false;
+
+    function login() {
+        /*  if (!avail) {
+              alert("请先拖动滑块填充拼图完成校验!");
+              return;
+          }*/
+        var account = $("#idNum").val().replace(/(^\s*)|(\s*$)/g, "").toUpperCase();
+        var password = $("#password").val();
+        var stamp = new Date().getTime();
+
+        var pwd = hex_md5(account + hex_md5(password));
+
+        var rsa = new JSEncrypt();
+        rsa.setPublicKey(_rsa_key);
+        // 对敏感数据进行加密
+        var en = rsa.oencrypt(account);
+
+        // 计算签名
+        var sign = signatureLogin(rsa, account, pwd, 1, stamp, stamp);
+
+        var data = JSON.stringify({
+            account: en,
+            mode: 1
+        });
+
+
+        //按钮60秒禁止
+        time(document.getElementById("btnvalid"));
+
+        $.post("http://sso.jszg.edu.cn/sso/rest/security/identify/login", data, {
+                success: function (result) {
+                    avail = false;
+                    // console.log(result);//打印服务端返回的数据(调试用)
+                    localStorage.account = account;
+                    localStorage.accessToken = result.data.accessToken;
+                    // 解密key3：用3des解密，密钥为登录密码的前24位
+                    var key3 = des3_decrypt(pwd.substring(0, 24), result.data.key3);
+                    localStorage.key3 = key3;
+                    // 解密随机数
+                    localStorage.random = des3_decrypt(key3, result.data.random);
+                    localStorage.teacher = JSON.stringify(result.data.teacher);
+                    localStorage.latestLoginTime = result.data.latestLoginTime;
+
+                    window.location.href = "http://sso.jszg.edu.cn/sso/desktop/index.html?t=" + Date.parse(new Date());
+                },
+                failure: function (code, message) {
+                    avail = false;
+                    var msg = api_error[code] || message;
+                    alert(msg);
+                }
+            },
+            sign,
+            stamp
+        );
+
+    }
+
+    var wait=1;
+    function time(o) {
+
+        if (wait == 0) {
+            o.removeAttribute("disabled");
+            o.value="登录";
+            o.innerHTML="登录";
+            wait = 1;
+        } else {
+            o.value=wait+"秒后可以重新登录";
+            o.innerHTML= wait+"秒后可以重新登录";
+            // o.setAttribute("disabled", true);
+
+            wait--;
+            setTimeout(function() {
+                    time(o)
+                },
+                1000)
+        }
+    }
+
+    /*
+    function createcode(type) {
+        //如果已经通过验证则不再加载验证码
+        $get('rest/security/identify/captcha',null,
+            {
+                success: function(data){
+                    cid = data.data.id;
+                    offset_x = data.data.offsetX;
+                    $("#captcha").imgcode({
+                        frontimg: data.data.front,
+                        backimg: data.data.background,
+                        refreshcallback: function () {
+                            //刷新验证码
+                            createcode(type);
+                        },
+                        callback: function (msg) {
+                            var x = parseInt(msg.xpos - offset_x);
+                            $get('rest/security/identify/captcha/verify',
+                                {id:cid,x:x},
+                                {   success: function (data) {
+                                        $('#info').css('display', 'block');
+                                        avail = true;
+                                        createcode(type);
+                                    },failure:function(){createcode(type);}
+                                }
+                            );
+                        }
+                    });
+                }
+            }
+        );
+    }
+*/
+    /*
+    //createcode(0);
+    callCaptcha($("#captcha"), 0, "http://sso.jszg.edu.cn/sso", {
+        clear: function(){
+            $('#info').css('display', 'block');
+            avail = true;
+        }
+    });
+    */
+
+</script>
+
+
+</body>
+</html>

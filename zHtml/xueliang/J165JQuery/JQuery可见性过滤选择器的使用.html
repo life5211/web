@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery可见性过滤选择器的使用</title>
+    <style>
+        div{
+            width: 100px;
+            height: 100px;
+        }
+        #div1{background-color: red}
+        #div2{background-color: green;display: none}
+        #div3{background-color: blue;visibility: hidden}
+        #div4{background-color: #5FF7FF;}
+    </style>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#btn").click(clickEvt1);
+        });
+
+        function clickEvt1(){
+            //设置可见元素的背景颜色
+//            $("div:visible").css({backgroundColor:"black"});
+            //让不可见的元素可见并且改变背景颜色
+//           $("div:hidden").show().css({backgroundColor:"black"});
+            //隐藏掉第一个div
+//            $("div:eq(0)").hide();
+
+            $("div:visible:eq(2)").css({backgroundColor:"black"});
+        }
+    </script>
+</head>
+<body>
+    <div id="div1"></div>
+    <div id="div2"></div>
+    <div id="div3"></div>
+    <div id="div4"></div>
+    <span hidden="hidden">JQuery可见性过滤选择器的使用</span>
+    <input type="button" value="确定" id="btn">
+</body>
+</html>

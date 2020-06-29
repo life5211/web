@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery对象与DOM对象转换</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(document).ready(function(){
+//            var div = document.getElementById("div1");//DOM对象
+//            div.innerHTML = "内容有了";
+//            div.innerText = "内容有了2";
+
+//           var $div = $(div);//DOM对象转成JQuery对象
+//            $div.html("内容有了");
+//            $div.text("内容有了2");
+
+//            $("#div1").html("内容有了3");//JQuery对象
+//            $("#div1")[0].innerHTML = "内容有了3innerHTML";//JQuery对象转换成DOM对象
+
+            //获取div的文本
+            alert($("#div1").html());
+        });
+    </script>
+</head>
+<body>
+    <div id="div1">DIV块</div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS定时器</title>
+    <script>
+        //定时器
+        //示例:每隔1秒钟执行一次showPoint方法
+        var id = setInterval(showPoint, 2000);
+        //清除定时器
+        clearInterval(id);
+
+        function showPoint(){
+            document.write(".");
+        }
+    </script>
+</head>
+<body>
+
+</body>
+</html>

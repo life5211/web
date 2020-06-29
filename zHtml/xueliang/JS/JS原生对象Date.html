@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS原生对象Date</title>
+    <script>
+        //创建时间对象
+        var currDate = new Date();
+        //取 年  月  日
+        var year = currDate.getFullYear();
+        var month = currDate.getMonth() + 1;
+        var day = currDate.getDate();
+        //处理输出的值
+        if(month < 10){
+            month = "0" + month;
+        }
+        if(day < 10){
+            day = "0" + day;
+        }
+        //拼字符串输出
+        document.write(year + "-" + month + "-" + day);
+    </script>
+</head>
+<body>
+
+</body>
+</html>

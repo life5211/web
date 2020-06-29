@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS事件绑定</title>
+    <script>
+        //整张页面加载完成以后触发onload事件
+        window.onload = function(){
+                //得到DIV的DOM对象
+                var div = document.getElementById("div1");
+                //动态绑定事件
+                div.onclick = function(){
+                       /* var d = document.getElementById("div1");
+                        alert(d.title);*/
+//                        alert(this.title);
+                 }
+
+                div.onclick = show;
+            }
+
+            function show() {
+               /* var d = document.getElementById("div1");
+                alert(d.title);*/
+                //代表自己
+                alert(this.id);
+            }
+    </script>
+</head>
+<body>
+    <!-- 静态绑定事件 -->
+    <!--<div id="div1" title="标题" onclick="test()">DIV块</div>-->
+
+    <div id="div1" title="标题">DIV块</div>
+</body>
+</html>

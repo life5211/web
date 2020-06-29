@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery属性操作</title>
+    <style>
+        .another{
+            background-color: red;
+        }
+        .hide{
+            display: none;
+        }
+    </style>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(":button:eq(0)").click(getClass);
+            $(":button:eq(1)").click(setClass);
+            $(":button:eq(2)").click(addClass);
+            $(":button:eq(3)").click(deleteAllClass);
+            $(":button:eq(4)").click(deleteSpecClass);
+            $(":button:eq(5)").click(togleClass);
+            $(":button:eq(6)").click(deleteAttr);
+
+            //练习: 切换隐藏/显示效果
+            $("p:first").click(function(){
+                $("p:last").toggleClass("hide");
+            });
+
+        });
+        //获取class
+        function getClass(){
+            alert($("p:eq(0)").attr("class"));
+        }
+        //设置class
+        function setClass(){
+//            $("p").attr("class", "class的值改变了");
+            $("p").eq(1).attr("class", "another");
+        }
+        //删除属性
+        function deleteAttr(){
+            $("div").removeAttr("style");
+        }
+        //追加class
+        function addClass(){
+            $("p").eq(0).addClass("another");
+        }
+        //删除全部class
+        function deleteAllClass(){
+            $("p").removeClass();
+        }
+        //删除指定class
+        function deleteSpecClass(){
+            $("p:first").removeClass("another");
+        }
+        //切换class
+        function togleClass(){
+            //如果有class=another就删除，如果没有就加进去
+            $("ul li:eq(0)").toggleClass("another");
+        }
+    </script>
+</head>
+<body>
+    <p class="问卷调查 another"><strong>问卷调查文本</strong></p>
+    <p class="选择你喜欢的水果"><strong>你最喜欢的水果是？</strong></p>
+    <ul>
+        <li title="苹果">苹果</li>
+        <li title="橘子">橘子</li>
+        <li title="菠萝">菠萝</li>
+    </ul>
+    <div style="text-align: center;background-color: blue;color: #ffffff">DIV块</div>
+
+    <input type="button" value="获取class">
+    <input type="button" value="设置class">
+    <input type="button" value="追加class">
+    <input type="button" value="删除全部class">
+    <input type="button" value="删除指定class">
+    <input type="button" value="切换class">
+    <input type="button" value="删除属性">
+</body>
+</html>

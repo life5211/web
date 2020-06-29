@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery基本过滤选择器的使用</title>
+    <style>
+        div{
+            width: 100px;
+            height: 100px;
+        }
+        .l2{
+            font-size: 20px;
+        }
+        #div1{background-color: blue}
+        #div2{background-color: red}
+        #div3{background-color: green}
+    </style>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#btn").click(function(){
+                //改变第一个div元素的背景颜色
+//                $("div:first").css({backgroundColor:"black"});
+                //改变最后一个div元素的背景颜色
+//                $("div:last").css({backgroundColor:"black"});
+                //改变第二个div元素的背景颜色
+//                $("div:eq(1)").css({backgroundColor:"black"});
+//                $("div").eq(1).css({backgroundColor:"black"});
+                //改变所有hn元素的字体颜色
+//                $(":header").css({color:"red"});
+                //改变列表项li元素中没有class属性的元素字体大小
+//                $("li:not(.l2)").css({fontSize:"50px"});
+                //改变列表项li元素中奇数行为红色，偶数行为蓝色
+                $("li:even").css({background:"red"});
+                $("li:odd").css({background:"blue"});
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="div1"></div>
+    <div id="div2"></div>
+    <div id="div3"></div>
+
+    <h1>JQuery基本过滤选择器的使用</h1>
+    <h2>JQuery基本过滤选择器的使用</h2>
+    <h3>JQuery基本过滤选择器的使用</h3>
+    <h4>JQuery基本过滤选择器的使用</h4>
+    <h5>JQuery基本过滤选择器的使用</h5>
+    <h6>JQuery基本过滤选择器的使用</h6>
+
+    <ul>
+        <li>列表一</li>
+        <li class="l2">列表二</li>
+        <li>列表三</li>
+        <li>列表四</li>
+    </ul>
+    <input type="button" id="btn" value="确定">
+</body>
+</html>

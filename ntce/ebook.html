@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>eBook</title>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/avalon.js/2.2.7/avalon.min.js"></script>
+<script>
+    var vm = avalon.define({
+        $id: "channelContactResultController",
+        // 渠道接触结果细项
+        text: '信息',
+        text1: '55',
+        contactResultConfig: [],//是否展示
+        contactResultConfigLimit: true,
+        contactResultList: [],
+        dicItemDataList: [], // 接触细项展示列表
+        dicItemDataListLimit: [], // 接触细项展示列表
+        list111: [{a: 0}, {a: 5555}, {a: 55}, {a: 1}, {a: 1}, {a: 1}],
+        aaa: '',
+        listItem: '',
+        filterFn: function (el, i) {
+            return el.a >this.text1;
+        }
+    });
+    var text = vm.list111[2].a;
+    vm.text = text;
+    vm.text1 = text;
+</script>
+<body ms-controller="channelContactResultController">
+<div>
+
+    <datalist id="list1111">
+        <option value="8">壮族</option>
+        <option value="9">布依族</option>
+    </datalist>
+
+
+    <input list="list" oninput="console.log(Date.now())">
+    <input list="list" oninput="console.log(Date.now())">
+    <datalist id="list">
+        <option value="q"></option>
+        <option>t</option>
+        <option :for="e in @list111 | filterBy(@filterFn)">{{e.a}}</option>
+    </datalist>
+    <input ms-duplex="@text"/>{{text}}
+    <input ms-duplex-number="@text1"/>{{text1}}
+    <hr/>
+    <ul>
+        <li>111</li>
+        <!--        <li ms-for="(i,e) in @list111">{{i}}-{{e}}</li>-->
+    </ul>
+    <input list="list1111" oninput="console.log(Date.now())">
+    <input oninput="a.fun(this,'')" ms-duplex="@aaa| debounce(500)"/>{{@aaa}}
+    <input ms-duplex="@aaa| debounce(500)"/>{{@aaa}}
+    <input onchange="this.value=this.value.replace(/[^\u4e00-\u9fa5]/g,'')"/>{{@aaa}}
+    <input oninput="console.log(this.value);"/>{{@aaa}}
+</div>
+<form>
+    <input id="title" placeholder="标题">
+    <input id="url" placeholder="url"/>
+    <input type="number" id="page" placeholder="page"/>
+    <input type="submit" onclick="load()" value="加载">
+</form>
+<div id="img"></div>
+<script>
+    avalon.define({
+        $id: "selectBy",
+        obj: {a: 'aaa', b: 'bbb', c: 'ccc', d: 'ddd', e: 'eee'},
+        grid: [{a: 1, b: 2, c: 3}, {c: 11, b: 22, a: 33}, {b: 23, a: 44}],
+        defaults: {
+            a:'@@@',
+            b:'$$$',
+            c:'###'
+        }
+    })
+</script>
+<div ms-controller='selectBy'>
+    <ul>
+        <li ms-for='el in @obj | selectBy(["c","a","b"])'>{{el}}</li>
+    </ul>
+    <table border='1' width='200'>
+        <tr ms-for="tr in @grid">
+            <td ms-for="td in tr | selectBy(['a','b','c'],@defaults)">{{td}}</td>
+        </tr>
+    </table>
+</div>
+<script>
+    avalon.define({
+        $id: "filterBy",
+        array: ['aaaa', 'aab', 'acb', 'ccc', 'dddd'],
+        object: {a: 'aaaa', b: 'aab', c: 'acb', d: 'ccc', e: 'dddd'},
+        searchs: "a",
+        searchFn: function (el, i) {
+            return i > 2
+        },
+        searchFn2: function (el, i) {
+            return el.length === 4
+        },
+        searchFn3: function (el, i) {
+            return i === 'b' || i === 1
+        }
+    })
+</script>
+<div ms-controller='filterBy'>
+    <select ms-duplex='@search'>
+        <option>a</option>
+        <option>b</option>
+        <option>c</option>
+    </select>
+    <p><button ms-click="@search = @searchFn | prevent">变成过滤函数</button></p>
+    <p><button ms-click="@search = @searchFn2 | prevent">变成过滤函数2</button></p>
+    <p><button ms-click="@search = @searchFn3 | prevent">变成过滤函数3</button></p>
+    <ul>
+        <li ms-for='el in @array | filterBy(@search)'>{{el}}</li>
+    </ul>
+    <ul>
+        <li ms-for='el in @object | filterBy(@search)'>{{el}}</li>
+    </ul>
+</div>
+</body>
+<script>
+    var a = {
+        fun: function (node) {
+            console.log(node.value);
+            node.value = node.value.replace(/[^\u4e00-\u9fa5]/g, '');
+        }
+    }
+
+    function fun(node) {
+        console.log(node.value);
+        node.value = node.value.replace(/[^\u4e00-\u9fa5]/g, '');
+    }
+
+    (function funPk(a) {
+    })(1);
+
+    function load() {
+        document.getElementsByTagName('title')[0].innerText = document.getElementById('title').value;
+        let html = '';
+        let url = document.getElementById('url').value;
+        let page = parseInt(document.getElementById('page').value);
+        for (let i = 1; i < page + 1; i++) {
+            html += '<img src="' + url + (i < 10 ? 0 : '') + (i < 100 ? 0 : '') + i + '.jpg"/>';
+        }
+        document.getElementsByTagName('body')[0].innerHTML = html;
+
+    }
+
+    //    http://www.100875.com.cn:1314/dzkb/czwl/qgb/8s/128.jpg  物理八上p128
+    //    http://www.100875.com.cn:1314/data/upload/2014czwl8sjc/wl8sjc283.jpg  物理八上教师版p283
+
+    //    http://www.100875.com.cn:1314/dzkb/czwl/qgb/8x/124.jpg  物理八下p
+    //    http://www.100875.com.cn:1314/data/upload/2015czwl/2015czwl8xjc/2015czwl8xjc/2015czwl8xjc282.jpg  物理八下教师版p
+
+    //    http://www.100875.com.cn:1314/dzkb/czwl/qgb/9q/224.jpg  物理九年级p
+    //    http://www.100875.com.cn:1314/data/upload/czwl9/9q202.jpg  物理九年级教师版p
+
+    //    http://www.100875.com.cn:1314/data/upload/2014czwl8sjc/wl8sjc001.jpg  物理九年级教师版p
+    //    http://www.100875.com.cn:1314/data/upload/2014czwl8sjc/wl8sjc001.jpg  物理九年级教师版p
+
+    //    http://www.100875.com.cn:1314/data/upload/2014czwl8sjc/wl8sjc001.jpg  物理九年级教师版p
+    //    http://www.100875.com.cn:1314/data/upload/2014czwl8sjc/wl8sjc001.jpg  物理九年级教师版p
+
+    //    http://www.100875.com.cn:1314/data/upload/2014czwl8sjc/wl8sjc001.jpg  物理九年级教师版p
+    //    http://www.100875.com.cn:1314/data/upload/2014czwl8sjc/wl8sjc001.jpg  物理九年级教师版p
+
+    //    http://www.100875.com.cn:1314/data/upload/2014czwl8sjc/wl8sjc001.jpg  物理九年级教师版p
+    //    http://www.100875.com.cn:1314/data/upload/2014czwl8sjc/wl8sjc001.jpg  物理九年级教师版p
+
+    //    http://www.100875.com.cn:1314/data/upload/2014czwl8sjc/wl8sjc001.jpg  物理九年级教师版p
+    //    http://www.100875.com.cn:1314/data/upload/2014czwl8sjc/wl8sjc001.jpg  物理九年级教师版p
+</script>
+</html>

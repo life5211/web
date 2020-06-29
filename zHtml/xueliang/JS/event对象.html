@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>event对象</title>
+    <script>
+        window.onload = function () {
+            var input = document.getElementsByTagName("input")[0];
+            /*input.onkeypress = function(){//键盘的键按下并松开时触发
+                alert(event.keyCode);//记录按的是哪一个键
+            }*/
+
+            input.onblur = function(){//失去焦点时触发
+                alert(1);
+            }
+
+
+            var div = document.getElementById("div1");
+            div.ondblclick = function(){//在双击鼠标时触发
+                alert(event.clientX);//获取鼠标点击浏览器窗口的坐标（横坐标）
+            }
+        }
+    </script>
+</head>
+<body>
+    <input type="text">
+    <div id="div1">DIV块</div>
+</body>
+</html>

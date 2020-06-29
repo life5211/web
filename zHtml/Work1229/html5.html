@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS盒模型</title>
+    <style>
+        /*        div {
+                    text-align: center;
+                    width: 500px;
+                    height: 300px;
+                    background-color: rgba(20, 255, 141, 0.5);
+                    !*border-color: blue;*!
+                    !*border-style: solid;*!
+                    !*border-width: 3px;*!
+                    border: 5px solid blue;
+                    !*margin: 10%;*!
+                    padding: 2%;
+                    position: relative;
+                    left: 20%;
+                    top: 80px;
+
+
+                }*/
+
+   /*     .bix1 {
+            !*background-color: aquamarine;*!
+
+            !*position: relative;*!
+            !*width: 100%;*!
+            !*height: 100%;*!
+            z-index: 1;
+
+        }
+
+        .bix2 {
+            background-color: #b3b3b3;
+
+            position: absolute;
+            width: 100%;
+            height: 200%;
+            top: 0px;
+            !*left: 0px;*!
+            z-index: 2;
+            opacity: 0.5;
+        }
+
+        .bix3 {
+            background-color: #ff0016;
+
+            position: absolute;
+            !*width: 30%;*!
+            !*height: 20%;*!
+            top: 30%;
+            left: 40%;
+            z-index: 10;
+            text-align: center;
+            padding: 3%;
+            !*vertical-align: center;*!
+        }
+        .bix4{
+            background: red;
+            !*width: 10%;*!
+            !*height: 30%;*!
+            z-index: 11;
+            position: fixed;
+            left: 90%;
+            top: 30%;
+            padding: 10% 0%;
+            text-align: center;
+        } */
+        .bix1 {
+            background-color: aquamarine;
+
+            /*position: relative;*/
+            width: 10%;
+            height: 150px;
+            /*float: left;*/
+            /*z-index: 1;*/
+
+        }
+
+        .bix2 {
+            background-color: #b3b3b3;
+
+            width: 10%;
+            height:100px;
+            /*margin-right: 90%;*/
+            /*float: left;*/
+            /*clear: right;*/
+        }
+
+        .bix3 {
+            background-color: #ff0016;
+
+            /*position: absolute;*/
+            width: 10%;
+            height: 100px;
+            /*top: 100px;*/
+            /*float: left;*/
+            /*clear: left;*/
+        }
+        .bix4{
+            background: #f3ff04;
+            /*width: 10%;*/
+            /*height: 30%;*/
+            width: 10%;
+            height: 100px;
+            float: left;
+        }
+        span{
+            border-width: 2px;
+            border-style: solid;
+            margin: 2% 10%;
+
+        }
+        span:link{
+            color: black;
+        }
+        span:visited{
+            color: blue;
+        }
+        span:hover{
+            background-color: #ff0016;
+        }
+        span:active{
+            color: yellow;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+    <ul class="nav">
+        <li><a href="#">首页</a> </li>
+        <li><a href="#">首页</a> </li>
+        <li><a href="#">首页</a> </li>
+        <li><a href="#">首页</a> </li>
+        <li><a href="#">首页</a> </li>
+        <li><a href="#">首页</a> </li>
+    </ul>
+</div>
+
+<span> <a href="#"> 首页 </a>  </span>
+<span> <a href="#"> 体育 </a>  </span>
+<span> <a href="#"> 音乐 </a>  </span>
+<span> <a href="#"> 电影 </a>  </span>
+
+<div class="bix1">1</div>
+<div class="bix2">2</div>
+<div class="bix3">3</div>
+<!--<div class="bix4">4</div>-->
+
+
+<!--<form class="bix1">
+    用户名：<input type="text" name="用户名"/><br/>
+     密 码 ： <input type="password" name="密码"/><br/>
+    <input type="button" value="登录">
+
+</form>
+<div class="bix2"></div>
+<div class="bix3">
+    <span>用户名密码不能为空</span><br/>
+    <span><a href="#">关闭窗口</a></span>
+</div>
+<div class="bix4">
+    广告招租
+</div>-->
+
+</body>
+</html>

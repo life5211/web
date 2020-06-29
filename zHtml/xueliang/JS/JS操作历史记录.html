@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS操作历史记录</title>
+    <script>
+        function backToLast(){
+            history.go(-1);// 等价于 history.back();
+        }
+    </script>
+</head>
+<body>
+    <div onclick="backToLast()">回到上一页</div>
+</body>
+</html>

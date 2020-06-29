@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>离线结算系统</title>
+  <!--    <script src="jquery-2.1.4.js"></script>-->
+  <!--    <script src="bootstrap-4.0.0-dist/js/bootstrap.js"></script>-->
+  <!--    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap.css">-->
+  <!-- Bootstrap -->
+  <!--  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">-->
+  <!--  <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css">
+
+  <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+  <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!--  <script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
+
+
+</head>
+<body>
+<div class="container" id="calcPage">
+  <div class="row">
+    <div class="col">
+      <h3>群记离线账单计算系统</h3>
+    </div>
+    <div class="col">
+      <input type="text" class="input-sm" v-model="username" placeholder="username">
+      <button type="button" class="btn btn-primary btn-sm" @click="addUser">添加用户</button>
+      <button type="button" class="btn btn-primary btn-sm">保存当前用户组</button>
+      <button type="button" class="btn btn-primary btn-sm">保存账单记录</button>
+
+    </div>
+    <hr/>
+  </div>
+  <div class="row text-center">
+    <table class="table table-bordered">
+      <tr>
+        <th>&times;</th>
+        <th colspan="2" v-for="(user,i) in users" :key="'username'+i">
+          <input v-model="users[i]" class="form-control">
+        </th>
+      </tr>
+      <tbody id="innerBox" @keyup.esc="reset" @keyup.enter="addLog">
+      <tr>
+        <th>出资人</th>
+        <td colspan="2" v-for="(user,i) in users" :key="'Investors'+i">
+          <input type="number" class="form-control" min="0" v-model.number="investInputs[i]">
+        </td>
+      </tr>
+      <tr>
+        <th>消费者</th>
+        <td colspan="2" v-for="(user,i) in users" :key="'Customer'+i">
+          <div class="row no-gutters">
+            <div class="col-3">
+              <input type="checkbox" class="form-control" v-model="consumeChecks[i]" @click="consumeInputs[i]=''">
+            </div>
+            <div class="col">
+              <input type="number" class="form-control" min="0" v-model.number="consumeInputs[i]" :disabled="!consumeChecks[i]">
+            </div>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+      <TBODY id="outBox">
+      <tr>
+        <td>总支出</td>
+        <td colspan="2" v-for="(user,i) in users" :key="'payoutTotal'+i">{{getInvestTotal(i)}}</td>
+      </tr>
+      <tr>
+        <td>总消费</td>
+        <td colspan="2" v-for="(user,i) in users" :key="'consumeTotal'+i">{{getConsumeTotal(i)}}</td>
+      </tr>
+      <tr>
+        <th>小计</th>
+        <th colspan="2" v-for="(user,i) in users" :key="'payoutTotal'+i">{{getInvestTotal(i)+getConsumeTotal(i)}}</th>
+      </tr>
+      </TBODY>
+      <tbody id="logBox">
+      <tr>
+        <th></th>
+        <th colspan="2" v-for="(user,i) in users" :key="'username'+i">{{user}}</th>
+      </tr>
+      <tr>
+        <th>账单详情</th>
+        <td v-for="(item,i) in logTitles">{{item}}</td>
+      </tr>
+      <tr v-for="(items,i) in getLogs" :key="'logRow'+i">
+        <td v-for="(item,j) in items" :key="'logRow'+i+'logCol'+j" :title="j?'':item+'\n双击删除'">{{j?item:item.substring(11)}}</td>
+      </tr>
+      <tr v-if="!getLogs.length">
+        <th :colspan="users.length*2+1"> 记录为空</th>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 text-center">
+      @Java17研究室版权所有
+    </div>
+  </div>
+
+</div>
+<script>
+    const users = ['王顺发', '王虹', '许洪智', '杨东升'];
+    const investInputs = users.map(() => '');
+    const consumeChecks = users.map(() => false);
+    const consumeInputs = users.map(() => '');
+    const investLogs = users.map(() => []);
+    const consumeLogs = users.map(() => []);
+    const timeLogs = [];
+
+    const vm = new Vue({
+        el: "#calcPage",
+        data: {
+            username: '',
+            users,
+            investInputs,
+            consumeChecks,
+            consumeInputs,
+            investLogs,
+            consumeLogs,
+            timeLogs
+        },
+        methods: {
+            init: function () {
+                this.reset();
+                this.investLogs = this.users.map(() => []);
+                this.consumeLogs = this.users.map(() => []);
+            },
+            investInputsInit: function () {
+                this.investInputs = this.users.map(() => '');
+            },
+            consumeChecksInit: function () {
+                this.consumeChecks = this.users.map(() => false);
+            },
+            consumeInputsInit: function () {
+                this.consumeInputs = this.users.map(() => '');
+
+            },
+            reset: function () {
+                this.investInputsInit();
+                // this.consumeChecksInit();
+                this.consumeInputsInit();
+            },
+            getInvestTotal: function (i) {
+                return this.investLogs[i].reduce((a, b) => a + b, 0);
+            },
+            getConsumeTotal: function (i) {
+                return this.consumeLogs[i].reduce((a, b) => a + b, 0) * -1;
+            },
+            addUser: function () {
+                this.users.push(this.username);
+                this.username = '';
+                this.investInputsInit();
+                this.consumeChecksInit();
+                this.consumeInputsInit();
+                this.investLogs.push(this.timeLogs.map(() => 0));
+                this.consumeLogs.push(this.timeLogs.map(() => 0));
+            },
+            addLog: function () {
+                let investInputsTotal = this.investInputs.reduce((a, b) => a + b, 0);
+                if (!investInputsTotal) {
+                    return util.alert('支出输入非法，总支出为零');
+                }
+                let consumeChecksSize = this.consumeChecks.filter(e => e).length;
+                if (!consumeChecksSize) {
+                    return util.alert('消费选择非法，消费选择总人数为零');
+                }
+                let consumeAverage = 0;
+                let consumeInputs = this.consumeInputs.filter(e => e);
+                let extraConsumeTotal = investInputsTotal - consumeInputs.reduce((a, b) => a + b, 0);
+                if (extraConsumeTotal < 0) {
+                    return util.alert('金额输入非法，输入消费金额大于支出金额');
+                }
+                let extraConsumeSize = consumeChecksSize - consumeInputs.length;
+                if (extraConsumeSize) {
+                    consumeAverage = parseFloat((extraConsumeTotal * 10000 / extraConsumeSize / 10000).toFixed(4));
+                }
+                this.consumeLogs.forEach((e, i) => {
+                    const consumeInput = this.consumeInputs[i];
+                    this.consumeLogs[i].push(consumeInput ? consumeInput : this.consumeChecks[i] ? consumeAverage : 0);
+                });
+                this.investLogs.forEach((e, i) => {
+                    const investInput = this.investInputs[i];
+                    this.investLogs[i].push(investInput ? investInput : 0);
+                });
+                this.timeLogs.push(Date.now());
+                this.reset();
+            }
+        },
+        computed: {
+            logTitles: function () {
+                let arr = [];
+                this.users.forEach(() => arr.push('支出', '消费'));
+                return arr;
+            },
+            getLogs: function () {
+                let arr = [];
+                this.investLogs[0].forEach((e, i) => {
+                    let cols = [];
+                    cols.push(util.getDateTimeStr(new Date(this.timeLogs[i])));
+                    this.users.forEach((e, j) => {
+                        let investLogElement = this.investLogs[j][i];
+                        let consumeLogElement = this.consumeLogs[j][i];
+                        return cols.push(investLogElement ? investLogElement : '', consumeLogElement ? consumeLogElement * -1 : '');
+                    });
+                    arr.push(cols);
+                });
+                return arr;
+            }
+
+        },
+        watch: {}
+    });
+    // vm.init();
+
+    let util = {
+        uuid: 'f864324f7bfa4115a4aa4f7c827ec7b4____',
+        alert: function (text) {
+            alert(text);
+            return false;
+        },
+        localSet: function (key, value) {
+            localStorage.setItem(this.uuid + key, JSON.stringify(value));
+        },
+        localGet: function (key) {
+            return localStorage.getItem(this.uuid + key);
+        },
+        getDateStr: function (date) {
+            const fullYear = date.getFullYear();
+            const month = date.getMonth();
+            const day = date.getDate();
+            return fullYear + (month < 9 ? '-0' : '-') + (month + 1) + (day < 10 ? '-0' : '-') + day;
+        },
+        getTimeStr: function (date) {
+            return date.toTimeString().substring(0, 8);
+        },
+        getDateTimeStr: function (date) {
+            return this.getDateStr(date) + ' ' + this.getTimeStr(date);
+        }
+    };
+    window.onbeforeunload = function() {
+        return "确认离开当前页面吗？未保存的数据将会丢失";
+    }
+</script>
+<style>
+  .table td, .table th {
+    padding: 1px;
+  }
+
+  .form-control {
+    height: auto;
+    padding: unset !important;
+  }
+
+  input[type=checkbox].form-control {
+    height: calc(95%);
+    padding: .375rem .75rem;
+  }
+</style>
+</body>
+</html>

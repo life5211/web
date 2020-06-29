@@ -1,0 +1,54 @@
+/*修改h1元素字体颜色尺寸*/
+h1 {
+    color: blue;
+    font-size: 50px;
+    font-family: 华文行楷;
+}
+
+span {
+    color: greenyellow;
+    font-weight: bold;
+    font-size: 35px;
+    font-family: 华文行楷;
+}
+
+form {
+    text-align: center;
+    font-family: Consolas
+}
+
+table {
+    line-height: 100px;
+    background-color: rgba(20,200,231,0.5);
+
+}
+
+div {
+    text-align: center;
+    font-family: Consolas;
+    font-size: 30px;
+}
+
+div > input[type="button"] {
+    width: 30%;
+    height: 160px;
+}
+
+input[type="text"] {
+    width: 30px;
+}
+
+td {
+    color: red;
+    width: 17%;
+}
+
+* {
+    text-align: center;
+
+}
+
+body {
+    background-image: url("source/win10_1k.jpg");
+    background-repeat: round;
+}

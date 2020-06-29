@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery属性过滤选择器的使用</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#btn").click(function(){
+                //设置所有h1元素中有id属性元素的字体颜色
+//                $("h1[id]").css({color:"red"});
+                //设置id=h1的h1元素的字体颜色
+//                $("h1[id=h1]").css({color:"red"});
+                //设置id不等于h1的h1元素的字体颜色
+//                $("h1[id!=h1]").css({color:"red"});
+                //设置id不等于h1和h2的h1元素的字体颜色
+                $("h1[id!=h1][id!=h2]").css({color:"red"});
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1 id="h1">标题1-1</h1>
+    <h1 id="h2">标题1-2</h1>
+    <h1 id="h3">标题1-3</h1>
+    <div id="div1">
+        <p class="title">JQuery属性过滤选择器的使用</p>
+        <span id="div2">
+            <p>属性过滤选择器的使用<p>
+        </span>
+    </div>
+    <h1>标题1</h1>
+    <h2>标题2</h2>
+    <h3>标题3</h3>
+    <input type="button" value="确定" id="btn">
+</body>
+</html>

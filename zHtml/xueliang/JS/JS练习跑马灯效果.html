@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>欢迎来到狼窝学校</title>
+    <script>
+        function showMarquee() {
+            var title = document.title;
+            // 取最后一个字符
+            var first = title.charAt(title.length - 1);
+            // 取最后一个字符前面的所有字符
+            var last = title.substring(0, title.length - 1);
+            // 拼字符串：最后一个字符 + 最后一个字符前面的所有字符
+            // 拼好的字符串重新赋值给title
+            document.title = first + last;
+        }
+
+        //开启定时器
+        setInterval(showMarquee,1000);
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

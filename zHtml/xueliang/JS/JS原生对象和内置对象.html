@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS原生对象和内置对象</title>
+    <script>
+
+        // string的常用API
+        /*var str = "欢迎来到朗沃培训学校";
+         // 把 “到” 取出来
+         var test = str.charAt(3);
+         // 把  “朗沃培训” 取出来
+         test = str.substring(4,8);
+         //把 “朗沃” 换成 “狼窝”
+         str = str.replace("朗沃", "狼窝");
+
+         alert(str);*/
+
+        //数组
+       /* var arry = new Array();//创建数组
+        arry[0] = "元素1";
+        arry[1] = "元素2";
+        arry[2] = "元素3";
+        arry[3] = "元素4";
+        arry[4] = "元素5";*/
+
+       /* var arry = new Array(5);//指定长度创建数组
+        arry[0] = "元素1";
+        arry[1] = "元素2";
+        arry[2] = "元素3";
+        arry[3] = "元素4";
+        arry[4] = "元素5";*/
+
+        /* 指定有初始值的数组
+        var arry = new Array("元素1","元素2","元素3");
+        var arry = ["元素1","元素2","元素3"];*/
+
+
+        arry.push("新加的元素6");//在数组的尾部添加新的元素
+
+        alert(arry.length);//数组长度
+
+        //遍历数组
+        for(var i = 0; i < arry.length; i++){
+            document.writeln(arry[i] + "<br>");//把内容输出到页面上
+        }
+
+        arry.pop();//从数组的尾部删除一个元素
+
+        alert("数组改变了");
+
+        alert(arry.length);//数组长度
+
+        //遍历数组
+        for(var i = 0; i < arry.length; i++){
+            document.writeln(arry[i] + "<br>");//把内容输出到页面上
+        }
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

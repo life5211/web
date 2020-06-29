@@ -1,0 +1,200 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>购物车</title>
+    <style type="text/css">
+        h1 {
+            text-align: center
+        }
+
+        table {
+            margin: 0 auto;
+            width: 60%;
+            border: 2px solid #09C;
+            border-collapse: collapse
+        }
+
+        table th, table td {
+            border: 2px solid #09C;
+            padding: 5px;
+
+        }
+
+        th {
+            background-color: #0CC;
+        }
+
+        input[type=number] {
+            width: 3em;
+        }
+    </style>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(function () {
+            $(".add").click(function () {
+                var tNum = parseInt($(this).parent().siblings().eq(3).text());
+                if (tNum > 0) {
+                    var $sel = $(".bGoods:contains(" + $(this).parent().siblings().eq(0).text() + ")");
+                    if ($sel.size() > 0) {
+                        $sel.siblings().eq(1).children().eq(1).val(function () {
+                            return ($(this).val() - 0) + 1;
+                        });
+                        $sel.siblings().eq(2).text(parseInt($sel.siblings().eq(2).text()) + parseInt($sel.siblings().eq(0).text()));
+                    } else {
+                        $tr = $("<tr>" +
+                            "<td class='bGoods'>" + $(this).parent().siblings().eq(0).text() + "</td>" +
+                            "<td class='pPrice'>" + $(this).parent().siblings().eq(1).text() + "</td>" +
+                            "<td class='number'><input type='button' class='btnDown' value='-'/><input type='number' value='1'/><input type='button' class='btnUp' value='+'/></td>" +
+                            "<td class='tPrice'></td>" +
+                            "<td><input type='button' class='btnDel' value='DEL'/></td>" +
+                            "</tr>");
+                        $tr.children().eq(3).text($(this).parent().siblings().eq(1).text());
+                        $("#goods").append($tr);
+                        $tr.children().eq(2).children().eq(0).click(function () {
+                            var sele = "td:contains('" + $(this).parent().siblings().eq(0).text() + "'):eq(0)";
+                            var pNum = $(sele).siblings().eq(2).text();
+                            $(sele).siblings().eq(2).text(++pNum);
+                            var num = parseInt($(this).siblings().eq(0).val());
+                            if (num > 1) {
+                                $(this).siblings().eq(0).val(num - 1);
+                                $(this).parent().next().text($(this).parent().next().text() - $(this).parent().prev().text());
+                            } else {
+                                $(this).parent().parent().remove();
+                            }
+                            totalBuy();
+                        });
+                        $tr.children().eq(2).children().eq(1).keyup(textChange);
+                        $tr.children().eq(2).children().eq(1).change(textChange);
+                        $tr.children().eq(2).children().eq(1)[0].min = 1;
+                        $tr.children().eq(2).children().eq(1)[0].max = $("td:contains('" + $tr.children().eq(0).text() + "'):eq(0)").siblings().eq(2).text() - 0;
+                        $tr.children().eq(2).children().eq(2).click(function () {
+                            // var sele = "td:contains('" + $(this).parent().siblings().eq(0).text() + "'):eq(0)";
+                            var pNum = $("td:contains('" + $(this).parent().siblings().eq(0).text() + "'):eq(0)").siblings().eq(2).text();
+                            if (pNum > 0) {
+                                $("td:contains('" + $(this).parent().siblings().eq(0).text() + "'):eq(0)").siblings().eq(2).text(--pNum);
+                                $(this).siblings().eq(1).val($(this).siblings().eq(1).val() - 0 + 1);
+                                $(this).parent().next().text(parseInt($(this).parent().next().text()) + parseInt($(this).parent().prev().text()));
+                                totalBuy();
+                            } else {
+                                alert("understock")
+                            }
+                        });
+                        $tr.children().eq(4).children().eq(0).click(function () {
+                            var $pNum = $("td:contains('" + $(this).parent().siblings().eq(0).text() + "'):eq(0)").siblings().eq(2);
+                            $pNum.text($(this).parent().siblings().children().eq(1)[0].max);
+                            $(this).parent().parent().remove();
+                            totalBuy();
+                        });
+                    }
+                    totalBuy();
+                    $(this).parent().siblings().eq(3).text(--tNum);
+                } else {
+                    alert("understock")
+                }
+            });
+        });
+
+        function textChange() {
+            var sele = "td:contains('" + $(this).parent().siblings().eq(0).text() + "'):eq(0)";
+            var maxNum = $(this)[0].max;
+            if ($(this).val() > 0) {
+                if ($(this).val() > maxNum) {
+                    alert("understock");
+                    $(this).val(maxNum);
+                }
+                $(sele).siblings().eq(2).text(maxNum - $(this).val());
+                $(this).parent().next().text($(this).parent().prev().text() * $(this).val());
+            } else {
+                $(this).parent().parent().remove();
+                $(sele).siblings().eq(2).text(maxNum);
+            }
+            totalBuy();
+        }
+
+        function totalBuy() {
+            var n = 0;
+            $(".tPrice").each(function (i) {
+                n += $(".tPrice").eq(i).text() - 0;
+            });
+            $("#total").text(n);
+        }
+    </script>
+</head>
+<body>
+<h1>商品列表</h1>
+<table>
+    <tr>
+        <th>商品</th>
+        <th>单价</th>
+        <th>颜色</th>
+        <th>库存</th>
+        <th>好评率</th>
+        <th>操作</th>
+    </tr>
+    <tr>
+        <td>罗技鼠标</td>
+        <td>80</td>
+        <td>黑色</td>
+        <td>893</td>
+        <td>98%</td>
+        <td align="center"><input type="button" value="加入购物车" class="add"/></td>
+    </tr>
+    <tr>
+        <td>微软键盘</td>
+        <td>150</td>
+        <td>黑色</td>
+        <td>100</td>
+        <td>98%</td>
+        <td align="center"><input type="button" value="加入购物车" class="add"/></td>
+    </tr>
+    <tr>
+        <td>手机壳</td>
+        <td>60</td>
+        <td>透明</td>
+        <td>200</td>
+        <td>98%</td>
+        <td align="center"><input type="button" value="加入购物车" class="add"/></td>
+    </tr>
+    <tr>
+        <td>sony耳机</td>
+        <td>380</td>
+        <td>蓝色</td>
+        <td>302</td>
+        <td>98%</td>
+        <td align="center"><input type="button" value="加入购物车" class="add"/></td>
+    </tr>
+    <tr>
+        <td>小米蓝牙音响</td>
+        <td>300</td>
+        <td>白色</td>
+        <td>302</td>
+        <td>99%</td>
+        <td align="center"><input type="button" value="加入购物车" class="add"/></td>
+    </tr>
+
+</table>
+
+<h1>购物车</h1>
+<table>
+    <thead>
+    <tr>
+        <td>商品</td>
+        <td>单价</td>
+        <td>数量</td>
+        <td>金额</td>
+        <td>删除</td>
+    </tr>
+    </thead>
+    <tbody id="goods">
+    </tbody>
+    <tfoot>
+    <tr>
+        <td colspan="3" align="right">总计</td>
+        <td id="total"></td>
+        <td></td>
+    </tr>
+    </tfoot>
+</table>
+</body>
+</html>

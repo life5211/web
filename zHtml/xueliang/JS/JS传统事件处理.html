@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS传统事件处理</title>
+    <script>
+        window.onload = function(){
+            var div = document.getElementsByTagName("div")[0];
+            var p = document.getElementsByTagName("p")[0];
+            div.onmouseover = function(){//鼠标移上去的时候触发
+                this.style.color = "red";
+                this.style.fontWeight = "bold";
+                p.style.display = "none";
+            }
+
+            div.onmouseout = function(){//鼠标移走的时候触发
+                this.removeAttribute("style");
+                p.style.display = "block";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div>传统事件处理</div>
+    <p>
+        手机打开房间时刻到了房间深刻的龙卷风快速登录积分看电视机房亏了多少积分亏了多少积分抗裂砂浆开发发<br>
+        手机打开房间时刻到了房间深刻的龙卷风快速登录积分看电视机房亏了多少积分亏了多少积分抗裂砂浆开发发<br>
+        手机打开房间时刻到了房间深刻的龙卷风快速登录积分看电视机房亏了多少积分亏了多少积分抗裂砂浆开发发<br>
+        手机打开房间时刻到了房间深刻的龙卷风快速登录积分看电视机房亏了多少积分亏了多少积分抗裂砂浆开发发<br>
+    </p>
+</body>
+</html>

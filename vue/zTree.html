@@ -1,0 +1,111 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="keywords" content="jQuery, javascript, Tree, plugIn, 树, 插件, 树插件, Web, Web前端"/>
+    <title>ztree的简单实用</title>
+    <script type="text/javascript" src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <link href="http://cdn.bootcss.com/zTree.v3/3.5.23/css/zTreeStyle/zTreeStyle.css" rel="stylesheet">
+    <script src="http://cdn.bootcss.com/zTree.v3/3.5.23/js/jquery.ztree.all.js"></script>
+</head>
+<body>
+
+<ul id="treeDemo" class="ztree"></ul>
+
+</body>
+
+<script>
+    var zNodes = [{
+        "id": 21,
+        "name": "总经理",
+        "pid": 0,
+        // "parent": true
+    }, {
+        "id": 26,
+        "name": "技术部",
+        // "pid": 0,
+        // "parent": true
+    }, {
+        "id": 27,
+        "name": "项目经理",
+        "pid": 26,
+        // "parent": false
+    }, {
+        "id": 28,
+        "name": "项目组组长",
+        "pid": 26,
+        // "parent": false
+    }, {
+        "id": 29,
+        "name": "安全部",
+        "pid": 0,
+        // "parent": true,
+        "checked": false
+        , children: [{
+            "id": 30,
+            "name": "网络安全部负责人",
+            "pid": 29,
+            // "parent": false,
+            "checked": true
+        }, {
+            "id": 31,
+            "name": "项目安全测试员",
+            // "pid": 29,
+            // "parent": false,
+            "checked": ''
+        }]
+    }];
+
+    var setting = {
+        view: {
+            showIcon: false
+        }, check: {
+            enable: true
+        }, data: {
+            simpleData: {
+                enable: false,
+                idKey: "id",
+                pIdKey: "pid"
+            }
+        },
+        callback: {
+            beforeDrag: false,
+            onCheck: function () {
+                const zTreeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                var checkedNodes = zTreeObj.getCheckedNodes();
+                console.log((checkedNodes.filter(node => {
+                    return node.check_Child_State === -1 || node.check_Child_State === 2
+                }).map(node =>node.id).join(",")));
+                checkedNodes = zTreeObj.getCheckedNodes(false);
+                console.log((checkedNodes.filter(node => {
+                    if (node.check_Child_State !== -1 && node.check_Child_State !== 2) {
+                        zTreeObj.checkNode(node, false, true);
+                        return false;
+                    }
+                    return true;
+                }).map(node => {
+                    return node.id;
+                })));
+            },
+            onClick: function (e, treeId, treeNode, clickFlag) {
+                $.fn.zTree.getZTreeObj("treeDemo").checkNode(treeNode, !treeNode.checked, true);
+            }
+        },
+    };
+    $(function () {
+        $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        var sNodes = treeObj.getNodes();
+        if (sNodes.length > 0) {
+            var tId = sNodes[0].tId;
+            console.log(tId)
+        }
+
+    });
+    var build = function (v) {
+        console.log(1);
+    }();
+
+</script>
+
+</html>
+

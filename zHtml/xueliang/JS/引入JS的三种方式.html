@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>第一个JS程序</title>
+    <style>
+        div{
+            width: 50px;
+            height: 50px;
+            background-color: black;
+            color: white;
+        }
+    </style>
+    <!-- 内嵌式(嵌入式) -->
+  <!--  <script>
+        /*
+            JS弹框：不能通过CSS来修改它的样式，连位置都改不了
+
+            JS弹框：警告框，建议框，确认框
+         */
+        /* 警告框 */
+        //alert("这是我的第一个JavaScript程序！");
+
+        // 确认框
+        /*var isConfirm = confirm("你是否确定删除？");
+        alert(isConfirm);*/
+
+        // 建议框
+        /*var msg = prompt("测试内容", "默认文本内容");
+        alert(msg);*/
+    </script>-->
+
+    <!-- 外部引用JS文件, 使用双标记引用外部js文件最稳当 -->
+    <!--<script src="external.js"></script>-->
+</head>
+<body>
+    <!-- 内联式，不推荐使用 -->
+    <div onclick="alert(2)">点我</div>
+
+    <a href="javascript:alert('伪URL引用JS');">超链接的伪URL引用JS</a>
+</body>
+</html>

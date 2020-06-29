@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery表单对象属性过滤选择器和表单选择器的使用</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(":submit").click(function(){
+                //取可用文本框的值
+                var username = $(":text:enabled").val("师傅的说法");
+//                return false;//屏蔽掉默认行为
+//                alert(username);
+
+                //取不可用文本框的值
+                //alert($(":text:disabled").val());
+
+                //取密码框的值
+                //alert($(":password").val());
+
+                //取单选框的值
+                //alert($(":radio[name=sex]:checked").val());
+
+                //取复选框的值（重点）
+//                $(":checkbox:checked").each(function(i){//遍历所有选中的复选框
+//                    alert(i + "," + this.value);//this代表当前对象的DOM对象，而不是JQ对象
+//                });
+
+                //取单选下拉列表的值（重点）
+//                $("select[multiple!=multiple] option:selected").each(function(i){
+//                    alert(this.value + ", " + this.text);
+//                });
+
+                //取多选下拉列表的值（重点）
+//                $("select[multiple=multiple] option:selected").each(function(i){
+//                    alert(this.value + ", " + this.text);
+//                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <form action="#" method="post">
+        用户名1：<input type="text" id="name1" name="name1" value="张三" disabled="disabled"><br><br>
+        用户名2：<input type="text" id="name2" name="name2"><br><br>
+        密码：<input type="password" id="pwd" name="pwd"><br><br>
+        单选框：<br>
+        男<input type="radio" name="sex" value="male" checked="checked">
+        女<input type="radio" name="sex" value="female">
+        测试1<input type="radio" name="test" value="male" checked="checked">
+        测试2<input type="radio" name="test" value="female"><br><br>
+        复选框：<br>
+        体育<input type="checkbox" name="hobby" value="sport">
+        音乐<input type="checkbox" name="hobby" value="music" checked="checked">
+        电影<input type="checkbox" name="hobby" value="film"><br><br>
+        单选下拉列表：<br>
+        <select id="star" name="star">
+            <option value="beckham">贝克汉姆</option>
+            <option value="baggio" selected="selected">巴乔</option>
+            <option value="totti">托蒂</option>
+        </select><br><br>
+        复选下拉列表：<br>
+        <select id="city" name="city" multiple="multiple" style="height: 100px">
+            <option value="chengdu" selected="selected">成都</option>
+            <option value="guangzhou" selected="selected">广州</option>
+            <option value="xiamen">厦门</option>
+            <option value="hongkong">香港</option>
+        </select><br><br>
+        <input type="submit" value="提交">
+    </form>
+</body>
+</html>

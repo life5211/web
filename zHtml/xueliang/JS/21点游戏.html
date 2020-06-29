@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>21点游戏</title>
+    <script>
+        function testRandom(){
+            var random = Math.random()*11 + 1;// [1 12)
+            alert(parseInt(random));
+        }
+    </script>
+</head>
+<body>
+    庄家：<input id="boss" type="text" readonly="readonly">点<br>
+    玩家：<input id="player" type="text" readonly="readonly">点<br>
+    <input type="button" id="againCard" value="再来一张">
+    <input type="button" id="showCard" value="亮牌">
+    <input type="button" id="startGame" value="重新发牌">
+    <input type="button" id="testRandom" value="测试随机数" onclick="testRandom()">
+</body>
+</html>

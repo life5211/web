@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery基本选择器的使用</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        function clickEvt(){
+//            alert(this.value);
+            //修改div块的宽度和高度以及背景色(ID选择器)
+            //alert($("#div1").css("width"));//查看div的宽度
+//            $("#div1").css({width:"500px", height:"500px", backgroundColor:"red"});
+
+            //修改body的背景颜色(元素选择器)
+//            $("body").css({backgroundColor:"yellow"});
+
+            //修改title字体大小(类选择器)
+//            $(".title").css({fontSize:"30px"});
+
+            //修改所有h1,h2字体颜色(并列关系的元素选择器)
+//            $("h1,h2").css({color:"red"});
+
+            //修改所有字体的颜色（通配符选择器）
+            $("*").css({color:"red"});
+        }
+
+        $(document).ready(function(){
+            //通过ID选择器获取按钮的JQuery对象并转成DOM对象来绑定事件
+            $("#btn")[0].onclick = clickEvt;
+        });
+    </script>
+</head>
+<body>
+    <div id="div1">
+        <p class="title">JQuery基本选择器的使用</p>
+        <p>基本选择器的使用</p>
+    </div>
+    <h1>标题1</h1>
+    <h2>标题2</h2>
+    <input type="button" id="btn" value="确定">
+</body>
+</html>

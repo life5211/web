@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS作业</title>
+    <script>
+        window.onload = function(){
+            var btn1 = document.getElementById("btn1");
+            var btn2 = document.getElementById("btn2");
+            var btn3 = document.getElementById("btn3");
+
+            btn1.onclick = hide;
+            btn2.onclick = show;
+            btn3.onclick = toggle;
+        }
+
+        function hide(){
+            var p = document.getElementById("p1");
+            p.style.display = "none";
+        }
+
+        function show(){
+            var p = document.getElementById("p1");
+            p.style.display = "block";
+        }
+
+        function toggle(){
+            var p = document.getElementById("p1");
+            var isShow =  p.style.display;
+
+            if(isShow == "none"){
+                p.style.display = "block";
+            } else {
+                p.style.display = "none";
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <input type="button" id="btn1" value="隐藏段落">
+    <input type="button" id="btn2" value="显示段落">
+    <input type="button" id="btn3" value="切换显示隐藏效果">
+    <p id="p1">
+        手机打开房间时刻到了房间深刻的龙卷风快速登录积分看电视机房亏了多少积分亏了多少积分抗裂砂浆开发发<br>
+        手机打开房间时刻到了房间深刻的龙卷风快速登录积分看电视机房亏了多少积分亏了多少积分抗裂砂浆开发发<br>
+        手机打开房间时刻到了房间深刻的龙卷风快速登录积分看电视机房亏了多少积分亏了多少积分抗裂砂浆开发发<br>
+        手机打开房间时刻到了房间深刻的龙卷风快速登录积分看电视机房亏了多少积分亏了多少积分抗裂砂浆开发发<br>
+    </p>
+</body>
+</html>

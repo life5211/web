@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JS下拉列表的使用</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        //全部右移
+        function moveAllToRight(){
+            $("#left option").appendTo($("#right"));
+        }
+        //全部左移
+        function moveAllToLeft(){
+            $("#right option").appendTo($("#left"));
+        }
+        //选中右移
+        function moveToRight(){
+            $("#left option:selected").appendTo($("#right"));
+        }
+        //选中左移
+        function moveToLeft(){
+            $("#right option:selected").appendTo($("#left"));
+        }
+    </script>
+    <style>
+        select{
+            width: 90px;
+            height: 128px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 双击右移 -->
+    <select id="left" name="left" multiple="multiple" size="7" ondblclick="moveToRight()">
+        <option value="1">选项一</option>
+        <option value="2">选项二</option>
+        <option value="3">选项三</option>
+        <option value="4">选项四</option>
+        <option value="5">选项五</option>
+        <option value="6">选项六</option>
+        <option value="7">选项七</option>
+    </select>
+    <!-- 双击左移 -->
+    <select id="right" name="right" multiple="multiple" size="7" ondblclick="moveToLeft()"></select>
+
+    <br>
+    <br>
+    <input type="button" value="全部右移" onclick="moveAllToRight()">
+    <input type="button" value="选中右移" onclick="moveToRight()">
+    <input type="button" value="选中左移" onclick="moveToLeft()">
+    <input type="button" value="全部左移" onclick="moveAllToLeft()">
+</body>
+</html>

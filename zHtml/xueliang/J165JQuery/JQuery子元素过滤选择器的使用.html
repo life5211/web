@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery子元素过滤选择器的使用</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#btn").click(function(){
+//                $("ul li:first-child").css({color:"red"});
+                //设置第一个ul里面的第一个li元素的字体颜色为红色
+//                $("ul:first li:first-child").css({color:"red"});
+                //设置第二个ul里面的最后一个li元素的字体颜色为红色
+                $("ul:eq(1) li:last-child").css({color:"red"});
+            });
+        });
+    </script>
+</head>
+<body>
+    <ul>
+        <li>John</li>
+        <li>Karl</li>
+        <li>Brandon</li>
+    </ul>
+    <ul>
+        <li>Glen</li>
+        <li>Tane</li>
+        <li>Ralph</li>
+    </ul>
+    <input type="button" id="btn" value="确定">
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery替换节点</title>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(function(){
+            $("#btn1").click(function(){
+                $("p").eq(1).replaceWith("<span>p元素被替换了</span>");
+            });
+
+            $("#btn2").click(function(){
+                $("<span>p元素被替换了</span>").replaceAll($("p:eq(1)"));
+            });
+        });
+
+
+    </script>
+</head>
+<body>
+    <!-- 把第二个p元素替换成<span>p元素被替换了</span> -->
+    <p title="title1">title1</p>
+    <p title="title2">title2</p>
+    <p title="title3">title3</p>
+    <input type="button" id="btn1" value="替换节点1">
+    <input type="button" id="btn2" value="替换节点2">
+</body>
+</html>

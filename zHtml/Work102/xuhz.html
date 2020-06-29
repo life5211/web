@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JSWork</title>
+    <script>
+        window.onload = function () {
+            // var p1 = document.getElementById("p1");
+            // var btn1 = document.getElementById("btn1");
+            // var btn2 = document.getElementById("btn2");
+            // var btn3 = document.getElementById("btn3");
+            btn1.onclick = function () {
+                p1.style.visibility = "hidden";
+            }
+            btn2.onclick = function () {
+                p1.style.visibility = "visible";
+            }
+            btn3.onclick = function () {
+                if (p1.style.visibility == "hidden") {
+                    p1.style.visibility = "visible";
+                } else {
+                    p1.style.visibility = "hidden";
+                }
+
+            }
+            btn4.onmouseover = function () {
+                p1.style.visibility = "hidden";
+            }
+            btn4.onmouseout = function () {
+                p1.style.visibility = "visible";
+            }
+
+        }
+    </script>
+</head>
+<body>
+
+<input type="button" id="btn1" value="隐藏"><br/>
+<input type="button" id="btn2" value="显示"><br/>
+<input type="button" id="btn3" value="切换"><br/>
+<input type="button" id="btn4" value="Test"><br/>
+
+<p id="p1">
+    测试信息<br/>
+    测试信息<br/>
+    测试信息<br/>
+    测试信息<br/>
+</p>
+</body>
+</html>
