@@ -8,12 +8,19 @@
     <script src="http://cdn.bootcss.com/zTree.v3/3.5.23/js/jquery.ztree.all.js"></script>
 </head>
 <body>
+<select id="sel111">
+    <option value="1">11</option>
+    <option value="2"  selected>12</option>
+    <option value="3">13</option>
+    <option value="4">14</option>
+</select>
 
 <ul id="treeDemo" class="ztree"></ul>
 
 </body>
 
 <script>
+    $('#sel111').val();
     var zNodes = [{
         "id": 21,
         "name": "总经理",

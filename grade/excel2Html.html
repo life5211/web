@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Excel2Html</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!--<script src="dist/xlsx.core.min.js"></script>-->
+  <!--<script src="../jsxlsx/dist/xlsx.full.min.js"></script>-->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  <!-- import Vue before Element -->
+  <!--<script src="https://unpkg.com/vue@2/dist/vue.js"></script>-->
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.js"></script>
+  <!-- 生产环境版本，优化了尺寸和速度 -->
+  <!--<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>-->
+  <!--<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.min.js"></script>-->
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="vue2">
+  <el-row>
+    <el-button type="primary">
+      <input type="file" @change="fileReadFnn" multiple="multiple" accept=".xlsx"/>
+    </el-button>
+    <el-button type="primary" @click="htmlDown"> 下载网页</el-button>
+    <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，且不超过500kb</div>
+  </el-row>
+  <el-row>
+    <el-input type="textarea" v-model="allSheetJson"></el-input>
+    <el-input type="textarea" v-model="allSheetJsonEncode"></el-input>
+  </el-row>
+
+  <h6>数据筛选项 （总数据量<{{allDataLen}}>）</h6>
+  <el-row>
+    <template v-for="(v, k) in keysObj">
+      <el-checkbox v-model="v.checked">{{k}}<{{v.num}}></el-checkbox>
+    </template>
+  </el-row>
+
+  <h6>文件列表<{{fileNames.length}}></h6>
+  <el-row v-if="fileNames.length">
+    <el-button v-for="(file,i) in fileNames" @click=fileIdx=i :key="file.name" :class="{ 'el-button--primary':i===fileIdx}"
+    >{{file.name}}
+    </el-button>
+  </el-row>
+  <h6>sheet列表<{{sheetNames.length}}></h6>
+  <el-row v-if="sheetNames.length">
+    <el-button v-for="(sheetName,i) in sheetNames" @click=sheetIdx=i :key="sheetName" :class="{'el-button--primary':i===sheetIdx}" round
+    >{{sheetName}}
+    </el-button>
+  </el-row>
+
+  <el-table
+      :data="tableData"
+      border
+      style="width: 100%">
+    <el-table-column v-for="(e) in tableCols"
+                     :prop="e"
+                     :label="e" :key="e"
+                     sortable>
+    </el-table-column>
+  </el-table>
+</div>
+</body>
+
+<script>
+  function downloadTxt(fileName, content) {
+    let blob = new Blob([content], {
+      type: "text/plain;charset=utf-8"
+    });
+    let reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onload = function(e) {
+      let a = document.createElement('a');
+      a.download = fileName;
+      a.href = e.target.result;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  }
+  document.VVue = new Vue({
+    el: '#vue2',
+    data: {
+      allSheetJson: "",
+      allSheetJsonEncode: "",
+      keysObj: {},
+      allDataLen: 0,
+      tableData: [],
+      fileNames: [],
+      sheetNames: [],
+      fileIdx: -1,
+      sheetIdx: 0,
+      tableCols: []
+    },
+    methods: {
+      htmlDown() {
+        const allSheetJsonEncode = this.allSheetJsonEncode;
+        const checkedKeys = Object.values(this.keysObj).filter(k => k.checked).map(k => k.field);
+        const keyString = JSON.stringify(Object.values(checkedKeys));
+        const innerHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title>成绩查询</title>
+</head>
+<body>
+<!-- 引入样式文件 -->
+<link rel="stylesheet" href="https://unpkg.com/vant@2.12/lib/index.css"/>
+<!-- 引入 Vue 和 Vant 的 JS 文件 -->
+<script src="https://unpkg.com/vue@2.6/dist/vue.min.js"><\/script>
+<!--<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.js"><\/script>-->
+<script src="https://unpkg.com/vant@2.12/lib/vant.min.js"><\/script>
+<div id="app">
+  <van-row>
+    <van-form @submit="queryGrade">
+      <template v-for="k in condition">
+        <van-field
+            v-model="k.input"
+            clearable
+            :name="k.field"
+            :label="k.field"
+            :placeholder="'请输入 '+k.field"
+            :rules="[{ required: true, message: '请输入'+k.field }]"
+        ></van-field>
+      </template>
+      <div style="margin: 16px;">
+        <van-button round block type="info" native-type="submit">查询</van-button>
+      </div>
+    </van-form>
+  </van-row>
+  <van-row>
+    <van-cell-group>
+      <van-cell v-for="(e,i) in tableData" :title="e.label" :value="e.data" :key="e.label"></van-cell>
+    </van-cell-group>
+    <van-cell-group>
+      <van-cell title="查询结果数量" :value="dataLen"></van-cell>
+    </van-cell-group>
+  </van-row>
+  <van-row>
+    查询结果仅供参考，仅供学习交流，严禁用于商业用途，请于24小时内删除；
+  </van-row>
+</div>
+<script>
+  document.getGrades = "${allSheetJsonEncode}"
+  document.getCondition = '${keyString}';
+  if (!document.getCondition || !document.getCondition.length) {
+    document.getCondition = '["姓名"]';
+  }
+  if (!document.getGrades || !document.getGrades.length) {
+    document.getGrades = '[]';
+  }
+  document.VVue = new Vue({
+    el: '#app',
+    data: {
+      stuName: '',
+      stuId: '',
+      tableData: [],
+      dataLen: 0,
+      grades: JSON.parse(decodeURI(document.getGrades)),
+      condition: JSON.parse(document.getCondition).map(k => ({field: k, input: ''}))
+    },
+    methods: {
+      queryGrade() {
+        let result = this.grades;
+        this.condition.forEach(k => result = result.filter(data => k.input.trim() == data[k.field]));
+        // const stuData = this.grades.filter(e => this.stuId.trim() === (e.身份证号码 || e.姓名));
+        // let filterData = this.grades;
+        // document.getCondition.forEach(c => filterData = filterData.filter(data => this.stuId.trim() === data[c]));
+        this.dataLen = result.length;
+        this.tableData = result.map(stu => (Object.keys(stu).map(e => ({label: e, data: stu[e]})))).flatMap(e => e);
+      }
+    }
+  });
+<\/script>
+</body>
+</html>
+
+`;
+        downloadTxt(`查询网站.html`, innerHtml);
+      },
+      fileReadFnn({target}) {
+        (async () => {
+          let wbs = [];
+          let fileNames = [];
+          for (const file of target.files) {
+            const wb = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.readAsBinaryString(file);
+              reader.onload = e => resolve(XLSX.read(e.target.result, {type: 'binary'}));
+            });
+            fileNames.push({name: file.name, sheetNames: wb.SheetNames});
+            wbs.push(wb);
+          }
+          document.wbs = wbs;
+          this.fileNames = fileNames;
+          this.fileIdx = -1;
+          this.fileIdx = 0;
+          //处理所有列表数据为json数组
+          const jsonArr = wbs.map(wb => wb.SheetNames.map(sheet => XLSX.utils.sheet_to_json(wb.Sheets[sheet])).flatMap(e => e)).flatMap(e => e);
+          this.allDataLen = jsonArr.length;
+          const keysObj = {};
+          jsonArr.map(json => Object.keys(json)).flatMap(e => e).forEach(k => {
+            if (keysObj[k]) (keysObj[k]).num++;
+            else keysObj[k] = {field: k, num: 1, checked: false};
+          });
+          this.keysObj = keysObj;
+          // const keyArr = Object.keys(keysObj).map(k => ({field: k, num: keysObj[k], checked: false}));
+          this.allSheetJson = JSON.stringify(jsonArr);
+          this.allSheetJsonEncode = encodeURI(this.allSheetJson);
+        })();
+      },
+      loadFileFn(fileIdx, sheetIdx) {
+        fileIdx = fileIdx || this.fileIdx;
+        sheetIdx = sheetIdx || 0;
+        const sheetName = this.fileNames[fileIdx].sheetNames[sheetIdx];
+        const sheetJson = XLSX.utils.sheet_to_json(document.wbs[fileIdx].Sheets[sheetName]);
+        if (!sheetJson || !sheetJson.length) {
+          return;
+        }
+        this.tableCols = Object.keys(sheetJson[0]);
+        this.tableData = sheetJson;
+      }
+
+    }, watch: {
+      fileIdx(index) {
+        if (index < 0) return;
+        this.sheetIdx = 0;
+        this.sheetNames = this.fileNames[this.fileIdx].sheetNames
+        this.loadFileFn(index);
+      }, sheetIdx(index) {
+        this.loadFileFn(0, index);
+      }
+    }
+  });
+</script>
+</html>
+

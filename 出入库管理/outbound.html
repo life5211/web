@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>小元小学出库管理系统</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/big.js/2.3.0/big.js"></script>
+  <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/big.js/2.3.0/big.min.js"></script>-->
+  <!--<script src="https://unpkg.com/vue@2/dist/vue.min.js"></script>-->
+  <!--<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.min.js"></script>-->
+
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script src="./util.js"></script>
+
+</head>
+<style>
+    .el-col {
+        border-radius: 4px
+    }
+
+    .el-table .bold {
+        color: #00ff00;
+    }
+</style>
+<body>
+<div id="vue2">
+  <h2>出库管理系统 - [{{fileName}}]
+    <el-link href="./inbound.html" target="_blank" type="primary"> 入库管理</el-link>
+  </h2>
+  <el-row>
+    <h3 id="l0"> 目录 </h3>
+    <a href="#l1">出库流水</a>
+    <a href="#OUT_INPUT">出库输入栏</a>
+    <a href="#l2">仓库库存列表</a>
+    <!--<a href="#l3">出库流水</a>-->
+    <!--<a href="#l4">出库统计数据</a>-->
+  </el-row>
+  <el-row>
+    <el-button type="primary">导入出库台账
+      <input type="file" @change="fileReadOutFnn" accept=".xlsx,.xls"/>
+    </el-button>
+    <el-button @click="exportOutFlow" type="success">导出出库流水</el-button>
+    <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，且不超过500kb</div>
+  </el-row>
+  <hr/>
+
+  <el-row>
+    <hr/>
+    <h3 id="l1">出库流水</h3><a href="#l0">回到顶部</a>
+    <el-table :data="tableData3" border style="width: 100%" id="outTable" :key="updateFlag+1">
+      <el-table-column v-for="(e) in ['序号','出库时间','品类','品名','前库存','出库数量','库存余量','入库序号','入库时间','数量','金额（元）','单价（元）',]"
+                       :prop="e" :label="e" :key="e" sortable :formatter="formatter"></el-table-column>
+      <!--<el-table-column v-for="(e) in tableCols3" :prop="e" :label="e" :key="e" sortable :formatter="formatter"></el-table-column>-->
+      <el-table-column prop="序号" label="操作">
+        <template slot-scope="scope">
+          <el-popconfirm :title="`确定删除 ${scope.row.出库数量} ${scope.row.品名} 吗?`" @confirm="rmOutFlowFn(scope.row,scope.row.序号)">
+            <el-button slot="reference">删除</el-button>
+          </el-popconfirm>
+        </template>
+      </el-table-column>
+    </el-table>
+  </el-row>
+  <el-row>
+    <el-col :span="5">
+      <el-col ID="OUT_INPUT">
+        <div style="font-size: 32px">{{dateString_}}</div>
+        <hr/>
+        <span class="demonstration">出库日期</span>
+        <el-date-picker v-model="outBoundDate" type="date" placeholder="选择日期"></el-date-picker>
+      </el-col>
+      <hr/>
+      <el-col>
+        <el-calendar v-model="outBoundDate"></el-calendar>
+      </el-col>
+      <el-col>
+        <span class="demonstration">品类</span>
+        <el-checkbox-group v-model="pinLei">
+          <el-checkbox label="米"></el-checkbox>
+          <el-checkbox label="面"></el-checkbox>
+          <el-checkbox label="肉"></el-checkbox>
+          <el-checkbox label="油"></el-checkbox>
+          <el-checkbox label="蛋"></el-checkbox>
+          <el-checkbox label="干杂"></el-checkbox>
+          <el-checkbox label="蔬菜"></el-checkbox>
+        </el-checkbox-group>
+      </el-col>
+      <el-col>
+        <span class="demonstration">品名</span>
+        <el-input v-model="pinMing" placeholder="筛选食材" @change="analysis_in_out" clearable></el-input>
+      </el-col>
+    </el-col>
+    <el-col :span="19">
+      <h3 id="l2">仓库库存列表</h3><a href="#l0">回到顶部</a>
+      <template>
+        <el-table border :data="inventoryList" border :key="updateFlag">
+          <el-table-column sortable prop="序号" label="序号" width="60"></el-table-column>
+          <el-table-column sortable prop="入库时间" label="入库时间" width="100" :formatter="formatter"></el-table-column>
+          <el-table-column sortable prop="品类" label="品类" width="80"></el-table-column>
+          <el-table-column sortable prop="品名" label="品名" width="120"></el-table-column>
+          <el-table-column prop="单价（元）" label="批次单价" width="60"></el-table-column>
+          <el-table-column prop="数量" label="批次数量" width="60"></el-table-column>
+          <el-table-column prop="金额（元）" label="批次金额" width="60"></el-table-column>
+          <el-table-column prop="库存余量" label="批次库存余量" style="color: red" width="80"></el-table-column>
+          <!--<el-table-column sortable prop="总库存余量" label="总库存余量"></el-table-column>-->
+          <el-table-column prop="出库数量" label="操作">
+
+            <template slot-scope="scope">
+              <el-button :disabled="!outBoundDate" :loading="loading" type="success"
+                         @click="outBoundLogFn(scope.row,scope.row.库存余量)">全部出库
+              </el-button>
+
+              <el-input placeholder="出库数量" v-model.number="scope.row.出库数量" :max="scope.row.库存余量" :min='0' type="number"
+                        clearable style="width: 180px" :disabled="!outBoundDate"
+                        @keyup="outBoundLogFn(scope.row,scope.row.出库数量 || 0)"
+              ></el-input>
+              <el-button :disabled="!outBoundDate" :loading="loading" type="primary"
+                         @click="outBoundLogFn(scope.row,scope.row.出库数量 || 0)">部分出库
+              </el-button>
+
+            </template>
+          </el-table-column>
+        </el-table>
+      </template>
+
+    </el-col>
+  </el-row>
+
+</div>
+</body>
+
+<script>
+
+  document.VVue = new Vue({
+    el: '#vue2',
+    data: {
+      loading: false, updateFlag: 0, fileName: '',
+      pinLei: [], pinMing: '',
+      outBoundDate: new Date(), nowDate: new Date(),
+      inventoryList: [],
+      inboundFlow: [], outboundFlow: [],
+      tableData3: [], tableCols3: []
+    },
+    methods: {
+      outBoundLogFn(inFlow, outNo) {
+        if (!inFlow) return this.$message({type: 'warning', message: `出库数据异常`});
+        if (outNo <= 0) return this.$message({type: 'warning', message: `出库数据异常，数量为：{ ${outNo} }`});
+        if (outNo > inFlow.库存余量) return this.$message({type: 'warning', message: `出库数据超出，出库：{ ${outNo} } ,库存：{ ${inFlow.库存余量} } ,`});
+        // 序号	年	月	日	周次	星期	品类	入库时间	品名	数量	金额（元）	单价（元）
+        // '序号,年,月,日,周次,星期,品类,品名,数量,金额（元）,单价（元）'
+        this.loading = true;
+        inFlow.出库数量 = '';
+        const outFlow = {
+          ...{
+            序号: 0, 出库时间: 0, 品类: 0, 品名: 0,
+            前库存: inFlow.库存余量,
+            出库数量: 0, 库存余量: 0, 出库金额: 0,
+            入库序号: inFlow.序号
+          }, ...inFlow, ...{
+            序号: util.getIncrease(),
+            出库时间: this.outBoundDate,
+            出库数量: outNo,
+            出库金额: util.times(inFlow['单价（元）'], outNo),
+            库存余量: util.minus(inFlow.库存余量, outNo),
+            入库序号: inFlow.序号
+          }
+        };
+        this.outboundFlow.push(outFlow);
+        util.localSet("out_bound_xlsx_arr", this.outboundFlow);
+        this.analysis_in_out();
+        this.$message({
+          message: `出库成功；${util.getDateStr(outFlow.出库时间)}出<${outFlow.品名}><${outFlow.出库数量}> 剩<${outFlow.库存余量}>`,
+          type: 'success'
+        });
+        this.loading = false
+        setTimeout(_ => this.loading = false, 1000);
+      },
+      rmOutFlowFn(flow, no) {
+        this.loading = true;
+        let idx = -1;
+        const iflow = this.outboundFlow.filter((e, i) => e.序号 === no && ((idx = i) + 1))?.[0];
+        if (iflow && idx > -1 && flow.序号 === iflow.序号 && flow.序号 === no) {
+          const splice = this.outboundFlow.splice(idx, 1);
+          if (splice) {
+            this.analysis_in_out();
+            this.$message({
+              message: `删除成功；${util.getDateStr(flow.出库时间)}出<${flow.品名}><${flow.出库数量} >`,
+              type: 'success'
+            });
+          }
+        }
+        this.loading = false;
+
+      },
+      analysis_in_out() {
+        this.inventoryList = this.inboundFlow
+            .filter(e => e.入库时间 && e.入库时间 <= (this.outBoundDate || this.nowDate))
+            .filter(e => !this.pinLei.length || this.pinLei.includes(e.品类))
+            .filter(e => !this.pinMing || e.品名.includes(this.pinMing))
+            .map(inFlow => {
+              inFlow.库存余量 = util.minus(
+                  inFlow.数量,
+                  this.outboundFlow.filter(oF => oF.入库序号 === inFlow.序号).map(e => e.出库数量).reduce((a, b) => util.adds(a, b), 0)
+              );
+              return inFlow;
+            })
+            .filter(flow => flow.库存余量 > 0);
+        this.updateFlag = new Date().getTime();
+        this.tableData3 = this.outboundFlow
+            .filter(out => !this.outBoundDate || util.isSameDay(this.outBoundDate, out.出库时间))
+            .filter(e => !this.pinLei.length || this.pinLei.includes(e.品类))
+            .filter(e => !this.pinMing || e.品名.includes(this.pinMing))
+            .sort((a, b) => util.compareFn(a, b, '出库时间', '品类', '品名'));
+
+        this.tableCols3 = util.getKeys(this.tableData3);
+
+      },
+      exportOutFlow() {
+        // 导出出入库流水
+        let workbook = XLSX.utils.book_new();
+        const outLs = this.outboundFlow.sort((a, b) => util.compareFn(a, b, '出库时间', '品类', '品名'));
+        let worksheet = XLSX.utils.json_to_sheet(outLs);
+        XLSX.utils.book_append_sheet(workbook, worksheet, "出库台账");
+        let worksheet2 = XLSX.utils.json_to_sheet(this.inboundFlow);
+        XLSX.utils.book_append_sheet(workbook, worksheet2, "入库台账");
+        XLSX.writeFile(workbook, `${this.fileName}出库导出[${util.getDateStr(new Date())}].xlsx`);
+
+      },
+      fileReadOutFnn({target}) {
+        (async () => {
+          const file = target.files[0];
+          const wb = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsBinaryString(file);
+            reader.onload = e => resolve(XLSX.read(e.target.result, {type: 'binary', cellDates: true, cellText: false}));
+          });
+          const sheet = wb.Sheets["出库台账"];
+          if (sheet) {
+            const outFlows = XLSX.utils.sheet_to_json(sheet, {row: false, dateNF: 'yyyy/m/d'});
+            if (outFlows?.length) {
+              util.localSet("out_bound_xlsx_arr", outFlows);
+              const t = outFlows.map(e => e.序号).sort((a, b) => b - a);
+              util.localSet("id", t[0] + 1);
+              return this.$message({
+                message: `导入成功 ${outFlows.length} 条`,
+                type: 'success'
+              });
+            }
+          }
+          alert("导入失败！")
+        })();
+      },
+
+      formatter: (r, c, e) => util.formatter(e),
+    },
+    computed: {
+      dateString_() {
+        return util.getDateWeekStr(this.outBoundDate);
+      }
+    },
+    watch: {
+      outBoundDate() {
+        this.analysis_in_out();
+      }
+    },
+    beforeMount() {
+      const inboundFlow = util.localGetParseDate("in_bound_xlsx_arr");
+      if (!inboundFlow) return util.alert("请先导入数据");
+      this.outBoundDate = inboundFlow[0].入库时间;
+      this.fileName = util.localGet("fileName", "");
+      const outboundFlow = util.localGetParseDate("out_bound_xlsx_arr", []);
+      this.inboundFlow = inboundFlow.sort((a, b) => util.compareFn(a, b, '品类', '品名', '入库时间'));
+      this.outboundFlow = outboundFlow;
+      this.analysis_in_out();
+    }
+  });
+</script>
+</html>

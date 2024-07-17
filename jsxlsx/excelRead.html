@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Excel加载工具</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!--<script src="dist/xlsx.core.min.js"></script>-->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  <!-- import Vue before Element -->
+  <!--<script src="https://unpkg.com/vue@2/dist/vue.js"></script>-->
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.js"></script>
+  <!-- 生产环境版本，优化了尺寸和速度 -->
+  <!--<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>-->
+  <!--<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.min.js"></script>-->
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="vue2">
+  <el-row>
+    <el-button type="primary">
+      <input type="file" @change="fileReadFnn" multiple="multiple" accept=".xlsx,.xls"/>
+    </el-button>
+    <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，且不超过500kb</div>
+  </el-row>
+  文件列表{{fileNames.length}}
+  <el-row v-if="fileNames.length">
+    <el-button v-for="(file,i) in fileNames" @click=fileIdx=i :key="file.name" :class="{ 'el-button--primary':i===fileIdx}"
+    >{{file.name}}
+    </el-button>
+  </el-row>
+  sheet列表{{sheetNames.length}}
+  <el-row v-if="sheetNames.length">
+    <el-button v-for="(sheetName,i) in sheetNames" @click=sheetIdx=i :key="sheetName" :class="{'el-button--primary':i===sheetIdx}" round
+    >{{sheetName}}
+    </el-button>
+  </el-row>
+
+
+  <el-table
+      :data="tableData"
+      border
+      style="width: 100%">
+    <el-table-column v-for="(e) in tableCols"
+                     :prop="e"
+                     :label="e" :key="e"
+                     sortable>
+    </el-table-column>
+  </el-table>
+</div>
+</body>
+<script>
+  document.VVue = new Vue({
+    el: '#vue2',
+    data: {
+      tableData: [],
+      fileNames: [],
+      sheetNames: [],
+      fileIdx: -1, sheetIdx: 0,
+      tableCols: []
+    },
+    methods: {
+      fileReadFnn({target}) {
+        (async () => {
+          let wbs = [];
+          let fileNames = [];
+          for (const file of target.files) {
+            const wb = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.readAsBinaryString(file);
+              reader.onload = e => resolve(XLSX.read(e.target.result, {type: 'binary'}));
+            });
+            wbs.push(wb);
+            fileNames.push({name: file.name, sheetNames: wb.SheetNames});
+          }
+          document.wbs = wbs;
+          this.fileNames = fileNames;
+          this.fileIdx = 0;
+        })();
+      },
+      loadFileFn(fileIdx, sheetIdx) {
+        fileIdx = fileIdx || this.fileIdx;
+        sheetIdx = sheetIdx || 0;
+        const sheetName = this.fileNames[fileIdx].sheetNames[sheetIdx];
+        const sheetJson = XLSX.utils.sheet_to_json(document.wbs[fileIdx].Sheets[sheetName]);
+        if (!sheetJson || !sheetJson.length) {
+          return;
+        }
+        this.tableCols = Object.keys(sheetJson[0]);
+        this.tableData = sheetJson;
+      }
+
+    },
+    watch: {
+      fileIdx(index) {
+        this.sheetIdx = 0;
+        this.sheetNames = this.fileNames[this.fileIdx].sheetNames
+        this.loadFileFn(index);
+      }, sheetIdx(index) {
+        this.loadFileFn(0, index);
+      }
+    }
+  });
+</script>
+</html>
+

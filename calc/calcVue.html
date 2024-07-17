@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>群记AA离线账单计算系统</title>
+  <!--    <script src="jquery-2.1.4.js"></script>-->
+  <!--    <script src="bootstrap-4.0.0-dist/js/bootstrap.js"></script>-->
+  <!--    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap.css">-->
+  <!-- Bootstrap -->
+  <!--  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">-->
+  <!--  <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css">
+
+  <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+  <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+
+  <!--  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <!--    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>-->
+  <!--<script src="https://unpkg.com/vue/dist/vue.js"></script>-->
+
+  <script src="dist/xlsx.core.min.js"></script>
+  <!--  <script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script>-->
+
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!-- 引入组件库 -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+  <!--  <script src="https://cdn.bootcdn.net/ajax/libs/uuid/8.3.2/uuid.min.js"></script>-->
+</head>
+<body>
+<div :class="{'container':users.length<10}" id="calcPage" v-cloak>
+  <el-row>
+    <div class="col">
+      <h3>群记AA离线账单计算系统</h3>
+    </div>
+    <hr/>
+  </el-row>
+  <h6>账单清单录入</h6>
+  <el-row class="text-center">
+    <table class="table table-bordered">
+      <tr>
+        <th></th>
+        <th v-for="({key},i) in users" :key="key">
+          <el-input :clearable="true" v-model="users[i].name" size="mini"></el-input>
+        </th>
+      </tr>
+      <tbody id="innerBox">
+      <tr>
+        <th>付款人</th>
+        <td v-for="({key},i) in users" :key="key">
+          <el-input type="number" :clearable="true" size="mini" min="0" v-model.number="paidInputs[i]"></el-input>
+        </td>
+      </tr>
+      <tr>
+        <th title="双击全选" @dblclick="consumeSelectAll" style="cursor:pointer">消费者</th>
+        <td v-for="({key},i) in users" :key="key">
+          <div class="row no-gutters">
+            <div class="col-2">
+              <input type="checkbox" class="form-control" v-model="consumeChecks[i]" @click="consumeInputs[i]=''">
+            </div>
+            <div class="col">
+              <el-input type="number" :clearable="true" size="mini" min="0" v-model.number="consumeInputs[i]" :disabled="!consumeChecks[i]"></el-input>
+            </div>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <el-row>
+      <el-form size="mini">
+        <el-form-item align="right">
+          <el-col :span="6">
+            <el-input type="text" v-model="inputName" placeholder="Input Text"></el-input>
+          </el-col>
+          <el-button type="primary" @click="addLog" class="el-icon-plus">添加</el-button>
+          <el-button @click="inputInit" class="el-icon-delete">重置</el-button>
+        </el-form-item>
+        <el-form-item align="right">
+          <el-button type="primary" @click="addTeam" class="el-icon-plus">团队</el-button>
+          <el-button type="primary" @click="addBill" class="el-icon-plus">账单</el-button>
+          <el-button type="primary" @click="addUser" class="el-icon-plus">成员</el-button>
+          <el-button type="primary" @click="editTeam" class="el-icon-edit-outline">团队</el-button>
+          <el-button type="primary" @click="editBill" class="el-icon-edit-outline">账单</el-button>
+          <el-button type="primary" @click="save">保存</el-button>
+          <el-button type="primary" class="el-icon-download" @click="exportFn">导出</el-button>
+          <el-button class="el-icon-delete" @click="rmLogs">日志</el-button>
+          <el-button @click="rmAll">重置全部</el-button>
+        </el-form-item>
+
+        <el-form-item label="团队列表 ">
+          <el-radio-group v-model="team">
+            <el-radio v-for="(e,idx) in teams" :label="idx" :key="keyFn()">{{e.name || `团队${idx}`}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="账单列表 ">
+          <el-radio-group v-model="bill">
+            <el-radio v-for="(e,idx) in thisBills" :label="idx" :key="keyFn()">{{e.name || `团队${idx}`}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+    </el-row>
+
+    <table class="table table-bordered" id="tableCalc">
+      <thead>
+      <tr>
+        <th :colspan="users.length*2+4">账单清单汇总</th>
+      </tr>
+      <tr>
+        <th></th>
+        <th colspan="2" v-for="({name},i) in users" :key="keyFn()"
+            @dblclick="rmUser(i)" title="双击删除" style="cursor:pointer">
+          {{name}}
+        </th>
+      </tr>
+      <tr>
+        <th>小计</th>
+        <th colspan="2" v-for="user in users" :key="keyFn()">
+          {{getPaidTotal(user) + getConsumeTotal(user)}}
+        </th>
+      </tr>
+      <tr>
+        <td>总付款</td>
+        <td colspan="2" v-for="user in users" :key="keyFn()">{{getPaidTotal(user)}}</td>
+      </tr>
+      <tr>
+        <td>总消费</td>
+        <td colspan="2" v-for="user in users" :key="keyFn()">{{getConsumeTotal(user)}}</td>
+      </tr>
+      </thead>
+
+      <tbody id="logBox">
+      <tr>
+        <th :colspan="users.length*2+4">账单清单详情</th>
+      </tr>
+      <tr>
+        <th></th>
+        <template v-for="e in users">
+          <td>付款</td>
+          <td>消费</td>
+        </template>
+        <td>清单描述</td>
+        <td>创建时间</td>
+        <td>操作</td>
+      </tr>
+      <tr v-for="({desc, createDate, logDetail},i) in billLogs" :key="keyFn()">
+        <td>{{i + 1}}</td>
+        <template v-for="({key}) in users">
+          <td>{{(logDetail[key] || {}).paid || ''}}</td>
+          <td>{{(logDetail[key] || {}).consume || ''}}</td>
+        </template>
+        <td>{{desc}}</td>
+        <td style="width: 10em">{{dateFn(createDate)}}</td>
+        <td><a href="javascript:void(0)" @click="rmLog(i)">删除</a></td>
+      </tr>
+      <tr v-if="!getLogs.length">
+        <th :colspan="users.length*2+4"> 记录为空</th>
+      </tr>
+      </tbody>
+    </table>
+  </el-row>
+  <el-row class="blue">
+    <div class="col-sm-12 text-center">
+      &copy;Java17研究室版权所有
+    </div>
+  </el-row>
+
+  </el-row></div>
+<script type="module">
+    import util from './util.js';
+
+    const vm = new Vue({
+        el: "#calcPage",
+        data: () => ({
+            inputName: '',
+            teams: [{
+                name: '团队1',
+                key: util.mathRandom(),
+                bills: [{name: '账单1', key: util.mathRandom()}]
+            }],
+            team: 0,
+            bill: 0,
+            users: [{key: '', name: ''}],
+            paidInputs: [],
+            consumeChecks: [],
+            consumeInputs: [],
+            billLogs: [{desc: '', createDate: 0, logDetail: {user1: {paid: 0, consume: 0}}}]
+        }),
+        methods: {
+            logInit() {
+                this.inputInit();
+                this.billLogs = [];
+            },
+            paidInputsInit: function () {
+                this.paidInputs = this.users.map(_ => '');
+            },
+            consumeChecksInit: function () {
+                this.consumeChecks = this.users.map(_ => false);
+            },
+            consumeInputsInit: function () {
+                this.consumeInputs = this.users.map(_ => '');
+            },
+            inputInit() {
+                this.paidInputsInit();
+                this.consumeChecksInit();
+                this.consumeInputsInit();
+            },
+            consumeSelectAll() {
+                let every = this.consumeChecks.every(e => e);
+                this.consumeChecks = this.users.map(_ => !every);
+            },
+            getPaidTotal: function ({key}) {
+                return this.billLogs.map(({logDetail}) => logDetail[key])
+                    .map(e => e && e.paid ? e.paid : 0)
+                    .reduce((a, b) => a + b, 0);
+            },
+            getConsumeTotal: function ({key}) {
+                return this.billLogs.map(({logDetail}) => logDetail[key])
+                    .map(e => e && e.consume ? e.consume : 0)
+                    .reduce((a, b) => a + b, 0) * -1;
+            },
+            addUser: function () {
+                let key = this.users.map(({key}) => key).reduce((a, b) => a > b ? a : b, 0) + 1;
+                this.users.push({key, name: this.inputName || `成员${key}`});
+                this.inputInit();
+                this.teamUpdate();
+            },
+            addTeam() {
+                this.teams.push({
+                    name: this.inputName || `团队${this.teams.length + 1}`,
+                    key: this.keyFn(),
+                    bills: [{name: '账单1', key: this.keyFn()}]
+                });
+                this.teamUpdate();
+            },
+            editTeam() {
+                this.teams[this.team].name = this.inputName;
+                this.teamUpdate();
+            },
+            addBill() {
+                this.teams[this.team].bills.push({
+                    name: this.inputName || `账单${this.thisTeam.bills.length + 1}`,
+                    key: this.keyFn()
+                });
+                this.teamUpdate()
+            },
+            editBill() {
+                this.thisBill.name = this.inputName;
+                this.teamUpdate()
+            },
+            teamUpdate() {
+                this.inputName = '';
+                util.localSet('teamData', {teams: this.teams, team: this.team, bill: this.bill});
+            },
+            keyFn() {
+                return util.mathRandom();
+            },
+            rmAll() {
+                if (!confirm("删除所有数据？")) return;
+                this.usersLoad({});
+            },
+            rmLogs() {
+                if (!confirm("删除所有日志？")) return;
+                this.logInit();
+            },
+            rmLog: function (index) {
+                if (!confirm("删除这条记录？")) return;
+                this.billLogs.splice(index, 1);
+            },
+            rmUser(i) {
+                if (this.users.length < 2) {
+                    return util.alert('唯一账户，无法删除');
+                }
+                let flag = this.billLogs.some(({logDetail}) => logDetail[this.users[i].key] && logDetail[this.users[i].key].paid && logDetail[this.users[i].key].consume);
+                if (flag) {
+                    return util.alert('存在账单记录，无法删除');
+                }
+                if (!confirm("删除这个用户？")) return;
+                this.users.splice(i, 1);
+            },
+            inputTextInitAndGet() {
+                const text = this.inputName;
+                this.inputName = '';
+                return text;
+            },
+            dateFn(time) {
+                return util.getDateTimeStr(new Date(time))
+            },
+            addLog: function () {
+                if (this.paidInputs.filter(e => e < 0).length || this.consumeInputs.filter(e => e < 0).length) {
+                    return util.alert('金额为负异常');
+                }
+                let paidInputsTotal = this.paidInputs.reduce((a, b) => a * 1 + b * 1, 0);
+                if (paidInputsTotal <= 0) {
+                    return util.alert('总支出非正异常');
+                }
+                let consumeChecksSize = this.consumeChecks.filter(e => e).length;
+                if (!consumeChecksSize) {
+                    return util.alert('消费选择非法，消费选择总人数为零');
+                }
+                let consumeAverage = 0;
+                let consumeInputs = this.consumeInputs.filter(e => e);
+                let extraConsumeTotal = paidInputsTotal - consumeInputs.reduce((a, b) => a + b, 0);
+                if (extraConsumeTotal < 0) {
+                    return util.alert('金额输入非法，输入消费金额大于支出金额');
+                }
+                let extraConsumeSize = consumeChecksSize - consumeInputs.length;
+                if (extraConsumeTotal && !extraConsumeSize) {
+                    return util.alert('金额输入非法，输入消费金额小于支出金额');
+                }
+                if (extraConsumeSize) {
+                    consumeAverage = parseFloat((extraConsumeTotal * 10000 / extraConsumeSize / 10000).toFixed(4));
+                }
+                const billLog = {createDate: Date.now(), desc: this.inputTextInitAndGet(), logDetail: {}};
+                this.users.forEach(({key}, i) => {
+                    if ((this.consumeChecks[i] || this.paidInputs[i])) {
+                        const consumeInput = this.consumeInputs[i];
+                        const paidInput = this.paidInputs[i];
+                        billLog.logDetail[key] = {
+                            paid: paidInput || 0,
+                            consume: consumeInput || (this.consumeChecks[i] ? consumeAverage : 0)
+                        };
+                    }
+                });
+                this.billLogs.push(billLog);
+                this.paidInputsInit();
+                this.consumeInputsInit();
+            },
+            save() {
+                const result = {
+                    users: this.users,
+                    billLogs: this.billLogs
+                };
+                util.localSet(`billResult${this.thisBill.key}`, result);
+                ELEMENT.Message.success("保存成功！");
+            },
+            exportFn() {
+                util.exportExcel($("#tableCalc")[0]);
+            },
+            usersLogLoad() {
+                let billRst = util.localGet(`billResult${this.thisBill.key}`);
+                if (billRst) {
+                    this.usersLoad(billRst);
+                    this.logLoad(billRst);
+                } else this.logInit();
+            },
+            logLoad({billLogs}) {
+                this.billLogs = billLogs;
+            },
+            usersLoad({users}) {
+                this.users = users || [{key: 1, name: '成员1'}, {key: 2, name: '成员2'}, {key: 3, name: '成员3'}];
+                this.logInit();
+            }
+        },
+        beforeMount() {
+            this.usersLoad({});
+            let teamData = util.localGet('teamData');
+            if (teamData) {
+                let {teams, team, bill} = teamData;
+                this.teams = teams;
+                this.team = team;
+                this.bill = bill;
+            }
+            this.usersLogLoad();
+            this.teamUpdate();
+        },
+
+        computed: {
+            thisTeam() {
+                return this.teams[this.team]
+            },
+            thisBills() {
+                return this.thisTeam.bills;
+            },
+            thisBill() {
+                return this.thisBills[this.bill];
+            },
+            getLogs: function () {
+                return this.billLogs.map(({desc, createDate, logDetail}) =>
+                    this.users.flatMap(({key}) => {
+                        const userLog = logDetail[key];
+                        if (!userLog) return ['', ''];
+                        return [userLog.paid || '', userLog.consume || ''];
+                    }).concat(desc, util.getDateTimeStr(new Date(createDate)))
+                );
+            }
+
+        },
+        watch: {
+            team() {
+                this.bill = 0;
+                this.usersLogLoad();
+            },
+            bill() {
+                this.usersLogLoad();
+            }
+        }
+    });
+    window.vmm = vm;
+    window.onbeforeunload = function () {
+        return true;
+    }
+</script>
+<style>
+    .table td, .table th {
+        padding: 1px;
+    }
+
+    .form-control {
+        height: auto;
+        padding: unset !important;
+    }
+
+    input[type=checkbox].form-control {
+        height: calc(95%);
+        padding: .375rem .75rem;
+    }
+
+    table.table input {
+        border: none
+    }
+
+    [v-cloak] {
+        visibility: hidden;
+    }
+</style>
+</body>
+</html>

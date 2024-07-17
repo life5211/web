@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单验证</title>
+    <style>
+        body {
+            background-color: #7bff00;
+        }
+
+        div {
+            margin: auto;
+            width: 30%;
+        }
+
+        select {
+            width: 40%;
+            height: 20em;
+        }
+    </style>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        /*
+        window.onload = function () {
+            var login = document.getElementsByName("btn")[0];
+            var spans = document.getElementsByTagName("span");
+            spans[0].style.color = "red";
+            spans[0].style.fontWeight = "bold";
+            spans[1].style.color = "red";
+            spans[1].style.fontWeight = "bold";
+
+            username.onblur = function () {
+                ucheck();
+            }
+            password.onblur = function () {
+                pcheck();
+            }
+            login.onclick = function () {
+                return ucheck() && pcheck();
+            }
+
+            function ucheck() {
+                if (username.value.length < 6 || username.value.length > 11) {
+                    spans[0].innerText = "用户名非法";
+                    return false;
+                } else {
+                    spans[0].innerText = "";
+                    return true;
+                }
+            }
+
+            function pcheck() {
+                if (password.value.length < 6 || password.value.length > 11) {
+                    spans[1].innerText = "密码非法";
+                    return false;
+                } else {
+                    spans[1].innerText = "";
+                    return true;
+                }
+            }
+
+            var alls = document.getElementsByName("all");
+            alls[0].onclick = function () {
+                for (var i = 1; i < alls.length; i++) {
+                    alls[i].checked = alls[0].checked;
+                }
+            }
+            alls[1].onclick = function () {
+                for (var i = 2; i < alls.length; i++) {
+                    alls[i].checked = !alls[i].checked;
+                }
+                alls[1].checked = f();
+            }
+
+            for (var i = 2; i < alls.length; i++) {
+                alls[i].onclick = f;
+            }
+
+            function f() {
+                var flag = true;
+                for (var j = 2; j < alls.length; j++) {
+                    flag &= alls[j].checked;
+                }
+                alls[0].checked = flag;
+                return flag;
+            }
+
+            var ss = document.getElementsByTagName("select");
+            ss[0].ondblclick = function () {
+                ss[1].add(this.options[this.selectedIndex]);
+            }
+            ss[1].ondblclick = function () {
+                ss[0].add(this.options[this.selectedIndex]);
+            }
+            left.onclick = function () {
+                while (ss[1].selectedIndex > -1) {
+                    ss[0].add(ss[1].options[ss[1].selectedIndex]);
+                }
+            }
+            right.onclick = function () {
+                while (ss[0].selectedIndex > -1) {
+                    ss[1].add(ss[0].options[ss[0].selectedIndex]);
+                }
+            }
+            leftAll.onclick = function () {
+                // ss[0].innerHTML = ss[1].innerHTML;
+                // ss[1].innerHTML = "";
+                while (ss[1].length > 0) {
+                    ss[0].add(ss[1].options[0]);
+                }
+            }
+            rightAll.onclick = function () {
+                while (ss[0].length > 0) {
+                    ss[1].add(ss[0].options[0]);
+                }
+            }
+
+
+        }
+
+    */
+        $(function () {
+
+            $("select:eq(0)").dblclick(rightChecked);
+            $("select:eq(1)").dblclick(leftChecked);
+            $(":button:eq(0)").click(function () {
+                $("select:eq(0)").append($("select:eq(1) option"));
+            });
+            $(":button:eq(1)").click(leftChecked);
+            $(":button:eq(2)").click(rightChecked);
+            $(":button:eq(3)").click(function () {
+                $("select:eq(1)").append($("select:eq(0) option"));
+            });
+
+            function leftChecked() {
+                $("select:eq(0)").append($("select:eq(1) option:selected"));
+            }
+
+            function rightChecked() {
+                $("select:eq(1)").append($("select:eq(0) option:selected"));
+            }
+
+
+            $(":checkbox:eq(0)").click(function () {
+                $(":checkbox:gt(0):lt(5)").prop("checked", this.checked);
+            });
+            $(":checkbox:eq(1)").click(function () {
+                $(":checkbox:gt(1):lt(4)").prop("checked", function () {
+                    return !this.checked;
+                });
+                $(":checkbox:lt(2)").prop("checked", $(":checkbox:gt(1):lt(4):checked").size() === 4);
+            });
+            $(":checkbox:gt(1):lt(4)").click(function () {
+                $(":checkbox:lt(2)").prop("checked", $(":checkbox:gt(1):lt(4):checked").size() === 4);
+            });
+
+
+        });
+    </script>
+</head>
+<body>
+<div>
+    <form action="login.gsp" method="post">
+        <select id="s1" multiple="multiple">
+            <option value="beijing">北京</option>
+            <option value="shanghai">上海</option>
+            <option value="guangzhou">广州</option>
+            <option value="shenzhen">深圳</option>
+            <option value="chengdu">成都</option>
+            <option value="xiamen">厦门</option>
+            <option value="ningbo">宁波</option>
+            <option value="fuzhou">福州</option>
+            <option value="xian">西安</option>
+            <option value="luoyang">洛阳</option>
+        </select>
+        <select id="s2" multiple="multiple">
+        </select><br/><br/>
+        <input type="button" id="leftAll" value="<<">
+        <input type="button" id="left" value="<">
+        <input type="button" id="right" value=">">
+        <input type="button" id="rightAll" value=">>">
+
+        <br/><br/>
+        <form action="xuhz.html" method="post">
+            <label>全选<input type="checkbox" name="all" value="all"></label>
+            <label>反选<input type="checkbox" name="all" value="fanxuan"></label>
+
+            <label>1<input type="checkbox" name="all" value="1"></label>
+            <label>2<input type="checkbox" name="all" value="2"></label>
+            <label>3<input type="checkbox" name="all" value="3"></label>
+            <label>4<input type="checkbox" name="all" value="4"></label><br/><br/>
+            用户名<input type="text" name="username" id="username"><span></span><br/><br/>
+            密码<input type="password" name="password" id="password"><span></span><br/><br/>
+            性别：
+            <label>男<input type="radio" name="sex" value="man" checked="checked"></label>
+            <label>女<input type="radio" name="sex" value="woman"></label><br/><br/>
+            爱好：
+            <label>体育<input type="checkbox" name="hobby" value="sport"></label>
+            <label>音乐<input type="checkbox" name="hobby" value="music"></label>
+            <label>电影<input type="checkbox" name="hobby" value="movie" checked="checked"></label><br/><br/>
+            学历：
+            <select id="edu">
+                <option value="1">高中</option>
+                <option value="2">大专</option>
+                <option value="3">本科</option>
+                <option value="4">研究生</option>
+            </select><br/><br/>
+            喜欢的城市
+            <select id="citys" multiple="multiple">
+                <option value="beijing">北京</option>
+                <option value="shanghai">上海</option>
+                <option value="guangzhou">广州</option>
+                <option value="shenzhen">深圳</option>
+                <option value="chengdu">成都</option>
+            </select><br/><br/>
+            <input type="submit" name="btn" value="Login"><br/><br/>
+
+            <pre>
+
+            {"RETURN":
+            {"success": true},
+            "BASEINFOSET":
+            {"baseinfoSet_INTERNETMAC":"24:CA:CB:19:2E:10",
+            "baseinfoSet_TR069MAC":"24:ca:cb:19:2e:11",
+            "baseinfoSet_VOIPMAC":"24:ca:cb:19:2e:12",
+            "baseinfoSet_PRIPROTOCOLMAC":"24:ca:cb:19:2e:13",
+            "baseinfoSet_WLANMAC":"24:ca:cb:19:2e:1d",
+            "baseinfoSet_PONMAC":"24:ca:cb:19:2e:1f",
+            "baseinfoSet_INTERNETEN":"1",
+            "baseinfoSet_TR069EN":"1",
+            "baseinfoSet_VOIPEN":"1",
+            "baseinfoSet_PRIPROTOCOLEN":"1",
+            "baseinfoSet_PONEN":"",
+            "baseinfoSet_TELECOMACCOUNT":"telecomadmin",
+            "baseinfoSet_TELECOMPASSWORD":"103&51&86&89&56&56&53&122&",
+            "baseinfoSet_USERACCOUNT":"useradmin",
+            "baseinfoSet_USERPASSWORD":"97&55&118&107&117&",
+            "baseinfoSet_MANUFACTUREROUI":"24CACB",
+            "baseinfoSet_DEVICESERIALNUMBER":"24CACB-4785124CACB192E10",
+            "baseinfoSet_Compiletime":"16:24:46 Dec 14 2017",
+            "baseinfoSet_SOFTWAREVERSION":"10FHT45002001",
+            "baseinfoSet_EXTNUMBER":"RP000000",
+            "baseinfoSet_HARDWAREVERSION":"V2.1",
+            "baseinfoSet_HARDWARECODE":"WKE7.200.400R1A",
+            "baseinfoSet_SSID":"ChinaNet-ppJ6",
+            "baseinfoSet_WPAKEY":"3m6eyqha",
+            "baseinfoSet_REGSTATUS":"1",
+            "baseinfoSet_GPONSN":"FHTT00244D02",
+            "baseinfoSet_GPONPASSWORD":"HG26012345",
+            "baseinfoSet_PONMODE":"EPON",
+            "baseinfoSet_BRMAC":"24:ca:cb:19:2e:1c",
+            "baseinfoSet_area":"Sichuan",
+            "baseinfoSet_IMAGEID":"2ff0635390bb6712aa5c383ea53d102f",
+            "baseinfoSet_PreconfigID":"50a1d0baa31e8247c4b71979a9b8e17f",
+            "baseinfoSet_factory":"1",
+            "baseinfoSet_factorymode":"0",
+            "wirelessenable":"1"}
+            }
+        </pre>
+
+        </form>
+
+
+        <br/>
+
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+body>div:nth-child(1) {
+    background-color: red;
+}
+
+body {
+    background-color: aquamarine;
+}

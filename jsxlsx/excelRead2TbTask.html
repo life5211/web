@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ExcelRead</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!--<script src="dist/xlsx.core.min.js"></script>-->
+  <script src="dist/xlsx.full.min.js"></script>
+
+</head>
+<body>
+<h1>任务组任务分发生成系统</h1>
+<div id="gradeQry">
+
+  <el-button type="primary">
+    <input type="file" @change="fileReadFn"/>
+  </el-button>
+  <el-link type="primary" href="/Downloads/任务分发模板.xlsx" download="任务分发模板文件">
+    <el-button type="primary">下载模板</el-button>
+  </el-link>
+  <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，且不超过500kb</div>
+  <div>
+    <el-button v-for="sheet in SheetNames">{{sheet}}</el-button>
+  </div>
+
+  <h2> 源数据表 </h2>
+  <el-table
+      :data="sheetJson"
+      border
+      style="width: 100%">
+    <el-table-column v-for="(e) in tableCols"
+                     :prop="e"
+                     :label="e"
+                     sortable>
+    </el-table-column>
+
+  </el-table>
+
+  <h2>任务组任务列表</h2>
+  <el-table
+      :data="taskGroups"
+      border
+      style="width: 100%">
+    <el-table-column
+        label="任务组名称"
+        prop="groupName"
+        width="130px"
+    >
+    </el-table-column>
+
+    <el-table-column prop="groupTaskHtml" label="任务明细">
+      <template slot-scope="scope">
+        <div v-html="scope.row.groupTaskHtml"></div>
+      </template>
+
+    </el-table-column>
+
+    <el-table-column prop="groupTaskText" label="任务明细">
+      <template slot-scope="scope">
+        <el-input v-model="scope.row.groupTaskText" type="textarea" rows="15"></el-input>
+      </template>
+
+    </el-table-column>
+
+  </el-table>
+  <!--<img src="C:/Documents/WeChat Files/wxid_iz9qfep2hqtg21/FileStorage/Temp/204ea52ef9c3d80e31b28e138dde782.jpg">-->
+</div>
+</body>
+<!-- import Vue before Element -->
+<!--<script src="https://unpkg.com/vue@2/dist/vue.js"></script>-->
+<script src="https://unpkg.com/vue@2.7.15/dist/vue.js"></script>
+
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<!--<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>-->
+<!-- 生产环境版本，优化了尺寸和速度 -->
+<!--<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>-->
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+  new Vue({
+    el: '#gradeQry',
+    data: {
+      taskGroups: [],
+      taskGroupTexts: '',
+      sheetJson: [],
+      SheetNames: [],
+      tableCols: ["任务组列表", "任务1", "任务2", "任务3", "任务5", "任务6", "买家名称", "工作时间", "淘宝号", "买家链接", "买家图片"]
+    },
+    methods: {
+      fileReadFn({target}) {
+        // const file = this.$refs.file.files[0];
+        const file = target.files[0];
+        (async () => {
+          const wb = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsBinaryString(file);
+            reader.onload = (e) => {
+              const data = e.target.result;
+              resolve(XLSX.read(data, {type: 'binary'}));
+            };
+          });
+          document.wb = wb;
+          this.SheetNames = wb.SheetNames;
+          this.loadFn(wb.SheetNames[0]);
+        })();
+
+
+      },
+      loadFn(sheetName) {
+        const sheetJson = XLSX.utils.sheet_to_json(document.wb.Sheets[sheetName]);
+        if (!sheetJson || !sheetJson.length) {
+          return;
+        }
+        // this.tableCols = Object.keys(sheetJson[0]);
+        this.sheetJson = sheetJson;
+        this.dealData(sheetJson);
+
+      },
+      dealData(sheetJson) {
+        const buyers = {};
+        // sheetJson.filter(e=>e["买家名称"]).map()
+        sheetJson.forEach(e => {
+          const buyer = e["买家名称"];
+          if (buyer) {
+            buyers[`${buyer}Time`] = e["工作时间"];
+            buyers[`${buyer}Id`] = e["淘宝号"];
+            buyers[`${buyer}Link`] = e["买家链接"];
+            buyers[`${buyer}Pic`] = (e["买家图片"] || "").replace("file://", "");
+            buyers[`${buyer}PicUrl`] = (e["买家图片"] || "").replace('file:///C:', "").replace("file://10.160.124.23", "");
+          }
+        });
+        const taskGroups = [];
+        const taskGroupTexts = [];
+        sheetJson.forEach(e => {
+          const groupName = e["任务组列表"];
+
+          if (groupName) {
+            const groupTasks = [];
+            ["任务1", "任务2", "任务3", "任务4", "任务5", "任务6"].forEach(taskName => {
+              const buyer = e[`${taskName}`];
+              if (buyer) {
+                groupTasks.push({
+                  taskName, buyer,
+                  buyerTime: buyers[`${buyer}Time`],
+                  buyerLink: buyers[`${buyer}Link`],
+                  buyerPic: buyers[`${buyer}Pic`],
+                  buyerPicUrl: buyers[`${buyer}PicUrl`],
+                  buyerId: buyers[`${buyer}Id`]
+                });
+              }
+            })
+            const groupTaskText = groupTasks.map(e =>
+                `${e.taskName}  ${e.buyerTime} \r\n ${e.buyerLink}
+![](${e.buyerPic})
+`).join("\r\n\r\n");
+
+            const groupTaskHtml = groupTasks.map(e =>
+                `<div>${e.taskName}  ${e.buyerTime} ${e.buyer} ${e.buyerId}<br/>
+                  ${e.buyerLink}> <br/>
+                  <img src="${e.buyerPicUrl}" width="300px" alt=""><br/>
+                  ————— 分割线 —————
+                   </div>`
+            ).join("<br/>");
+
+            taskGroups.push({groupName, groupTasks, groupTaskText, groupTaskHtml});
+            taskGroupTexts.push(groupTaskText);
+          }
+        });
+        this.taskGroups = taskGroups;
+        this.taskGroupTexts = taskGroupTexts;
+      }
+
+    }
+
+  })
+</script>
+</html>

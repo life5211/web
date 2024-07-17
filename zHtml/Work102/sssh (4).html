@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test2</title>
+    <style>
+        body {
+            margin: auto;
+        }
+
+        div {
+            margin: auto;
+            width: 480px;
+            height: 320px;
+            text-align: center;
+        }
+
+        [type=button] {
+            width: 160px;
+        }
+    </style>
+    <script src="jquery-2.1.4.js"></script>
+    <script>
+        $(function () {
+
+            $(":text").blur(function () {
+                $(this).next().text(this.value.match(/^[a-zA-Z]+$/) ? "正" : "误");
+            });
+            $(":password").blur(function () {
+                $(this).next().text(this.value.match(/^[0-9a-zA-Z]+$/) ? "正" : "误");
+            });
+
+        });
+    </script>
+</head>
+<body>
+<div>
+    <h2>登录考试</h2><br/>
+    <img src="#"><input type="text"><span></span><br/>
+    <img src="#"><input type="password"><span></span><br/>
+    <input type="button" value="登录">
+</div>
+</body>
+</html>

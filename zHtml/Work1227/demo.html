@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>购物车</title>
+</head>
+<body>
+<form action="goods.jsp" method="get">
+    价格<input type="number" name=minPrice>-<input type="number" name=maxPrice>
+    添加日期<input type="date" name=minDate>-<input type="date" name=maxDate>
+    <input type="submit" value="查询">
+    <a href="add.jsp"><input type="button" value="添加"/></a>
+</form>
+<form action="html5.html" style="font-family: Consolas" method="post" enctype="multipart/form-data">
+    <table border="2" style="border-collapse:collapse;border: red" align="center">
+        <b>
+            <caption style="font-size: 72px">购物车</caption>
+        </b>
+        <tr>
+            <th><input type="checkbox" name="allcheckbox">全选</th>
+            <th>商品名称</th>
+            <th>单价</th>
+            <th>数量</th>
+            <th>商品总价</th>
+            <th align="centre">操作</th>
+        </tr>
+        <tr>
+            <td><input type="checkbox" name="checkbox1"></td>
+            <td>Java从入门到入坟</td>
+            <td>68.00</td>
+            <td><input type="button" name="del1" value="-"><input type="text" name="text1" style="width: 30px"
+                                                                  value="2"><input
+                    type="button" name="add1" value="+"></td>
+            <td>136.00</td>
+            <td><a href="xuhongzhi.html"><img src="source/big.jpg" height="20px"></a><input type="image"
+                                                                                            src="source/del.jpg"
+                                                                                            height="20"><a
+                    href="html5.html" name="del1">删除</a></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" name="checkbox2"></td>
+            <td>C++从入门到放弃</td>
+            <td>68.00</td>
+            <td><input type="button" name="del1" value="-"><input type="text" name="text2" style="width: 30px"
+                                                                  value="2"><input
+                    type="button" name="add1" value="+"></td>
+            <td>136.00</td>
+            <td><a href="xuhongzhi.html"><img src="source/big.jpg" height="20px"></a><input type="image"
+                                                                                            src="source/del.jpg"
+                                                                                            height="20"><a
+                    href="html5.html" name="del1">删除</a></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" name="checkbox3"></td>
+            <td><span style="text-align: center">测试信息</span></td>
+            <td>68.00</td>
+            <td><input type="button" name="del3" value="-">
+                <input type="text" name="text3" style="width: 30px" value="2">
+                <input type="button" name="add3" value="+"></td>
+            <td>136.00</td>
+            <td><a href="xuhongzhi.html"><img src="source/big.jpg" height="20px"></a><input type="image"
+                                                                                            src="source/del.jpg"
+                                                                                            height="20"><a
+                    href="html5.html" name="del1">删除</a></td>
+        </tr>
+
+
+    </table>
+    <center>
+        <input type="button" name="ok" value="结算" style="font-size: 30px;text-align: center">
+
+        <input type="reset" name="delall" value="清空" style="font-size: 30px;text-align: center">
+    </center>
+
+
+</form>
+
+
+</body>
+</html>

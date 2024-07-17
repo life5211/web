@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>小元小学入库管理系统</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/big.js/2.3.0/big.js"></script>
+  <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/big.js/2.3.0/big.min.js"></script>-->
+  <!--<script src="https://unpkg.com/vue@2/dist/vue.min.js"></script>-->
+  <!--<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.min.js"></script>-->
+
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script src="./util.js"></script>
+</head>
+
+<body>
+<div id="vue2">
+  <h2>入库管理系统 - [{{fileName}}] <a href="./outbound.html" target="_blank">出库管理</a></h2>
+  <el-row>
+    <el-button type="primary">导入入库台账
+      <input type="file" @change="fileReadInBoundFnn" accept=".xlsx,.xls"/>
+    </el-button>
+    <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，且不超过500kb</div>
+  </el-row>
+  <el-row>
+    <el-header>{{fileName}}</el-header>
+    <h6 id="l0"> 目录 </h6>
+    <a href="#l1">入库流水</a>
+    <a href="#l2">入库统计数据</a>
+    <a href="#l3">出库流水</a>
+    <a href="#l4">出库统计数据</a>
+
+  </el-row>
+  <el-row>
+    <hr/>
+    <h3 id="l1">入库流水 <a href="#l0">回到顶部</a></h3>
+
+    <el-table :data="tableData" border style="width: 100%">
+      <el-table-column v-for="(e) in tableCols" :prop="e" :label="e" :key="e" sortable :formatter="formatter"></el-table-column>
+    </el-table>
+  </el-row>
+
+
+  <el-row>
+    <hr/>
+    <h3 id="l2">入库统计 <a href="#l0">回到顶部</a></h3>
+    <el-table :data="tableData2" border>
+      <el-table-column v-for="(e) in tableCols2" :prop="e" :label="e" :key="e" sortable :formatter="formatter"></el-table-column>
+    </el-table>
+  </el-row>
+
+  <el-row>
+    <hr/>
+    <h3 id="l3">出库流水 <a href="#l0">回到顶部</a></h3>
+    <el-table :data="tableData3" border style="width: 100%">
+      <el-table-column v-for="(e) in tableCols3" :prop="e" :label="e" :key="e" sortable :formatter="formatter"></el-table-column>
+    </el-table>
+  </el-row>
+
+
+  <!--<el-row>-->
+  <!--  <hr/>-->
+  <!--  <h6 id="l4">出库统计</h6><a href="#l0">回到顶部</a>-->
+  <!--  <el-table :data="tableData2" border>-->
+  <!--    <el-table-column v-for="(e) in tableCols2" :prop="e" :label="e" :key="e" sortable :formatter="formatter"></el-table-column>-->
+  <!--  </el-table>-->
+  <!--</el-row>-->
+
+</div>
+</body>
+
+<script>
+
+  document.VVue = new Vue({
+    el: '#vue2',
+    data: {
+      wb: {}, fileName: '',
+      tableData3: [], tableCols3: [],
+      tableData2: [], tableCols2: [],
+      tableData: [], tableCols: []
+    },
+    methods: {
+      fileReadInBoundFnn({target}) {
+        (async () => {
+          const file = target.files[0];
+          const wb = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsBinaryString(file);
+            reader.onload = e => resolve(XLSX.read(e.target.result, {type: 'binary', cellDates: true, cellText: false}));
+          });
+          const xlsxArray = XLSX.utils.sheet_to_json(wb.Sheets["入库台账"], {row: false, dateNF: 'yyyy/m/d'});
+          util.localSet("fileName", this.fileName = file.name);
+          this.loadInFlow(xlsxArray);
+          this.$message({
+            type: 'success', message: `导入成功入库信息 ${xlsxArray.length} 条`
+          });
+          util.localSet("in_bound_xlsx_arr", xlsxArray);
+        })();
+      },
+      loadInFlow(xlsxArray) {
+        this.tableCols = util.getKeys(xlsxArray);
+        this.tableData = xlsxArray;
+        const inBoundStat = {};
+        this.tableData.forEach(tr => {
+          const stat = inBoundStat[tr.品名] || {};
+          stat.品名 = tr.品名;
+          stat.金额 = util.adds(stat.金额, tr["金额（元）"]);
+          stat.数量 = util.adds(stat.数量, tr["数量"]);
+          stat.单价 = util.div(stat.金额, stat.数量);
+          stat.入次 = util.adds(stat.入次, 1);
+          inBoundStat[tr.品名] = stat;
+        });
+        const tableData2 = Object.values(inBoundStat);
+        this.tableCols2 = util.getKeys(tableData2);
+        this.tableData2 = tableData2;
+      },
+      loadOutFlow(outFlow) {
+        this.tableCols3 = util.getKeys(outFlow);
+        this.tableData3 = outFlow;
+      },
+      formatter: (r, c, e) => util.formatter(e),
+    }, beforeMount() {
+      const inFlow = util.localGetParseDate("in_bound_xlsx_arr");
+      if (inFlow) this.loadInFlow(inFlow);
+      const outFlow = util.localGetParseDate("out_bound_xlsx_arr");
+      if (outFlow) this.loadOutFlow(outFlow);
+      this.fileName = util.localGet("fileName", "");
+    }, created() {
+    }
+  });
+</script>
+
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>calculator</title>
+    <!--    <script src="jquery-2.1.4.js"></script>-->
+    <!--    <script src="bootstrap-4.0.0-dist/js/bootstrap.js"></script>-->
+    <!--    <link rel="stylesheet" type="text/css" href="bootstrap-4.0.0-dist/css/bootstrap.css">-->
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>多用户账单计算工具</h3>
+        </div>
+    </div>
+    <div class="row text-center">
+        <div class="col-sm-2"></div>
+        <table class="table table-bordered col-sm-8">
+            <thead>
+            <tr>
+                <th></th>
+                <th>王虹</th>
+                <th>杨东升</th>
+                <th>许洪智</th>
+                <th>王顺发</th>
+            </tr>
+            </thead>
+            <tbody id="innerBox">
+            <tr>
+                <th>出资人</th>
+                <td><input type="radio" name="outer" class="c1"/></td>
+                <td><input type="radio" name="outer" class="c2"/></td>
+                <td><input type="radio" name="outer" class="c3"/></td>
+                <td><input type="radio" name="outer" class="c4"/></td>
+            </tr>
+            <tr>
+                <th>消费者</th>
+                <td><input type="checkbox" name="inner" class="c1"/></td>
+                <td><input type="checkbox" name="inner" class="c2"/></td>
+                <td><input type="checkbox" name="inner" class="c3"/></td>
+                <td><input type="checkbox" name="inner" class="c4"/></td>
+            </tr>
+            <tr>
+                <th>Input</th>
+                <td>
+                    <button class="form-control button col-sm-12">Reset</button>
+                </td>
+                <td colspan="3"><input id="innerText" class="form-control  col-sm-12"/></td>
+            </tr>
+            </tbody>
+            <TBODY id="outBox">
+            <tr>
+                <td>总支出</td>
+                <td class="c1">0</td>
+                <td class="c2">0</td>
+                <td class="c3">0</td>
+                <td class="c4">0</td>
+            </tr>
+            <tr>
+                <td>总消费</td>
+                <td class="c1">0</td>
+                <td class="c2">0</td>
+                <td class="c3">0</td>
+                <td class="c4">0</td>
+            </tr>
+            <tr>
+                <th>小计</th>
+                <th class="c1">0</th>
+                <th class="c2">0</th>
+                <th class="c3">0</th>
+                <th class="c4">0</th>
+            </tr>
+            </TBODY>
+            <tbody id="logBox">
+            <!--LogBox-->
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 text-center">
+            Java17研究室版权所有
+        </div>
+    </div>
+</div>
+<script>
+    $("#innerBox button").click(function () {
+        // 取消已选中的按钮
+        $("#innerBox :checked").prop("checked", false);
+        $("#innerText").val("");
+    });
+    $("#innerBox tr:lt(2) :gt(0)").click(function () {
+        const $check = $(this).children().eq(0);
+        $check.prop("checked", !$check.prop("checked"));
+    });
+    $("#innerBox tr:eq(1) th").click(function () {
+        $("#innerBox :checkbox").prop("checked", true);
+    });
+    const $innerText = $("#innerText");
+    $innerText.focus(function () {
+        $("#innerText").val("");
+    });
+    $innerText.blur(start);
+    $innerText.keydown(function (e) {
+        if (e.keyCode == 13) {
+            start();
+        }
+    });
+
+    function start() {
+        const total = parseFloat($innerText[0].value);
+        const size = $("#innerBox :checkbox:checked").size();
+
+        if ($("#innerBox :radio:checked").size() !== 1 || size == 0 || isNaN(total) || total <= 0) {
+            $innerText.val("Error input");
+            return;
+        }
+        $("#logBox").prepend($("#outBox tr:eq(1)").clone());
+        $("#logBox tr:eq(0) td:eq(0)").text(new Date().toTimeString().substr(0, 8));
+        calc(total, parseFloat((total / size).toFixed(2)));
+        $innerText.val("");
+        $innerText.focus();
+    }
+
+    function calc(total, per) {
+        colCalc("c1", total, per);
+        colCalc("c2", total, per);
+        colCalc("c3", total, per);
+        colCalc("c4", total, per);
+    }
+
+    function colCalc(sel, total, per) {
+        let log = "";
+        const $outerRadio = $("#outBox ." + sel + ":eq(0)");
+        if ($("#innerBox :radio." + sel).prop("checked")) {
+            $outerRadio.text(total + parseFloat($outerRadio[0].innerText));
+            log += total;
+        }
+        const $innerCheck = $("#outBox ." + sel + ":eq(1)");
+        if ($("#innerBox :checkbox." + sel).prop("checked")) {
+            $innerCheck.text((per) + parseFloat($innerCheck[0].innerText));
+            log += " - " + per;
+        }
+        $("#logBox ." + sel + ":eq(0)").text(log);
+        $("#outBox ." + sel + ":eq(2)").text(
+            (parseFloat($outerRadio[0].innerText) - parseFloat($innerCheck[0].innerText)).toFixed(3)
+        );
+    }
+</script>
+
+</body>
+</html>

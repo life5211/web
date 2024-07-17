@@ -1,6 +1,7 @@
-*.iml
 .idea/
-rebel.xml
+.vscode/
 target/
-.txlcn
-*.log
+node_modules/
+*.iml
+*log
+package-lock.json

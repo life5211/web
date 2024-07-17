@@ -31,10 +31,22 @@
         },
         searchFn3: function (el, i) {
             return i === 'b' || i === 1
+        },
+        arrF: function () {
+            return this.array;
         }
     })
 </script>
 <div ms-controller='filterBy'>
+    ----
+    <ul>
+
+        <li ms-for='el in @array | filterBy()'>{{el}}</li>
+    </ul>
+----
+    <br/>
+
+
     <input :duplex-number="num"/>
     <select ms-duplex='@search'>
         <option>a</option>

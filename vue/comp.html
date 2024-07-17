@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>comp</title>
+  <script src="vue.js"></script>
+</head>
+<body>
+<div id="comp">
+  <myeleeee v-for="ob in arr1" :myname="ob[0]" :myshow="ob[1]"></myeleeee>
+  <myeleeee @myevent="handleEvent1($event)" :myname="'btn3'" :myshow="true"></myeleeee>
+  <p v-if="show"> {{str1}}</p>
+  <navibar @mye="toggle" ref="navibar"></navibar>
+  <input ref="myinput">
+  <button @click="fnadd"> Add</button>
+
+  <wx></wx>
+  <wx></wx>
+  <user></user>
+  <keep-alive>
+    <component :is="comp"></component>
+  </keep-alive>
+</div>
+</body>
+<script>
+    const bus = new Vue();
+
+    Vue.component('wx', {
+        template: '<div><input v-model="text" ref="text"><button @click="pub">Pub</button></div>',
+        data() {
+            return {text: '1'}
+        }, methods: {
+            pub() {
+                // bus.$emit('wxpub', this.text);
+                bus.$emit('wxpub', this.$refs.text.value);
+            }
+        }
+    });
+    Vue.component('user', {
+        template: '<div>User<textarea v-model="txt"readonly></textarea></div>',
+        data() {
+            return {txt: ''}
+        }, methods: {},
+        mounted() {
+            console.log('组件创建完成后调用');
+            bus.$on('wxpub', (e) => {
+                this.txt = e;
+            })
+        }
+    });
+
+    Vue.component('navibar', {
+        template:
+            `
+<div style="background-color: red;width: 50%" >
+<button @click="fn">按钮</button>
+
+</div>
+`,
+        methods: {
+            fn() {
+                this.$emit('mye', 'red');
+            }
+        }, data: () => ({user: 'userinfo'})
+    });
+
+    Vue.component('myeleeee',
+        {
+            template: `
+<div>
+<button @click="payout" v-show="myshow">{{myname}}</button><p>{{myshow}}</p><hr/><br/>
+</div>`,
+            // props: ['myname', 'myshow']
+            props: {myname: String, myshow: Boolean},
+            data() {
+                return {
+                    childname: '子组件属性'
+                }
+            },
+            methods: {
+                payout(e) {
+                    this.$emit('myevent', this.childname); //触发事件
+                }
+            }, components: {}
+        });
+    new Vue({
+        el: '#comp',
+        data: {
+            arr1: [['首页', true], ['btn2', true], ['返回', false]],
+            str1: '',
+            show: true,
+            comp: 'wx'
+        },
+        methods: {
+            handleEvent1(e) {
+                console.log(e || 'str', e);
+                this.str1 = e;
+            }, toggle(e) {
+                this.show = !this.show;
+            },
+            fnadd() {
+                this.str1 = this.$refs.myinput.value;
+                console.log(this.$refs.navibar.fn());
+            }
+        }
+    })
+
+</script>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>中考成绩采集系统</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!--<script src="dist/xlsx.core.min.js"></script>-->
+  <!--<script src="../jsxlsx/dist/xlsx.full.min.js"></script>-->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  <!-- import Vue before Element -->
+  <!--<script src="https://unpkg.com/vue@2/dist/vue.js"></script>-->
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.js"></script>
+  <!-- 生产环境版本，优化了尺寸和速度 -->
+  <!--<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>-->
+  <!--<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.min.js"></script>-->
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+
+<body>
+  <div id="vue2">
+    <el-row>
+      <el-button type="primary">上传基础信息
+        <input type="file" @change="fileReadFnn" accept=".xlsx" />
+      </el-button>
+      <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，且不超过500kb</div>
+      <el-button type="primary" @click="flushStudentInfo"> 刷新数据</el-button>
+      <a type="primary" href="https://www.ncjypt.com/nczk" target="_blank"> 开始采集 </a>
+      <el-button type="primary" @click="htmlDown"> 下载成绩</el-button>
+      <span>查询进度：{{gradeNo}}/{{stuNo}}</span>
+    </el-row>
+
+
+    <h6>文件列表<{{fileNames.length}}>
+    </h6>
+    <el-row v-if="fileNames.length">
+      <el-button v-for="(file,i) in fileNames" @click=fileIdx=i :key="file.name" :class="{ 'el-button--primary':i===fileIdx}">{{file.name}}
+      </el-button>
+    </el-row>
+    <h6>sheet列表<{{sheetNames.length}}>
+    </h6>
+    <el-row v-if="sheetNames.length">
+      <el-button v-for="(sheetName,i) in sheetNames" @click=sheetIdx=i :key="sheetName" :class="{'el-button--primary':i===sheetIdx}" round>{{sheetName}}
+      </el-button>
+    </el-row>
+
+    <el-table :data="tableData" border style="width: 100%">
+      <el-table-column v-for="(e) in tableCols" :prop="e" :label="e" :key="e" sortable> </el-table-column>
+    </el-table>
+  </div>
+</body>
+
+<script>
+  function downloadTxt(fileName, content) {
+    let blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    let reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onload = function (e) {
+      let a = document.createElement('a');
+      a.download = fileName;
+      a.href = e.target.result;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  }
+
+  document.VVue = new Vue({
+    el: '#vue2',
+    data: {
+      stuNo: 0,
+      allDataLen: 0,
+      gradeNo: 0,
+      tableData: [],
+      fileNames: [],
+      sheetNames: [],
+      fileIdx: -1,
+      sheetIdx: 0,
+      keysObj: {},
+      tableCols: []
+    },
+    methods: {
+      htmlDown() {
+        downloadTxt(`查询网站.html`);
+      },
+      fileReadFnn({ target }) {
+        (async () => {
+          let wbs = [];
+          let fileNames = [];
+          for (const file of target.files) {
+            const wb = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.readAsBinaryString(file);
+              reader.onload = e => resolve(XLSX.read(e.target.result, { type: 'binary' }));
+            });
+            fileNames.push({ name: file.name, sheetNames: wb.SheetNames });
+            wbs.push(wb);
+          }
+          document.wbs = wbs;
+          this.fileNames = fileNames;
+          this.fileIdx = -1;
+          this.fileIdx = 0;
+        })();
+      },
+      loadFileFn(fileIdx, sheetIdx) {
+        fileIdx = fileIdx || this.fileIdx;
+        sheetIdx = sheetIdx || 0;
+        const sheetName = this.fileNames[fileIdx].sheetNames[sheetIdx];
+        const sheetJson = XLSX.utils.sheet_to_json(document.wbs[fileIdx].Sheets[sheetName]);
+        localStorage.setItem("sheetJson_local", JSON.stringify(sheetJson));
+
+        this.loadStudents2Table(sheetJson);
+      },
+      loadStudents2Table(sheetJson) {
+        if (!sheetJson) return;
+        this.allDataLen = sheetJson.length;
+        let students = sheetJson.filter(s => s && s.姓名 && s.准考证号 && s.身份证号);
+        this.stuNo = students.length;
+        this.gradeNo = students.filter(s => s.gredeFlag).length;
+        this.tableCols = ["姓名", "身份证号", "准考证号", ...new Set(students.flatMap(s => Object.keys(s)))];
+        this.tableData = sheetJson;
+      },
+      flushStudentInfo() {
+        let sheetJson = JSON.parse(localStorage.getItem("sheetJson_local"));
+        if (sheetJson && sheetJson.length) {
+          this.loadStudents2Table(sheetJson);
+        }
+      }
+    }, beforeMount() {
+      this.flushStudentInfo();
+    }, watch: {
+      fileIdx(index) {
+        if (index < 0) return;
+        this.sheetIdx = 0;
+        this.sheetNames = this.fileNames[this.fileIdx].sheetNames
+        this.loadFileFn(index);
+      }, sheetIdx(index) {
+        this.loadFileFn(0, index);
+      }
+    }
+  });
+</script>
+
+</html>
