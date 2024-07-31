@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>小元小学出库管理系统</title>
+  <title>出库管理</title>
   <link rel="Shortcut Icon" href="./icon.png" type="image/x-icon"/>
 
   <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
@@ -29,7 +29,7 @@
 </style>
 <body>
 <div id="vue2">
-  <h2>出库管理系统 - [{{fileName}}]
+  <h2>出库管理系统 - [ {{fileName}} ]
   </h2>
   <el-row>
     <h3 id="l0"> 目录 </h3>
@@ -51,7 +51,7 @@
 
   <el-row>
     <hr/>
-    <h3 id="l1">出库流水  总【{{outboundFlow.length}}】条</h3><a href="#l0">回到顶部</a>
+    <h3 id="l1">出库流水 总【{{outboundFlow.length}}】条</h3><a href="#l0">回到顶部</a>
     <el-table :data="tableData3" border style="width: 100%" id="outTable" :key="updateFlag+1">
       <el-table-column v-for="(e) in ['序号','出库时间','品类','品名','前库存','出库数量','库存余量','入库序号','入库时间','数量','金额（元）','单价（元）',]"
                        :prop="e" :label="e" :key="e" sortable :formatter="formatter"></el-table-column>
@@ -68,30 +68,26 @@
   <el-row>
     <el-col :span="5">
       <el-col ID="OUT_INPUT">
-        <div style="font-size: 32px">{{dateString_}}</div>
+        <div style="font-size: 32px" v-html="dateString_"></div>
         <hr/>
         <span class="demonstration">出库日期</span>
         <el-date-picker v-model="outBoundDate" type="date" placeholder="选择日期"></el-date-picker>
       </el-col>
       <hr/>
       <el-col>
-        <el-calendar v-model="outBoundDate"></el-calendar>
+        <el-calendar v-model="outBoundDate" :first-day-of-week="7"></el-calendar>
       </el-col>
       <el-col>
         <span class="demonstration">品类</span>
-        <el-checkbox-group v-model="pinLei">
-          <el-checkbox label="米"></el-checkbox>
-          <el-checkbox label="面"></el-checkbox>
-          <el-checkbox label="肉"></el-checkbox>
-          <el-checkbox label="油"></el-checkbox>
-          <el-checkbox label="蛋"></el-checkbox>
-          <el-checkbox label="干杂"></el-checkbox>
-          <el-checkbox label="蔬菜"></el-checkbox>
+        <el-checkbox-group v-model="pinLei" @change="pinLeiFn">
+          <el-checkbox :label="e" v-for="e in allPinLeis" :key="e"></el-checkbox>
         </el-checkbox-group>
       </el-col>
       <el-col>
         <span class="demonstration">品名</span>
-        <el-input v-model="pinMing" placeholder="筛选食材" @change="analysis_in_out" clearable></el-input>
+        <el-checkbox-group v-model="pinMing" @change="pinMingFn">
+          <el-checkbox :label="e" v-for="e in allPinMing" :key="e"></el-checkbox>
+        </el-checkbox-group>
       </el-col>
     </el-col>
     <el-col :span="19">
@@ -116,7 +112,6 @@
 
               <el-input placeholder="出库数量" v-model.number="scope.row.出库数量" :max="scope.row.库存余量" :min='0' type="number"
                         clearable style="width: 180px" :disabled="!outBoundDate"
-                        @keyup.enter="addOutBoundLogFn(scope.row,scope.row.出库数量 || 0)"
               ></el-input>
               <el-button :disabled="!outBoundDate" :loading="loading" type="primary"
                          @click="addOutBoundLogFn(scope.row,scope.row.出库数量 || 0)">部分出库
@@ -139,7 +134,8 @@
     el: '#vue2',
     data: {
       loading: false, updateFlag: 0, fileName: '',
-      pinLei: [], pinMing: '',
+      pinLei: [], pinMing: [],
+      allPinLeis: [], allPinMing: '',
       outBoundDate: '', nowDate: new Date(),
       inventoryList: [],
       inboundFlow: [], outboundFlow: [],
@@ -198,9 +194,9 @@
       },
       analysis_in_out() {
         this.inventoryList = this.inboundFlow
-            .filter(e => e.入库时间 && e.入库时间 <= (this.outBoundDate || this.nowDate))
+            .filter(e => e?.入库时间 <= (this.outBoundDate || this.nowDate))
             .filter(e => !this.pinLei.length || this.pinLei.includes(e.品类))
-            .filter(e => !this.pinMing || e.品名.includes(this.pinMing))
+            .filter(e => !this.pinMing.length || this.pinMing.includes(e.品名))
             .map(inFlow => {
               inFlow.库存余量 = util.minus(
                   inFlow.数量,
@@ -208,14 +204,14 @@
               );
               return inFlow;
             })
-            .filter(flow => flow.库存余量 > 0);
+            .filter(flow => flow?.库存余量);
         this.tableData3 = this.outboundFlow
             .filter(out => !this.outBoundDate || util.isSameDay(this.outBoundDate, out.出库时间))
             .filter(e => !this.pinLei.length || this.pinLei.includes(e.品类))
-            .filter(e => !this.pinMing || e.品名.includes(this.pinMing))
+            .filter(e => !this.pinMing.length || this.pinMing.includes(e.品名))
             .sort((a, b) => util.compareFn(a, b, '出库时间', '品类', '品名'));
         // this.tableCols3 = util.getKeys(this.tableData3);
-        this.updateFlag = new Date().getTime();
+        this.updateFlag = Date.now();
 
       },
       exportOutFlow() {
@@ -226,7 +222,7 @@
         XLSX.utils.book_append_sheet(workbook, worksheet, "出库台账");
         let worksheet2 = XLSX.utils.json_to_sheet(this.inboundFlow);
         XLSX.utils.book_append_sheet(workbook, worksheet2, "入库台账");
-        XLSX.writeFile(workbook, `${this.fileName}出库导出[${util.getDateStr(new Date())}].xlsx`);
+        XLSX.writeFile(workbook, `[系统导出]${this.fileName}[${util.getDateStr(new Date())}].xlsx`);
 
       },
       fileReadOutFnn({target}) {
@@ -244,6 +240,7 @@
               util.localSet("out_bound_xlsx_arr", outFlows);
               const t = outFlows.map(e => e.序号).sort((a, b) => b - a);
               util.localSet("id", t[0] + 1);
+              location.reload()
               return this.$message({
                 message: `导入成功 ${outFlows.length} 条`,
                 type: 'success'
@@ -253,12 +250,21 @@
           alert("导入失败！")
         })();
       },
-
+      pinLeiFn() {
+        this.analysis_in_out();
+        let pinMingArr = this.inboundFlow
+            .filter(e => !this.pinLei.length || this.pinLei.includes(e.品类))
+            .map(e => e.品名);
+        this.allPinMing = [...new Set(pinMingArr)];
+      },
+      pinMingFn() {
+        this.analysis_in_out();
+      },
       formatter: (r, c, e) => util.formatter(e),
     },
     computed: {
       dateString_() {
-        return util.getDateWeekStr(this.outBoundDate);
+        return util.getSemester(this.outBoundDate) + "<br/>" + util.getDateWeekStr(this.outBoundDate);
       }
     },
     watch: {
@@ -269,11 +275,13 @@
     beforeMount() {
       const inboundFlow = util.localGetParseDate("in_bound_xlsx_arr");
       if (!inboundFlow) return util.alert("请先导入数据");
-      this.outBoundDate = inboundFlow[0].入库时间;
       this.fileName = util.localGet("fileName", "");
       const outboundFlow = util.localGetParseDate("out_bound_xlsx_arr", []);
       this.inboundFlow = inboundFlow.sort((a, b) => util.compareFn(a, b, '入库时间', '品类', '品名'));
+      this.outBoundDate = this.inboundFlow[0].入库时间;
       this.outboundFlow = outboundFlow;
+      this.allPinLeis = [...new Set(this.inboundFlow.map(e => e.品类))];
+      this.allPinMing = [...new Set(this.inboundFlow.map(e => e.品名))];
       this.analysis_in_out();
     }
   });

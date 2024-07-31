@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>小元小学入库管理系统</title>
-  <link rel="Shortcut Icon" href="./icon.png" type="image/x-icon" />
+  <title>入库管理</title>
+  <link rel="Shortcut Icon" href="./icon.png" type="image/x-icon"/>
 
   <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
   <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
@@ -27,6 +27,11 @@
       <input type="file" @change="fileReadInBoundFnn" accept=".xlsx,.xls"/>
     </el-button>
     <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，且不超过500kb</div>
+    <template>
+      <el-popconfirm :title="`确定删除本地出库入库数据吗?删除不可恢复，请自行导出已有数据`" @confirm="cacheClear">
+        <el-button slot="reference" round>清空本地入库出库数据</el-button>
+      </el-popconfirm>
+    </template>
   </el-row>
   <el-row>
     <el-header>{{fileName}}</el-header>
@@ -123,6 +128,10 @@
       loadOutFlow(outFlow) {
         this.tableCols3 = util.getKeys(outFlow);
         this.tableData3 = outFlow;
+      },
+      cacheClear() {
+        localStorage.clear();
+        location.reload()
       },
       formatter: (r, c, e) => util.formatter(e),
     }, beforeMount() {

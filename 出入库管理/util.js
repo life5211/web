@@ -8,6 +8,11 @@ const util = {
     alert(text);
     return false;
   },
+  /**
+   * 生成一个增长不重复ID
+   * @param { Number } randomLength
+   */
+  getUuid: (randomLength) => Number(Date.now() - 1695345040467 + Math.random().toString().substr(2, randomLength)).toString(36),
   mathRandomStr: _ => `${Math.random()}`.substr(2),
   getKeys: jsonArr => [...new Set(jsonArr.flatMap(s => Object.keys(s)))],
   adds: (...args) => parseFloat(args.filter(e => e).map(e => new Big(e)).reduce((a, b) => a.plus(b), new Big(0)).toString()),
@@ -44,17 +49,40 @@ const util = {
   }, getDateWeekStr(date) {
     return this.getDateStr(date) + ' ' + this.getWeekStr(date);
   },
+  /**
+   * @return yyyy年[春/秋]季学期
+   * 判断学期
+   * @param date {Date}
+   */
+  getSemester(date) {
+    if (!date) return '';
+    if (!date instanceof Date) return '';
+    let m = date.getMonth() + 1;
+    let y = date.getFullYear();
+    if (m > 7) return `${y}年秋季学期`;
+    if (m > 1) return `${y}年春季学期`;
+    return `${y - 1}年秋季学期`;
+  },
   formatter(e) {
     return (e instanceof Date) ? this.getDateStr(e) : e
-  }, isSameDay(s, e) {
+  },
+  isSameDay(s, e) {
     return this.getDateStr(s) === this.getDateStr(e);
+  },
+  getCalcDate(date, day, month, year) {
+    if (!date instanceof Date) return null;
+    let dateIncrease = new Date(date);
+    if (day) dateIncrease.setDate(date.getDate() + day);
+    if (month) dateIncrease.setMonth(date.getMonth() + month);
+    if (year) dateIncrease.setFullYear(date.getFullYear() + year);
+    return dateIncrease;
   },
   compareFn(a, b, ...fields) {
     for (let field of fields) {
       if (field && a[field] !== b[field]) return a[field] > b[field] ? 1 : -1;
     }
     return 0;
-      },
+  },
   exportTableExcel: function (tableEle, filename) {
     // let sheet = XLSX.utils.table_to_sheet(tableEle);
     // var workbook = XLSX.utils.book_new();
@@ -68,4 +96,4 @@ const util = {
     XLSX.utils.book_append_sheet(workbook, worksheet, filename);
     XLSX.writeFile(workbook, `${filename} ${this.getDateTimeStr(new Date())}.xlsx`);
   }
-}
+};
