@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>每日库存统计</title>
+  <link rel="Shortcut Icon" href="./icon.png" type="image/x-icon"/>
+
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/big.js/2.3.0/big.js"></script>
+  <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/big.js/2.3.0/big.min.js"></script>-->
+  <!--<script src="https://unpkg.com/vue@2/dist/vue.min.js"></script>-->
+  <!--<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.min.js"></script>-->
+
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script src="./util.js"></script>
+</head>
+
+<body>
+<div id="vue2">
+  <h2>核算系统 <a href="./inbound.html" target="_blank"> 入库管理</a></h2>
+  <el-row>
+
+  </el-row>
+</div>
+</body>
+
+<script>
+
+  document.VVue = new Vue({
+    el: '#vue2',
+    data: {
+      allData: {},
+      outBoundDate: '', nowDate: new Date(),
+      inboundFlow: [], outboundFlow: [],
+      tableData: [], tableCols: []
+    },
+    methods: {
+      boundStat() {
+
+      },
+      formatter: (r, c, e) => util.formatter(e),
+    }, beforeMount() {
+      const inboundFlow = util.localGetParseDate("in_bound_xlsx_arr");
+      if (!inboundFlow) return util.alert("请先导入数据");
+      const outboundFlow = util.localGetParseDate("out_bound_xlsx_arr", []);
+      this.inboundFlow = inboundFlow.sort((a, b) => util.compareFn(a, b, '入库时间', '品类', '品名'));
+      this.outboundFlow = outboundFlow.sort((a, b) => util.compareFn(a, b, '出库时间', '品类', '品名'));
+      let startDate = this.inboundFlow[0].入库时间;
+      let endDate = util.getCalcDate(startDate, 0, 6);
+
+      for (let date = startDate, inventory = {}; date <= endDate; date = util.getCalcDate(date, 1)) {
+        const inboundDaily = this.inboundFlow.filter(e => util.isSameDay(date, e.入库时间));
+
+        if (inboundDaily.length) {
+          inventory = inboundDaily.reduce((preInventory, currFlow) => {
+            // 出库时间	品名	单价（元）	 数量 	金额（元)	品名	数量	金额（元)
+            let pinMing = currFlow.品名;
+            let pinMingObj = preInventory[pinMing];
+
+            let currPinMingObj = {
+              品名: pinMing,
+              更新日期: date,
+              库存金额: util.adds(pinMingObj?.库存金额, currFlow['金额（元）']),
+              库存: util.adds(pinMingObj?.库存, currFlow['数量'])
+            }
+            currPinMingObj.单价 = util.div(currPinMingObj.库存金额, currPinMingObj.库存);
+
+            preInventory[pinMing] = currPinMingObj;
+          }, inventory);
+        }
+        const outboundDaily = this.outboundFlow.filter(e => util.isSameDay(date, e.出库时间)).reduce((pre, curr) => {
+          // 品名，品类，数量，总价，单价
+          let pinMing = curr.品名;
+          let prePinObj = pre[pinMing];
+
+          let currPinObj = {
+            出库时间: date,
+            品名: pinMing,
+            单价: 0,
+            数量: util.adds(curr['数量'], prePinObj?.数量),
+            金额: util.adds(curr['金额（元）'], prePinObj?.金额),
+            库存品名: pinMing,
+          }
+          currPinObj.单价 = util.div(currPinObj.金额, currPinObj.数量);
+
+          currPinObj.库存数量 = util.minus(inventory[pinMing].库存, currPinObj.数量,);
+          currPinObj.库存金额 = util.div(inventory[pinMing].库存金额, currPinObj.金额);
+          pre[pinMing] = currPinObj;
+        }, {});
+
+        if (outboundDaily.length) {
+          inventory = Object.entries(outboundDaily).reduce((preInventory, [pinMing, currFlow]) => {
+            // 出库时间	品名	单价（元）	 数量 	金额（元)	品名	数量	金额（元)
+            let pinMingObj = preInventory[pinMing];  // 出库一定存在库存
+
+            let currPinMingObj = {
+              品名: pinMing,
+              更新日期: date,
+              库存金额: util.minus(pinMingObj.库存金额, currFlow['金额']),
+              库存: util.adds(pinMingObj.库存, currFlow['数量'])
+            }
+            currPinMingObj.单价 = util.div(currPinMingObj.库存金额, currPinMingObj.库存);
+            preInventory[pinMing] = currPinMingObj;
+          }, inventory);
+        }
+
+      }
+    }, computed: {}, watch: {},
+    created() {
+    }
+  });
+</script>
+</script>
+</html>

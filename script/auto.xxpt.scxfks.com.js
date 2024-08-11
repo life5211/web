@@ -48,13 +48,13 @@
       location.href = "/study/courses/require";
       return;
     }
-    if (location.pathname.startsWith("/study/activity/question?")) {
+    if (location.href.replace(location.origin,"")?.startsWith("/study/activity/question?")) {
       // "http://xxpt.scxfks.com/study/activity/entry?id=57";
       const questionNode = document.querySelector("div.question");
       if (!questionNode) return;
       const questionText = encodeURIComponent(questionNode.innerText.substr(10));
       const searchDiv = document.createElement("div");
-      searchDiv.innerHTML = `<table><tr>
+      searchDiv.innerHTML = `<table style="min-width:600px"><tr>
         <td><a target="_blank" href="https://www.chinaso.com/newssearch/all/allResults?q=${questionText}">中国搜索</a></td>
         <td><a target="_blank" href="https://cn.bing.com/search?q=${questionText}">必应搜索</a><br/></td>
         <td><a target="_blank" href="https://www.baidu.com/s?wd=${questionText}">百度搜索</a><br/></td>
