@@ -59,11 +59,15 @@
     let subjectId = location.hash.substring(11);
     utils.log(log, subjectId);
     user.scriptKcIds.push(subjectId);
-    user.scriptLog.push(`${subjectId}=${log}`);
+    user.scriptLog.push({
+      subjectId, log,
+      name: all_kcs.filter(k => k.id === subjectId).reduce((a, b) => b?.name, {})
+    });
     utils.localSet(userInfoKey, user); // 学完保存
     let studyLs = all_kcs.filter(k => !user.subject || k.name.includes(user.subject))
         .filter(k => !user.scriptKcIds.includes(k.id))
-        .filter(k => !user.importKcNames?.includes(k.name));
+        .filter(k => !user.importKcNames?.includes(k.name))
+        .filter(k => !user.importKcNames3?.includes(k.name))
     if (!studyLs.length) return document.infoUp(0) && utils.log("学完了") && alert("当前用户课程学习已完成");
     location.href = `https://wljy.scjks.net/a/#/activity/${studyLs[0]?.id}`;
     location.reload();
@@ -74,7 +78,10 @@
     div.innerHTML = `<table style="width: 95%"><tr>
 <td>任教科目<button onclick="infoUp(1)">设置</button><input placeholder="eg：语文、初中语文" id="form_subject"/></td>
 <td>观看记录<button onclick="infoUp(2)">设置</button><textarea id="form_importSubject" rows="2" cols="40"></textarea></td>
+<td>证书申请<button onclick="infoUp(3)">设置</button><textarea id="form_importSubject3" rows="2" cols="40"></textarea></td>
 <td>待学习<span id="info0">1344/1344</span> <button id="study_state" onclick="infoUp(0)">开始运行</button></td>
+<td>已学习<select id="studied"></select></td>
+<td>未学习<select id="noStudy"></select></td>
 </tr></table>`;
     document.body.insertBefore(div, document.body.firstChild);
   }
@@ -83,6 +90,7 @@
     if (n === 0) user.state = !user.state;
     else if (n === 1) user.subject = document.getElementById("form_subject").value;
     else if (n === 2) user.importKcNames = document.getElementById("form_importSubject").value;
+    else if (n === 3) user.importKcNames3 = document.getElementById("form_importSubject3").value;
     utils.localSet(userInfoKey, user);
     showForm();
     studyFun();
@@ -92,9 +100,11 @@
     let all = all_kcs.filter(k => !user.subject || k.name.includes(user.subject)),
         needs = all.filter(k => !user.scriptKcIds?.includes(k.id))
             .filter(k => !user.importKcNames?.includes(k.name))
+            .filter(k => !user.importKcNames3?.includes(k.name))
     document.getElementById("info0").innerText = ` ${needs.length} / ${all.length} ;`;
     document.getElementById("form_subject").value = user.subject || '';
     document.getElementById("form_importSubject").value = user.importKcNames || '';
+    document.getElementById("form_importSubject3").value = user.importKcNames3 || '';
     document.getElementById("study_state").innerText = `${user.state ? '暂停' : '开始'}运行`
   }
 
