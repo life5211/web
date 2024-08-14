@@ -78,9 +78,9 @@ const util = {
     return dateIncrease;
   },
   compareFn(a, b, ...fields) {
-    for (let field of fields) {
-      if (field && a[field] !== b[field]) return a[field] > b[field] ? 1 : -1;
-    }
+    const fnc = (m, n) => m === n ? 0 : m === undefined ? -1 : n === undefined ? 1 : m.localeCompare ? m.localeCompare(n) : m > n ? 1 : -1;
+    if (!fields?.length) return fnc(a, b);
+    for (let f of fields) if (f) return fnc(a[f], b[f]);
     return 0;
   },
   exportTableExcel: function (tableEle, filename) {
