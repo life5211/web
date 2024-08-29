@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         四川网络教研自动化脚本
 // @namespace    http://tampermonkey.net/
-// @version      1.17
+// @version      2.17
 // @description  自动化播放网络教研视频，支持设置学科和已经播放的课程过滤
 // @match        https://wljy.scjks.net/*
 // @match        *wljy.scjks.net/*
@@ -14,10 +14,17 @@
 // ==/UserScript==
 
 (function () {
-  let userInfoKey, user, allSubjects, needSubjects, learned_kcs, utils = {
+  let userInfoKey, user, allSubjects, needSubjects, learned_kcs, subjectId, utils = {
     rf: (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
     localGet: (k, def) => JSON.parse(localStorage.getItem(k)) || def,
     localSet: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+    updateUser: _ => utils.localSet(userInfoKey, user),
+    compareFn(a, b, ...fields) {
+      const fnc = (m, n) => m === n ? 0 : m === undefined ? -1 : n === undefined ? 1 : m.localeCompare ? m.localeCompare(n) : m > n ? 1 : -1;
+      if (!fields?.length) return fnc(a, b);
+      for (let f of fields) if (f) return fnc(a[f], b[f]);
+      return 0;
+    },
     log(msg) {
       console.log(msg);
       let logs = this.localGet("logs", []);
@@ -26,97 +33,174 @@
     }
   };
 
+  let i1 = setInterval(function init() {
+    let login_name = document.querySelector("div.login-name").innerText; //未登录直接报错不予执行
+    if (!login_name) return utils.log("用户未登录");
+    clearInterval(i1);
+    userInfoKey = `${login_name}_info`;
+    subjectId = location.hash.substring(11);
+    user = utils.localGet(userInfoKey, {scriptKcIds: [], state: 1});
+    if (!user.playLog) user.playLog = {}
+    if (!user.join_kcs) user.join_kcs = []
+    doSubject();
+    formInsert();
+    showForm();
+    let video = document.querySelector('video');
+    if (video) setTimeout(function jump() {
+      if (user.playLog[subjectId]) {
+        let recordList = Array.from(document.querySelectorAll("div.video-list div.record-list div.recode-item"));
+        recordList[user.playLog[subjectId].currIdx].click();
+        setTimeout(_ => video.currentTime = user.playLog[subjectId].currentTime, utils.rf(4, 6));
+      }
+    }, utils.rf(10, 20));
+    document.i_2 = setInterval(studyFun, utils.rf(40, 80));
+  }, utils.rf(1, 2));
+
   function studyFun() {
     if (!user.state) return; // 暂停学习
     let video = document.querySelector('video');
     if (!video) return utils.log("没有video媒体"); // 没在播放界面，不处理直接退出
-    if (!video.paused) return; // 正在播放，推出继续等待，否者判断暂停原因
     video.muted = true;
     let recordList = Array.from(document.querySelectorAll("div.video-list div.record-list div.recode-item"));
-    if (document.querySelector("div.video-list div.live.current")) { // 在直播栏目
-      if (!recordList?.length) return nextProject("没有录播列表");
-      return recordList[0].click();
+    let currIdx = recordList.map(e => e.className.includes("current")).indexOf(true);
+    if (!video.paused) {// 正在播放，break，继续等待，否者判断暂停原因
+      user.playLog[subjectId] = {currIdx, currentTime: video.currentTime, length: video.duration}
+      return utils.updateUser();
     }
-    if (video.ended) { // 当前视频播放结束，
-      if (recordList.length > 1) { // 单页多个视频 且存在下一个视频就播放
-        let currIdx = recordList.map(e => e.className.includes("current")).indexOf(true);
-        if (recordList[currIdx + 1]) return recordList[currIdx + 1].click(); // 当前页面下一个视频,点击后推出
-      }
-      return nextProject('done');
+    if (!recordList?.length) return nextProject("没有录播列表");
+    if (document.querySelector("div.video-list div.live.current")) return recordList[0].click();
+    if (video.ended) {
+      user.playLog[subjectId] = {currIdx, currentTime: video.currentTime, length: video.duration}
+      utils.updateUser();
+      if (recordList[currIdx + 1]) return recordList[currIdx + 1].click(); // 单页多个视频 且存在下一个视频就播放
+      return nextProject('课程学习完成');
     }
     if (video.paused) video.play().then(utils.log).catch(utils.log); // 意外暂停
   }
 
-  setTimeout(function () {
-    let login_name = document.querySelector("div.login-name").innerText; //未登录直接报错不予执行
-    if (!login_name) return utils.log("用户未登录");
-    userInfoKey = `${login_name}_info`;
-    user = utils.localGet(userInfoKey, {scriptKcIds: [], scriptLog: [], state: 1});
-    doSubject();
-    formInsert();
-    showForm();
-    setInterval(studyFun, utils.rf(40, 80));
-  }, utils.rf(10, 20));
-
-  function doSubject() {
-    learned_kcs = all_kcs.filter(k => user.importKcNames?.includes(k.name) || user.importKcNames3?.includes(k.name) || user.scriptKcIds.includes(k.id) || false);
-    allSubjects = all_kcs.filter(k => !user.subject || k.name.includes(user.subject));
-    needSubjects = allSubjects.filter(k => !user.importKcNames?.includes(k.name) && !user.importKcNames3?.includes(k.name) && !user.scriptKcIds?.includes(k.id));
-  }
-
+  /**
+   * 下一个视频，用户加入播放或未学习学科视频
+   */
   function nextProject(log = '') {
-    let next, subjectId = location.hash.substring(11);
-    utils.log(log, subjectId);
+    utils.log({subjectId, log, name: all_kcs.filter(k => k.id === subjectId).reduce((a, b) => b?.name, {})});
     user.scriptKcIds.push(subjectId);
-    user.scriptLog.push({subjectId, log, name: all_kcs.filter(k => k.id === subjectId).reduce((a, b) => b?.name, {})});
-    utils.localSet(userInfoKey, user); // 学完保存
     doSubject();
-    if (user.join_kcs?.length) {
-      next = user.join_kcs.pop();
-      utils.localSet(userInfoKey, user);
-    }
-    if (needSubjects?.length) next = needSubjects[0];
+    let next;
+    if (user.join_kcs?.length) next = user.join_kcs.pop();
+    else if (needSubjects?.length) next = needSubjects[0];
+    utils.updateUser();
     if (!next) return document.infoUp(0) && utils.log("学完了") && alert("当前用户课程学习已完成");
     location.href = `https://wljy.scjks.net/a/#/activity/${next.id}`;
     location.reload();
   }
 
+  function getMin(str) {
+    return str.split(';').map(s => {
+      if (!s || s.includes('不足1分钟')) return 0;
+      if (/^\d+(\.\d+)?$/.test(s)) return s * 1;
+      if (/(\d+)小时(\d+)分钟/.test(s)) {
+        let hm = s.replace(/(\d+)小时(\d+)分钟/, '$1;$2').split(';');
+        return hm[0] * 60 + hm[1] * 1;
+      }
+      if (/^(\d+)分钟$/.test(s)) return s.replace(/(\d+)分钟/, '$1') * 1;
+      return 0;
+    });
+  }
+
+  /**
+   * 更新数据
+   */
+  function doSubject() {
+    all_kcs.sort((a, b) => utils.compareFn(a, b, 'crt', 'name'));
+    all_kcs.forEach(k => k.crt1 = new Date(k.crt).toLocaleString());
+    learned_kcs = all_kcs.filter(k => user.importKcNames?.includes(k.name) || user.importKcNames3?.includes(k.name) || user.scriptKcIds.includes(k.id) || false);
+    learned_kcs.filter(k => user.scriptKcIds.includes(k.id)).forEach(k => k.sctipt = true);
+    if (user.importKcNames)
+      learned_kcs.filter(k => user.importKcNames.includes(k.name)).forEach(k => {
+        let s = user.importKcNames.indexOf(k.name), e = user.importKcNames.indexOf("点播观看", s);
+        k.his = user.importKcNames.substring(s + k.name.length, e + 16)
+            .replace(/^[\s\S]*总计直播观看:\s*(.+分钟)\s*总计点播观看：\s*(.+分钟)[\s\S]*$/, "$1;$2");
+        [k.zbgk, k.dbgk] = getMin(k.his);
+
+      });
+    if (user.importKcNames3)
+      learned_kcs.filter(k => user.importKcNames3.includes(k.name)).forEach(k => {
+        let s = user.importKcNames3.indexOf(k.name), e = user.importKcNames3.indexOf("预计学时", s);
+        k.his = user.importKcNames3.substring(s + k.name.length, e + 8)
+            .replace(/^[\s\S]*直播观看\s*(.+分钟)\s*点播观看\s*(.+分钟)\s*预计学时\s*([\d.]+)[\s\S]*$/, "$1;$2;$3");
+        [k.zbgk, k.dbgk, k.yjxs] = getMin(k.his);
+      });
+
+    allSubjects = all_kcs.filter(k => !user.subject || k.name.includes(user.subject));
+    needSubjects = allSubjects.filter(k => !user.importKcNames?.includes(k.name) && !user.importKcNames3?.includes(k.name) && !user.scriptKcIds?.includes(k.id));
+  }
+
   function formInsert() {
+    if (document.getElementById('insertDiv')) return;
     const div = document.createElement("div");
     document.body.insertBefore(div, document.body.firstChild);
-    div.innerHTML = `<table style="width: 100%;margin-top: 65px">
-  <tr>
-    <td>
-      <input placeholder="eg:语文/高中语文" id="form_subject"/>
-      <div>任教科目 <button onclick="infoUp(1)">设置</button></div>
-    </td>
-    <td>
-      <textarea id="form_importKc" rows="2" cols="30"></textarea>
-      <div>观看记录 <button onclick="infoUp(2)">设置</button></div>
-    </td>
-    <td>
-      <textarea id="form_importKc3" rows="2" cols="30"></textarea>
-      <div>证书申请 <button onclick="infoUp(3)">设置</button></div>
-    </td>
-    <td>
-      待学习<span id="info0">0/0</span>
-      <div>
-        <button id="study_state" onclick="infoUp(0)">开始运行</button>
-        <button onclick="fNext()">下一课程</button>
-      </div>
-    </td>
-    <td>主动学习列表<br/><select id="join_kcs" style="width: 150px"></select></td>
-    <td>
-      <input type="text" list="all_kcs" id="form_join" placeholder="选择加入学习列表">
-      <datalist id="all_kcs"></datalist>
-      <div>
-        <button onclick="infoUp(4)">加入主动学习</button>
-      </div>
-    </td>
-    <td>未学习<br/><select id="noStudy" style="width: 150px"></select></td>
-    <td>已学习<br/><select id="learned" style="width: 150px"></select></td>
-  </tr>
-</table>`;
+    div.innerHTML = `<div  style="width: 100%;max-height: 400px;overflow: auto;margin-top: 66px;text-align: -webkit-center;" id="insertDiv">
+  <table>
+    <tr>
+      <td>
+        <div>主动学习列表</div>
+        <div><select id="join_kcs" style="width: 120px"></select></div>
+        <div>
+          <input type="text" list="all_kcs" id="form_join" placeholder="选择加入学习列表">
+          <datalist id="all_kcs"></datalist>
+        </div>
+        <div>
+          <button onclick="infoUp(4)">加入主动学习</button>
+        </div>
+      </td>
+      <td>
+        <div><label>未学习</label> <select id="noStudy" style="width: 120px"></select></div>
+        <div><label>已学习</label> <select id="learned" style="width: 120px"></select></div>
+      </td>
+      <td>
+        <input placeholder="eg:语文/高中语文" id="form_subject"/>
+        <div>任教科目
+          <button onclick="infoUp(1)">设置</button>
+        </div>
+      </td>
+      <td>
+        <textarea id="form_importKc" rows="2" cols="30"></textarea>
+        <div>观看记录
+          <button onclick="infoUp(2)">设置</button>
+        </div>
+      </td>
+      <td>
+        <textarea id="form_importKc3" rows="2" cols="30"></textarea>
+        <div>证书申请
+          <button onclick="infoUp(3)">设置</button>
+        </div>
+      </td>
+      <td style="width:8em">
+        <div onclick="downLog()">
+          <button>导出学习记录</button>
+        </div>
+        待学习<span id="info0">0/0</span>
+        <div>
+          <button id="study_state" onclick="infoUp(0)">开始运行</button>
+          <button onclick="fNext()">下一课程</button>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <table border="1" style="border-collapse: collapse;border: 2px solid rgb(140 140 140);">
+    <caption>四川省网络教研平台学习记录表</caption>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>课程名称</th>
+      <th>直播；回放；学时</th>
+      <th>学时</th>
+      <th>课程时间</th>
+    </tr>
+    </thead>
+    <tbody id="learnedTable"></tbody>
+  </table>
+</div>`;
   }
 
   document.infoUp = function (n) {
@@ -127,15 +211,16 @@
     else if (n === 4) {
       let joinTxt = document.getElementById("form_join").value;
       let kcs = all_kcs.filter(k => k.name.includes(joinTxt));
-      if (kcs.length !== 1) return alert(`搜索数据数量：【${kcs.length}】`);
-      if (!user?.join_kcs) user.join_kcs = [];
+      if (kcs.length !== 1) return alert(`搜索结果数量：【${kcs.length}】`);
       user.join_kcs.push(kcs[0]);
     }
-    utils.localSet(userInfoKey, user);
+    utils.updateUser();
+    doSubject();
     showForm();
     studyFun();
   }
   document.fNext = _ => nextProject('手动点击');
+  document.downLog = _ => downloadExcel('网络教研记录', learned_kcs);
 
   function showForm() {
     document.getElementById("info0").innerText = ` ${needSubjects.length} / ${allSubjects.length} `;
@@ -143,10 +228,22 @@
     document.getElementById("form_importKc").value = user.importKcNames || '';
     document.getElementById("form_importKc3").value = user.importKcNames3 || '';
     document.getElementById("study_state").innerText = `${user.state ? '暂停' : '开始'}运行`;
-    document.getElementById("learned").innerHTML = learned_kcs.map(k => `<option value="${k.id}">${k.name}</option>`).join();
-    document.getElementById("noStudy").innerHTML = needSubjects.map(k => `<option value="${k.id}">${k.name}</option>`).join();
-    document.getElementById("join_kcs").innerHTML = user.join_kcs?.map(k => `<option value="${k.id}">${k.name}</option>`).join();
-    document.getElementById("all_kcs").innerHTML = all_kcs.map(k => `<option value="${k.name}">${k.id}</option>`).join();
+    document.getElementById("learned").innerHTML = learned_kcs.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
+    document.getElementById("noStudy").innerHTML = needSubjects.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
+    document.getElementById("join_kcs").innerHTML = user.join_kcs?.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
+    document.getElementById("all_kcs").innerHTML = all_kcs.map(k => `<option value="${k.name}">${k.id}</option>`).join('\n');
+    document.getElementById('learnedTable').innerHTML = learned_kcs
+        .map(k => `<tr><td>${k.id}</td><td>${k.name}</td><td>${k.his}</td><td>${k.yjxs || ''}</td><td>${k.crt1}</td></tr>`).join('\n');
+  }
+
+  async function downloadExcel(fileName, objArr) {
+    if (!objArr?.length) return alert("导出数据为空！");
+    (await fetch("https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js")).text().then(eval).then(_ => {
+      let workbook = XLSX.utils.book_new();
+      let worksheet = XLSX.utils.json_to_sheet(objArr);
+      XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
+      XLSX.writeFile(workbook, `${fileName}_${Date.now()}.xlsx`);
+    })
   }
 
   let all_kcs = [
