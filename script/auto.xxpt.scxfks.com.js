@@ -18,7 +18,7 @@
       if (checkBox && !checkBox.checked) checkBox.click(); // 选中登录须知
       return;
     }
-    const noLimit = !getCookie("study_limit");
+    const noLimit = new Date().toLocaleDateString() !== getCookie("study_limit");
     if (location.pathname.startsWith("/study/course") && noLimit) {
       if (location.pathname.startsWith("/study/courses")) { // 课程列表
         const studyBtn = Array.from(document.querySelectorAll("table.list-tab>tbody>tr"))
@@ -36,7 +36,8 @@
       }
       setInterval(_ => window.scrollBy({ top: window.innerHeight / 3, behavior: "smooth", }), rf(1, 2));
       if (location.pathname.includes("/chapter/")) { // 学习界面
-        if (document.querySelector("div.chapter-score.limit")) return document.cookie = "study_limit=true;path=/";
+        if (document.querySelector("div.chapter-score.limit")) 
+          return document.cookie = `study_limit=${new Date().toLocaleDateString()};path=/`;
         if (document.querySelector("div.chapter-score.chapter-score-suc")) return document.querySelector("button").click();
         return setInterval(() => {
           if (!document.querySelector("div.chapter-score.chapter-score-suc")) return;
