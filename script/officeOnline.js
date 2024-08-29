@@ -1,14 +1,15 @@
 // ==UserScript==
 // @name         文档在线预览
-// @namespace    com.life5211.officeOnline
+// @namespace    http://tampermonkey.net/
 // @version      1.2
 // @description  用于在线预览文档
-// @author       life5211
+// @author       nickname
 // @match        *.e21cn.com/*
 // @match        *.ncpta.cn/*
 // @match        *.gov.cn/*
 // @match        *.edu.cn/*
 // @icon         https://media-cdn.microsoftstore.com.cn/media/category/office2019/icon-word.png
+// @noframes
 // ==/UserScript==
 
 (function () {
