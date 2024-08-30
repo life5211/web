@@ -1,12 +1,16 @@
 // ==UserScript==
 // @name         四川网络教研自动化脚本
 // @namespace    http://tampermonkey.net/
-// @version      2.17
+// @version      2.17.1
 // @description  自动化播放网络教研视频，支持设置学科和已经播放的课程过滤
 // @match        https://wljy.scjks.net/*
 // @match        *wljy.scjks.net/*
 // @icon         https://ascjkysvod.yscdn.top/upload/35/52970bea06a24874af80cd75492ead5e.png
+// @downloadURL  https://life5211.github.io/web/script/auto.wljy.scjky.js
+// @updateURL    https://life5211.github.io/web/script/auto.wljy.scjky.js
+// @require      https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js
 // @noframes
+// @grant        GM_addStyle
 // @grant        unsafeWindow
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -14,7 +18,7 @@
 // ==/UserScript==
 
 (function () {
-  let userInfoKey, user, allSubjects, needSubjects, learned_kcs, subjectId, utils = {
+  let userInfoKey, user, allSubjects, needSubjects, learned_kcs, subjectId, r, re, t, utils = {
     rf: (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
     localGet: (k, def) => JSON.parse(localStorage.getItem(k)) || def,
     localSet: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
@@ -25,18 +29,18 @@
       for (let f of fields) if (f) return fnc(a[f], b[f]);
       return 0;
     },
-    log(msg) {
+    log(...msg) {
       console.log(msg);
       let logs = this.localGet("logs", []);
-      logs.push({msg, t: new Date().toLocaleString()});
+      logs.push([...msg, new Date().toLocaleString()]);
       this.localSet("logs", logs);
     }
   };
 
-  let i1 = setInterval(function init() {
+  document.i_1 = setInterval(function init() {
     let login_name = document.querySelector("div.login-name").innerText; //未登录直接报错不予执行
     if (!login_name) return utils.log("用户未登录");
-    clearInterval(i1);
+    clearInterval(document.i_1);
     userInfoKey = `${login_name}_info`;
     subjectId = location.hash.substring(11);
     user = utils.localGet(userInfoKey, {scriptKcIds: [], state: 1});
@@ -82,7 +86,7 @@
    * 下一个视频，用户加入播放或未学习学科视频
    */
   function nextProject(log = '') {
-    utils.log({subjectId, log, name: all_kcs.filter(k => k.id === subjectId).reduce((a, b) => b?.name, {})});
+    utils.log(subjectId, log, all_kcs.filter(k => k.id === subjectId).reduce((a, b) => b?.name, {}));
     user.scriptKcIds.push(subjectId);
     doSubject();
     let next;
@@ -94,8 +98,8 @@
     location.reload();
   }
 
-  function getMin(str) {
-    return str.split(';').map(s => {
+  function getMin(...arr) {
+    return arr.map(s => {
       if (!s || s.includes('不足1分钟')) return 0;
       if (/^\d+(\.\d+)?$/.test(s)) return s * 1;
       if (/(\d+)小时(\d+)分钟/.test(s)) {
@@ -111,35 +115,37 @@
    * 更新数据
    */
   function doSubject() {
-    all_kcs.sort((a, b) => utils.compareFn(a, b, 'crt', 'name'));
-    all_kcs.forEach(k => k.crt1 = new Date(k.crt).toLocaleString());
-    learned_kcs = all_kcs.filter(k => user.importKcNames?.includes(k.name) || user.importKcNames3?.includes(k.name) || user.scriptKcIds.includes(k.id) || false);
-    learned_kcs.filter(k => user.scriptKcIds.includes(k.id)).forEach(k => k.sctipt = true);
-    if (user.importKcNames)
-      learned_kcs.filter(k => user.importKcNames.includes(k.name)).forEach(k => {
-        let s = user.importKcNames.indexOf(k.name), e = user.importKcNames.indexOf("点播观看", s);
-        k.his = user.importKcNames.substring(s + k.name.length, e + 16)
-            .replace(/^[\s\S]*总计直播观看:\s*(.+分钟)\s*总计点播观看：\s*(.+分钟)[\s\S]*$/, "$1;$2");
-        [k.zbgk, k.dbgk] = getMin(k.his);
-
-      });
-    if (user.importKcNames3)
-      learned_kcs.filter(k => user.importKcNames3.includes(k.name)).forEach(k => {
-        let s = user.importKcNames3.indexOf(k.name), e = user.importKcNames3.indexOf("预计学时", s);
-        k.his = user.importKcNames3.substring(s + k.name.length, e + 8)
-            .replace(/^[\s\S]*直播观看\s*(.+分钟)\s*点播观看\s*(.+分钟)\s*预计学时\s*([\d.]+)[\s\S]*$/, "$1;$2;$3");
-        [k.zbgk, k.dbgk, k.yjxs] = getMin(k.his);
-      });
-
+    all_kcs.forEach(k => k.script = k.his = k.zbgk = k.dbgk = k.yjxs = '');
+    all_kcs.filter(k => user.scriptKcIds.includes(k.id)).forEach(k => k.script = true);
+    if (user.playHistory) {
+      let re_hist = /\n(.+)\n+(总计直播观看:\s*(.+分钟)\s*总计点播观看：\s*(.+分钟))/g;
+      while (r = re_hist.exec(user.playHistory)) {
+        all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.zbgk, k.dbgk] = getMin(r[3], r[4]));
+      }
+    }
+    if (user.certApply) {
+      let re_cert = /\n(.+)\n+(直播观看\s*(.+分钟)\s*点播观看\s*(.+分钟)\s*预计学时\s*([\d.]+))\n/g;
+      while (r = re_cert.exec(user.certApply)) {
+        all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.zbgk, k.dbgk, k.yjxs] = getMin(r[3], r[4], r[5]));
+      }
+    }
+    if (user.certApplied) {
+      let re_cert_ed = /\n(.+)\n+(已发放学时\s*([\d.]+))\n/g;
+      while (r = re_cert_ed.exec(user.certApplied)) {
+        all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.yjxs] = getMin(r[3]));
+      }
+    }
+    learned_kcs = all_kcs.filter(k => k.script || k.his);
+    let learned_kcsIds = learned_kcs.map(k => k.id);
     allSubjects = all_kcs.filter(k => !user.subject || k.name.includes(user.subject));
-    needSubjects = allSubjects.filter(k => !user.importKcNames?.includes(k.name) && !user.importKcNames3?.includes(k.name) && !user.scriptKcIds?.includes(k.id));
+    needSubjects = allSubjects.filter(k => !learned_kcsIds.includes(k.id));
   }
 
   function formInsert() {
     if (document.getElementById('insertDiv')) return;
     const div = document.createElement("div");
     document.body.insertBefore(div, document.body.firstChild);
-    div.innerHTML = `<div  style="width: 100%;max-height: 400px;overflow: auto;margin-top: 66px;text-align: -webkit-center;" id="insertDiv">
+    div.innerHTML = `<div style="width: 100%;max-height: 400px;overflow: auto;margin-top: 66px;text-align: -webkit-center;" id="insertDiv">
   <table>
     <tr>
       <td>
@@ -160,19 +166,23 @@
       <td>
         <input placeholder="eg:语文/高中语文" id="form_subject"/>
         <div>任教科目
-          <button onclick="infoUp(1)">设置</button>
+          <button onclick="infoUp(1)">&nbsp;设&nbsp;置&nbsp;</button>
         </div>
       </td>
       <td>
-        <textarea id="form_importKc" rows="2" cols="30"></textarea>
+        <textarea id="form_playHistory" rows="4" cols="30"></textarea>
         <div>观看记录
-          <button onclick="infoUp(2)">设置</button>
+          <button onclick="infoUp(2)">&nbsp;设&nbsp;置&nbsp;</button>
         </div>
       </td>
       <td>
-        <textarea id="form_importKc3" rows="2" cols="30"></textarea>
-        <div>证书申请
-          <button onclick="infoUp(3)">设置</button>
+        <textarea id="form_certApply" rows="2" cols="30"></textarea>
+        <div>证书申请(可申请)
+          <button onclick="infoUp(3)">&nbsp;设&nbsp;置&nbsp;</button>
+        </div>
+        <textarea id="form_certApplied" rows="2" cols="30"></textarea>
+        <div>证书申请(已申请)
+          <button onclick="infoUp(5)">&nbsp;设&nbsp;置&nbsp;</button>
         </div>
       </td>
       <td style="width:8em">
@@ -191,11 +201,14 @@
     <caption>四川省网络教研平台学习记录表</caption>
     <thead>
     <tr>
+      <th>课程时间</th>
       <th>ID</th>
       <th>课程名称</th>
-      <th>直播；回放；学时</th>
       <th>学时</th>
-      <th>课程时间</th>
+      <th>直播</th>
+      <th>回放</th>
+      <th>脚本</th>
+      <th>记录</th>
     </tr>
     </thead>
     <tbody id="learnedTable"></tbody>
@@ -206,8 +219,9 @@
   document.infoUp = function (n) {
     if (n === 0) user.state = !user.state;
     else if (n === 1) user.subject = document.getElementById("form_subject").value;
-    else if (n === 2) user.importKcNames = document.getElementById("form_importKc").value;
-    else if (n === 3) user.importKcNames3 = document.getElementById("form_importKc3").value;
+    else if (n === 2) user.playHistory = document.getElementById("form_playHistory").value;
+    else if (n === 3) user.certApply = document.getElementById("form_certApply").value;
+    else if (n === 5) user.certApplied = document.getElementById("form_certApplied").value;
     else if (n === 4) {
       let joinTxt = document.getElementById("form_join").value;
       let kcs = all_kcs.filter(k => k.name.includes(joinTxt));
@@ -225,15 +239,15 @@
   function showForm() {
     document.getElementById("info0").innerText = ` ${needSubjects.length} / ${allSubjects.length} `;
     document.getElementById("form_subject").value = user.subject || '';
-    document.getElementById("form_importKc").value = user.importKcNames || '';
-    document.getElementById("form_importKc3").value = user.importKcNames3 || '';
+    document.getElementById("form_playHistory").value = user.playHistory || '';
+    document.getElementById("form_certApply").value = user.certApply || '';
     document.getElementById("study_state").innerText = `${user.state ? '暂停' : '开始'}运行`;
     document.getElementById("learned").innerHTML = learned_kcs.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
     document.getElementById("noStudy").innerHTML = needSubjects.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
     document.getElementById("join_kcs").innerHTML = user.join_kcs?.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
     document.getElementById("all_kcs").innerHTML = all_kcs.map(k => `<option value="${k.name}">${k.id}</option>`).join('\n');
     document.getElementById('learnedTable').innerHTML = learned_kcs
-        .map(k => `<tr><td>${k.id}</td><td>${k.name}</td><td>${k.his}</td><td>${k.yjxs || ''}</td><td>${k.crt1}</td></tr>`).join('\n');
+        .map(k => `<tr><td>${k.crt1}</td><td>${k.id}</td><td>${k.name}</td><td>${k.yjxs}</td><td>${k.zbgk}</td><td>${k.dbgk}</td><td>${k.script}</td><td>${k.his}</td></tr>`).join('\n');
   }
 
   async function downloadExcel(fileName, objArr) {
@@ -1511,4 +1525,5 @@
     {"crt": "2023-05-25T01:30:00.000Z", "id": "1656118644272267264", "name": "作业设计大赛培训-小学英语"},
     {"crt": "2023-05-15T01:30:00.000Z", "id": "1655778685329866752", "name": "作业设计大赛培训-小学语文"},
     {"crt": "2023-05-26T09:00:00.000Z", "id": "1661713525464104960", "name": "作业设计大赛培训-政策及要求整体解读"}]
+  all_kcs.sort((a, b) => -1 * utils.compareFn(a, b, 'crt', 'name')).forEach(k => k.crt1 = new Date(k.crt).toLocaleString());
 })();
