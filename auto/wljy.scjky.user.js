@@ -38,7 +38,7 @@
   };
 
   document.i_1 = setInterval(function init() {
-    let login_name = document.querySelector("div.login-name").innerText; //未登录直接报错不予执行
+    let login_name = document.querySelector("div.login-name").innerText;
     if (!login_name) return utils.log("用户未登录");
     clearInterval(document.i_1);
     userInfoKey = `${login_name}_info`;
@@ -119,21 +119,18 @@
     all_kcs.filter(k => user.scriptKcIds.includes(k.id)).forEach(k => k.script = true);
     if (user.playHistory) {
       let re_hist = /\n(.+)\n+(总计直播观看:\s*(.+分钟)\s*总计点播观看：\s*(.+分钟))/g;
-      while (r = re_hist.exec(user.playHistory)) {
+      while (r = re_hist.exec(user.playHistory))
         all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.zbgk, k.dbgk] = getMin(r[3], r[4]));
-      }
     }
     if (user.certApply) {
       let re_cert = /\n(.+)\n+(直播观看\s*(.+分钟)\s*点播观看\s*(.+分钟)\s*预计学时\s*([\d.]+))\n/g;
-      while (r = re_cert.exec(user.certApply)) {
+      while (r = re_cert.exec(user.certApply))
         all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.zbgk, k.dbgk, k.yjxs] = getMin(r[3], r[4], r[5]));
-      }
     }
     if (user.certApplied) {
       let re_cert_ed = /\n(.+)\n+(已发放学时\s*([\d.]+))\n/g;
-      while (r = re_cert_ed.exec(user.certApplied)) {
+      while (r = re_cert_ed.exec(user.certApplied))
         all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.yjxs] = getMin(r[3]));
-      }
     }
     learned_kcs = all_kcs.filter(k => k.script || k.his);
     let learned_kcsIds = learned_kcs.map(k => k.id);
@@ -170,7 +167,7 @@
         </div>
       </td>
       <td>
-        <textarea id="form_playHistory" rows="4" cols="30"></textarea>
+        <textarea id="form_playHistory" rows="2" cols="30"></textarea>
         <div>观看记录
           <button onclick="infoUp(2)">&nbsp;设&nbsp;置&nbsp;</button>
         </div>
@@ -180,8 +177,10 @@
         <div>证书申请(可申请)
           <button onclick="infoUp(3)">&nbsp;设&nbsp;置&nbsp;</button>
         </div>
+      </td>
+      <td>
         <textarea id="form_certApplied" rows="2" cols="30"></textarea>
-        <div>证书申请(已申请)
+        <div>证书申请(已获得)
           <button onclick="infoUp(5)">&nbsp;设&nbsp;置&nbsp;</button>
         </div>
       </td>
