@@ -240,6 +240,7 @@
     document.getElementById("form_subject").value = user.subject || '';
     document.getElementById("form_playHistory").value = user.playHistory || '';
     document.getElementById("form_certApply").value = user.certApply || '';
+    document.getElementById("form_certApplied").value = user.certApplied || '';
     document.getElementById("study_state").innerText = `${user.state ? '暂停' : '开始'}运行`;
     document.getElementById("learned").innerHTML = learned_kcs.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
     document.getElementById("noStudy").innerHTML = needSubjects.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
