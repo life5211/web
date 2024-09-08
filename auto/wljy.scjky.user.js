@@ -1,13 +1,13 @@
 // ==UserScript==
-// @name         四川网络教研自动化脚本
+// @name         网络教研学习自动化
 // @namespace    http://tampermonkey.net/
 // @version      2.17.1
 // @description  自动化播放网络教研视频，支持设置学科和已经播放的课程过滤
 // @match        https://wljy.scjks.net/*
 // @match        *wljy.scjks.net/*
 // @icon         https://ascjkysvod.yscdn.top/upload/35/52970bea06a24874af80cd75492ead5e.png
-// @downloadURL  https://life5211.github.io/web/script/auto.wljy.scjky.js
-// @updateURL    https://life5211.github.io/web/script/auto.wljy.scjky.js
+// @downloadURL  https://life5211.github.io/web/auto/wljy.scjky.user.js
+// @updateURL    https://life5211.github.io/web/auto/wljy.scjky.user.js
 // @require      https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js
 // @noframes
 // @grant        GM_addStyle
@@ -233,7 +233,7 @@
     studyFun();
   }
   document.fNext = _ => nextProject('手动点击');
-  document.downLog = _ => downloadExcel('网络教研记录', learned_kcs);
+  document.downLog = _ => downloadExcel(`${userInfoKey}网络教研`, learned_kcs);
 
   function showForm() {
     document.getElementById("info0").innerText = ` ${needSubjects.length} / ${allSubjects.length} `;
@@ -246,7 +246,7 @@
     document.getElementById("join_kcs").innerHTML = user.join_kcs?.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
     document.getElementById("all_kcs").innerHTML = all_kcs.map(k => `<option value="${k.name}">${k.id}</option>`).join('\n');
     document.getElementById('learnedTable').innerHTML = learned_kcs
-        .map(k => `<tr><td>${k.crt1}</td><td>${k.id}</td><td>${k.name}</td><td>${k.yjxs}</td><td>${k.zbgk}</td><td>${k.dbgk}</td><td>${k.script}</td><td>${k.his}</td></tr>`).join('\n');
+        .map(k => `<tr><td>${k.crt}</td><td>${k.id}</td><td>${k.name}</td><td>${k.yjxs}</td><td>${k.zbgk}</td><td>${k.dbgk}</td><td>${k.script}</td><td>${k.his}</td></tr>`).join('\n');
   }
 
   async function downloadExcel(fileName, objArr) {
@@ -1524,5 +1524,5 @@
     {"crt": "2023-05-25T01:30:00.000Z", "id": "1656118644272267264", "name": "作业设计大赛培训-小学英语"},
     {"crt": "2023-05-15T01:30:00.000Z", "id": "1655778685329866752", "name": "作业设计大赛培训-小学语文"},
     {"crt": "2023-05-26T09:00:00.000Z", "id": "1661713525464104960", "name": "作业设计大赛培训-政策及要求整体解读"}]
-  all_kcs.sort((a, b) => -1 * utils.compareFn(a, b, 'crt', 'name')).forEach(k => k.crt1 = new Date(k.crt).toLocaleString());
+  all_kcs.sort((a, b) => -1 * utils.compareFn(a, b, 'crt', 'name')).forEach(k => k.crt = new Date(k.crt).toLocaleString());
 })();

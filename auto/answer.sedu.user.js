@@ -6,6 +6,8 @@
 // @icon         https://www.sedu.net/apppc/login/static/jjw-bj-bf11c0d7.png
 // @match        https://www.sctce.cn/apppc/examsys/*
 // @match        *www.sctce.cn/*
+// @downloadURL  https://life5211.github.io/web/auto/answer.sedu.user.js
+// @updateURL    https://life5211.github.io/web/auto/answer.sedu.user.js
 // @noframes
 // @grant        unsafeWindow
 // @grant        GM_setValue

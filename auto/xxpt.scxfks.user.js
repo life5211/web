@@ -6,6 +6,8 @@
 // @author      null
 // @description 四川省，学习平台，工作人员学法考试平台，每日学习辅助，学完停止；
 // @icon        http://xxpt.scxfks.com/study/static/images/favicon.ico?v1.2
+// @downloadURL  https://life5211.github.io/web/auto/xxpt.scxfks.user.js
+// @updateURL    https://life5211.github.io/web/auto/xxpt.scxfks.user.js
 // @license MIT
 // ==/UserScript==
 (function () {
@@ -36,7 +38,7 @@
       }
       setInterval(_ => window.scrollBy({ top: window.innerHeight / 3, behavior: "smooth", }), rf(1, 2));
       if (location.pathname.includes("/chapter/")) { // 学习界面
-        if (document.querySelector("div.chapter-score.limit")) 
+        if (document.querySelector("div.chapter-score.limit"))
           return document.cookie = `study_limit=${new Date().toLocaleDateString()};path=/`;
         if (document.querySelector("div.chapter-score.chapter-score-suc")) return document.querySelector("button").click();
         return setInterval(() => {

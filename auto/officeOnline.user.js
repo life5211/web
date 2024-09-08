@@ -9,6 +9,8 @@
 // @match        *.gov.cn/*
 // @match        *.edu.cn/*
 // @icon         https://media-cdn.microsoftstore.com.cn/media/category/office2019/icon-word.png
+// @downloadURL  https://life5211.github.io/web/auto/officeOnline.user.js
+// @updateURL    https://life5211.github.io/web/auto/officeOnline.user.js
 // @noframes
 // ==/UserScript==
 
