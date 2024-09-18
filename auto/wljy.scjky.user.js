@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         网络教研学习自动化
 // @namespace    http://tampermonkey.net/
-// @version      2.17.1
+// @version      2.17.2
 // @description  自动化播放网络教研视频，支持设置学科和已经播放的课程过滤
 // @match        https://wljy.scjks.net/*
 // @match        *wljy.scjks.net/*
@@ -18,37 +18,36 @@
 // ==/UserScript==
 
 (function () {
-  let userInfoKey, user, allSubjects, needSubjects, learned_kcs, subjectId, r, re, t, utils = {
+  let usrName, usrKey, user, allSubjects, needSubjects, learned_kcs, subjectId, subjectName, r, re, t, utils = {
     rf: (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
     localGet: (k, def) => JSON.parse(localStorage.getItem(k)) || def,
     localSet: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
-    updateUser: _ => utils.localSet(userInfoKey, user),
+    updateUser: _ => utils.localSet(usrKey, user),
+    run: (...fun) => fun.forEach(f => f()),
     compareFn(a, b, ...fields) {
-      const fnc = (m, n) => m === n ? 0 : m === undefined ? -1 : n === undefined ? 1 : m.localeCompare ? m.localeCompare(n) : m > n ? 1 : -1;
+      const fnc = (m, n) => m === undefined ? -1 : n === undefined ? 1 : m.localeCompare ? m.localeCompare(n) : m > n ? 1 : m < n ? -1 : 0;
       if (!fields?.length) return fnc(a, b);
-      for (let f of fields) if (f) return fnc(a[f], b[f]);
+      for (let f of fields) if (f && a[f] !== b[f]) return fnc(a[f], b[f]);
       return 0;
     },
     log(...msg) {
       console.log(msg);
-      let logs = this.localGet("logs", []);
-      logs.push([...msg, new Date().toLocaleString()]);
-      this.localSet("logs", logs);
+      let k = `logs${new Date().toLocaleDateString()}`, logs = this.localGet(k, []);
+      logs.push(JSON.stringify([...msg, new Date().toLocaleString()]));
+      this.localSet(k, logs);
     }
   };
 
   document.i_1 = setInterval(function init() {
-    let login_name = document.querySelector("div.login-name").innerText;
-    if (!login_name) return utils.log("用户未登录");
+    usrName = document.querySelector("div.login-name").innerText;
+    if (!usrName) return utils.log("用户未登录");
     clearInterval(document.i_1);
-    userInfoKey = `${login_name}_info`;
+    usrKey = `${usrName}_info`;
     subjectId = location.hash.substring(11);
-    user = utils.localGet(userInfoKey, {scriptKcIds: [], state: 1});
+    subjectName = all_kcs.filter(k => k.id === subjectId).reduce((a, b) => b?.name, {});
+    user = utils.localGet(usrKey, {scriptKcIds: [], state: 1});
     if (!user.playLog) user.playLog = {}
     if (!user.join_kcs) user.join_kcs = []
-    doSubject();
-    formInsert();
-    showForm();
     let video = document.querySelector('video');
     if (video) setTimeout(function jump() {
       if (user.playLog[subjectId]) {
@@ -57,7 +56,8 @@
         setTimeout(_ => video.currentTime = user.playLog[subjectId].currentTime, utils.rf(4, 6));
       }
     }, utils.rf(10, 20));
-    document.i_2 = setInterval(studyFun, utils.rf(40, 80));
+    utils.run(updateSubject, insertForm, showForm);
+    document.i_2 = setInterval(studyFun, utils.rf(60, 80));
   }, utils.rf(1, 2));
 
   function studyFun() {
@@ -67,6 +67,7 @@
     video.muted = true;
     let recordList = Array.from(document.querySelectorAll("div.video-list div.record-list div.recode-item"));
     let currIdx = recordList.map(e => e.className.includes("current")).indexOf(true);
+    utils.log({t: video.currentTime, i: currIdx, subjectId, subjectName, usrName, length: video.duration});
     if (!video.paused) {// 正在播放，break，继续等待，否者判断暂停原因
       user.playLog[subjectId] = {currIdx, currentTime: video.currentTime, length: video.duration}
       return utils.updateUser();
@@ -86,14 +87,14 @@
    * 下一个视频，用户加入播放或未学习学科视频
    */
   function nextProject(log = '') {
-    utils.log(subjectId, log, all_kcs.filter(k => k.id === subjectId).reduce((a, b) => b?.name, {}));
+    utils.log(subjectId, log, subjectName);
     user.scriptKcIds.push(subjectId);
-    doSubject();
+    updateSubject();
     let next;
     if (user.join_kcs?.length) next = user.join_kcs.pop();
     else if (needSubjects?.length) next = needSubjects[0];
     utils.updateUser();
-    if (!next) return document.infoUp(0) && utils.log("学完了") && alert("当前用户课程学习已完成");
+    if (!next) return document.infoUp(0) & utils.log("学完了") & alert("当前课程学习已完成");
     location.href = `https://wljy.scjks.net/a/#/activity/${next.id}`;
     location.reload();
   }
@@ -114,31 +115,25 @@
   /**
    * 更新数据
    */
-  function doSubject() {
+  function updateSubject() {
     all_kcs.forEach(k => k.script = k.his = k.zbgk = k.dbgk = k.yjxs = '');
-    all_kcs.filter(k => user.scriptKcIds.includes(k.id)).forEach(k => k.script = true);
-    if (user.playHistory) {
-      let re_hist = /\n(.+)\n+(总计直播观看:\s*(.+分钟)\s*总计点播观看：\s*(.+分钟))/g;
-      while (r = re_hist.exec(user.playHistory))
+    all_kcs.filter(k => user.scriptKcIds.includes(k.id)).forEach(k => k.script = k.his = 'script');
+    if (user.playHistory)
+      for (let re_his = /\n(.+)\n+(总计直播观看:\s*(.+分钟)\s*总计点播观看：\s*(.+分钟))/g; !!(r = re_his.exec(user.playHistory));)
         all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.zbgk, k.dbgk] = getMin(r[3], r[4]));
-    }
-    if (user.certApply) {
-      let re_cert = /\n(.+)\n+(直播观看\s*(.+分钟)\s*点播观看\s*(.+分钟)\s*预计学时\s*([\d.]+))\n/g;
-      while (r = re_cert.exec(user.certApply))
+    if (user.certApply)
+      for (let re_cert = /\n(.+)\n+(直播观看\s*(.+分钟)\s*点播观看\s*(.+分钟)\s*预计学时\s*([\d.]+))\n/g; !!(r = re_cert.exec(user.certApply));)
         all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.zbgk, k.dbgk, k.yjxs] = getMin(r[3], r[4], r[5]));
-    }
-    if (user.certApplied) {
-      let re_cert_ed = /\n(.+)\n+(已发放学时\s*([\d.]+))\n/g;
-      while (r = re_cert_ed.exec(user.certApplied))
+    if (user.certApplied)
+      for (let re_cert_ed = /\n(.+)\n+(已发放学时\s*([\d.]+))\n/g; !!(r = re_cert_ed.exec(user.certApplied));)
         all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.yjxs] = getMin(r[3]));
-    }
-    learned_kcs = all_kcs.filter(k => k.script || k.his);
+    learned_kcs = all_kcs.filter(k => k.his);
     let learned_kcsIds = learned_kcs.map(k => k.id);
     allSubjects = all_kcs.filter(k => !user.subject || k.name.includes(user.subject));
     needSubjects = allSubjects.filter(k => !learned_kcsIds.includes(k.id));
   }
 
-  function formInsert() {
+  function insertForm() {
     if (document.getElementById('insertDiv')) return;
     const div = document.createElement("div");
     document.body.insertBefore(div, document.body.firstChild);
@@ -227,13 +222,10 @@
       if (kcs.length !== 1) return alert(`搜索结果数量：【${kcs.length}】`);
       user.join_kcs.push(kcs[0]);
     }
-    utils.updateUser();
-    doSubject();
-    showForm();
-    studyFun();
+    utils.run(utils.updateUser, updateSubject, showForm, studyFun);
   }
   document.fNext = _ => nextProject('手动点击');
-  document.downLog = _ => downloadExcel(`${userInfoKey}网络教研`, learned_kcs);
+  document.downLog = _ => downloadExcel(`${usrName}网络教研`, learned_kcs);
 
   function showForm() {
     document.getElementById("info0").innerText = ` ${needSubjects.length} / ${allSubjects.length} `;
