@@ -10,6 +10,20 @@
   ;
 })();
 
+// 继续教育审批学时
+fetch("https://api-credit.sctce.cn/api/app/EmployeeApply/check", {
+  method: 'post',
+  headers: {
+    "Content-Type": "application/json",
+    authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImJjODIzYjdhLTVmNjItNGI3MS1iMDBlLWIwMmQwMTA4ZTdiZCIsIlRlbmFudElkIjoiMSIsIlN5c1R5cGVzIjoiWzJdIiwiTG9naW5UZW5hbnRJZCI6IjEiLCJTdG9yZUlkIjoiIiwiVW5pdElkIjoiOTYyYzEyNWMtNTgxZS00OGE3LThlNzEtYWY0MDAxM2MzYmFlIiwiVW5pdE5hbWUiOiLljZfpg6jljr_lsI_lhYPkuaHlsI_lraYiLCJQcm92aW5jZUlkIjoiNTEiLCJQcm92aW5jZU5hbWUiOiLlm5vlt53nnIEiLCJDaXR5SWQiOiI1MTEzIiwiQ2l0eU5hbWUiOiLljZflhYXluIIiLCJDb3VudHlJZCI6IjUxMTMyMSIsIkNvdW50eU5hbWUiOiLljZfpg6jljr8iLCJBcmVhRnVsbE5hbWUiOiLlm5vlt53nnIEt5Y2X5YWF5biCLeWNl-mDqOWOvyIsIkNyZWRpdFVuaXRJZCI6IiIsIlVzZXJJZCI6ImJjODIzYjdhLTVmNjItNGI3MS1iMDBlLWIwMmQwMTA4ZTdiZCIsIlVzZXJOYW1lIjoiNTExMzIxMTAyNzIiLCJUcnVlTmFtZSI6IuWwj-WFg-S5oeWwj-WtpueuoeeQhuWRmCIsIlBob25lTnVtYmVyIjoiIiwiRW1haWwiOiIiLCJVc2VyVHlwZSI6IjQiLCJQaWMiOiIiLCJJc0RlZmF1bHRQd2QiOiJGYWxzZSIsIklzVXNlQ3JlZGl0UGxhdGZvcm0iOiJUcnVlIiwiSXNSc2oiOiJGYWxzZSIsIkxhc3RMb2dpblRpbWUiOiIyMDI0LTEwLTEzIDEwOjI1OjI5IiwiVGltZXN0YW1wIjoiMTcyODc4NjMyOTkyMSIsIlNpZ24iOiIxN2ZlOTBlNDBhNTViYzQ4ZGI4MjhlN2IwNjVmOTBkYSIsIm5iZiI6MTcyODc4NjMyOSwiZXhwIjoxNzI4ODcyNzI5LCJpc3MiOiJTY2hhbnkiLCJhdWQiOiJBbGxVc2VycyJ9.jAwfGeLoKSr0tFV1cx3SIOp8X_PlhRLudAjsLUXCPWQ"
+  },
+  body: JSON.stringify({
+    id: "63b1eb75-57b2-485a-9516-b1dc00d13ec7",
+    passed: true,
+    remark: "",
+    otherApplyIds: []
+  })
+}).then(console.log)
 
 (async function downloadExcel(fileName, objArr) {
   if (!objArr?.length) return alert("导出数据为空！");
