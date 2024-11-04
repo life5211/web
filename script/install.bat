@@ -1,13 +1,12 @@
-@echo on
-chcp 65001
-title 初始化安装软件
+@echo off
+title Win_soft_install_auto
 color 02
 
 for %%i in (auto\*.*) do (
  echo %%i "====Start============="
  start /wait .\%%i /q /Q /s /S
  echo %%i "====End========================Done===="
- @echo  %%i>>install.log
+ @echo  %%i>>install_auto.log
 )
 
 pause
