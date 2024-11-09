@@ -4,7 +4,7 @@
 // @version      0.17
 // @description  四川继续教育多课程自动连续播放
 // @icon         https://www.sedu.net/apppc/login/static/jjw-bj-bf11c0d7.png
-// @match        https://trplayer.sctce.cn/#/pc_palyer*
+// @match        https://trplayer.sctce.cn/*
 // @downloadURL  https://life5211.github.io/web/auto/play.sedu.user.js
 // @updateURL    https://life5211.github.io/web/auto/play.sedu.user.js
 // @noframes
@@ -26,8 +26,7 @@ let userI = setInterval(_ => {
     document.videoText = curr.innerText;
     let idx = videos.indexOf(curr);
     console.log("用户脚本,当前课程学习进度：", curr.innerText, "课程序号", idx);
-    if (curr.innerText.includes("已学习100.00%") && videos[idx + 1])
-      videos[idx + 1].click();
+    if (curr.innerText.includes("已学习100.00%") && videos[idx + 1]) videos[idx + 1].click();
   }
 }, 72000);
 
