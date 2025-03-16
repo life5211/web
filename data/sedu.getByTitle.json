@@ -1,0 +1,29 @@
+{
+    "notifyType": 0,
+    "message": "Ok",
+    "logMessage": null,
+    "appendData": {
+        "id": 5601,
+        "categoryId": 39,
+        "diffcultNum": 1,
+        "aanalysis": "",
+        "questionType": 3,
+        "questionTypeName": "判断",
+        "showIndex": 0,
+        "title": "低学历者的工作压力源主要是发展压力。",
+        "questionItems": [
+            {
+                "id": 20308,
+                "questionId": 5601,
+                "content": "对",
+                "isRight": false
+            },
+            {
+                "id": 20309,
+                "questionId": 5601,
+                "content": "错",
+                "isRight": true
+            }
+        ]
+    }
+}
