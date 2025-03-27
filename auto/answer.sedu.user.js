@@ -3942,7 +3942,6 @@
           {q: "TOD是实现便捷高效、绿色发展的关键，是形成合理城市结构、提高土地利用效率的根本途径。", a: ["对"]}
       ];
     function show(ans) {
-        Array.from(document.querySelectorAll("div.question-items label")).forEach(e => e.style.background= 'none');
         let div = document.createElement('div');
         div.innerHTML = `<pre id="answerEle" style="color: white;background: #42b8dd;"> Answer：${JSON.stringify(ans, null, '\t')}\n Number:[${ans.map(e=>e.length).join()}]</pre>`;
         document.querySelector("div.el-card__body span").append(div);
@@ -3952,10 +3951,11 @@
         if (document.getElementById("answerEle")) return;
         let ques = document.querySelector("div.el-card__body span")?.innerText;
         if(!ques) return console.error("未找到题目");
+        Array.from(document.querySelectorAll("div.question-items label")).forEach(e => e.style.background= 'none');
         let rst = qas.filter(qa => qa.q === ques).map(qa => qa.a);
-        if (rst.length) show(rst);
-        else if(palnId){
-            if (questions.includes(ques)) return; // 只搜一次
+        if (rst.length) return show(rst);
+        if (questions.includes(ques)) return; // 只搜一次
+        if(palnId){
             questions.push(ques);
             fetch(`https://api-examsys.sctce.cn/api/app/question/getByTitle?title=${ques}&planArrageId=${palnId}`)
                 .then(r => r.json())
