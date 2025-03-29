@@ -1,0 +1,2323 @@
+{
+    "deviceType": null,
+    "planCode": null,
+    "isOutSys": true,
+    "outSys_stuCourseId": "36f5c6e8-7dd9-4cb0-b965-b29701517878",
+    "outSys_classId": "null",
+    "outSys_userId": "null",
+    "stuInfo": {
+        "planName": null,
+        "planArrangeName": null,
+        "planArrangeInfo": {
+            "id": 33,
+            "mkEpRules": [],
+            "planId": 0,
+            "planName": "",
+            "name": "2025年公需科目（心理健康与职业发展）",
+            "isMoni": false,
+            "canDoMaxTimes": 9999,
+            "isAnyTimeAndAnyWhere": true,
+            "totalSeconds": 5400,
+            "anyTimeAndAnyWhereStart": null,
+            "anyTimeAndAnyWhereEnd": null,
+            "loginStart": null,
+            "mkExampaperEnd": null,
+            "answerStart": null,
+            "answerEnd": null,
+            "submitStart": null,
+            "stuCanQueryExamPaper": false,
+            "isShowScore": false,
+            "isDisabled": false,
+            "creationTime": "0001-01-01T00:00:00",
+            "stuTotal": 0
+        },
+        "id": 66681,
+        "canExamTotalTimes": null,
+        "examedTotalTimes": 0,
+        "score": null,
+        "planArrangeId": 0,
+        "name": "许洪智",
+        "examNo": "511324199611120052",
+        "picUrl": "",
+        "outerId": ""
+    },
+    "examPaper": {
+        "id": "f4c9f5a0-cc12-48ee-92d7-16a9be6116c8",
+        "outerStuCourseId": "36f5c6e8-7dd9-4cb0-b965-b29701517878",
+        "outerClassId": "null",
+        "outerUsertId": "null",
+        "planId": 1,
+        "planName": "公需科目考试计划",
+        "planArrangeId": 33,
+        "planArrangeName": "2025年公需科目（心理健康与职业发展）",
+        "planArrangeStuId": 66681,
+        "stuName": "许洪智",
+        "examNo": "511324199611120052",
+        "isMoni": false,
+        "questions": [
+            {
+                "id": 5622,
+                "showIndex": 1,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "长期时间贫困导致个体在面对任务时认为自己所面对的任务要求超过了个体所拥有的资源，从而让个体将任务评估为潜在的威胁而不是激发自己成长的挑战，这种威胁评估会反应在（）指标上。",
+                "questionItems": [
+                    {
+                        "id": 20378,
+                        "content": "激素"
+                    },
+                    {
+                        "id": 20377,
+                        "content": "心血管"
+                    },
+                    {
+                        "id": 20380,
+                        "content": "肌肉"
+                    },
+                    {
+                        "id": 20379,
+                        "content": "大脑皮层"
+                    }
+                ]
+            },
+            {
+                "id": 5607,
+                "showIndex": 2,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "长期压力带来的（）包括厌食、打嗝、恶心、腹胀、腹部隐痛、肠鸣、排气增多、排便不正常等。",
+                "questionItems": [
+                    {
+                        "id": 20325,
+                        "content": "大脑损伤"
+                    },
+                    {
+                        "id": 20323,
+                        "content": "IBS肠应激综合症"
+                    },
+                    {
+                        "id": 20322,
+                        "content": "SBS办公室综合症"
+                    },
+                    {
+                        "id": 20324,
+                        "content": "CFS慢性疲劳综合症"
+                    }
+                ]
+            },
+            {
+                "id": 5625,
+                "showIndex": 3,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "“当代社会的生活步调已然加速，我们想要或觉得必须在更少的时间做更多的事。”这句话出自（）。",
+                "questionItems": [
+                    {
+                        "id": 20392,
+                        "content": "伊斯特林"
+                    },
+                    {
+                        "id": 20389,
+                        "content": "戴维·迈尔斯"
+                    },
+                    {
+                        "id": 20390,
+                        "content": "弗洛伊德"
+                    },
+                    {
+                        "id": 20391,
+                        "content": "罗萨"
+                    }
+                ]
+            },
+            {
+                "id": 5643,
+                "showIndex": 4,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "数字时代的社群关系呈现（）现象。",
+                "questionItems": [
+                    {
+                        "id": 20454,
+                        "content": "社交圈层化"
+                    },
+                    {
+                        "id": 20453,
+                        "content": "社交区域化"
+                    },
+                    {
+                        "id": 20456,
+                        "content": "社交分层化"
+                    },
+                    {
+                        "id": 20455,
+                        "content": "社交个性化"
+                    }
+                ]
+            },
+            {
+                "id": 5644,
+                "showIndex": 5,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "一项纵向研究表明，在（）岁前观看非教育性电视节目能够预测后续儿童期的注意缺陷。",
+                "questionItems": [
+                    {
+                        "id": 20458,
+                        "content": "6"
+                    },
+                    {
+                        "id": 20457,
+                        "content": "9"
+                    },
+                    {
+                        "id": 20460,
+                        "content": "3"
+                    },
+                    {
+                        "id": 20459,
+                        "content": "5"
+                    }
+                ]
+            },
+            {
+                "id": 5703,
+                "showIndex": 6,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "女性在到达一定年龄后，对于哪种关系的需求特别强烈？（）",
+                "questionItems": [
+                    {
+                        "id": 20674,
+                        "content": "与朋友的关系"
+                    },
+                    {
+                        "id": 20676,
+                        "content": "与孩子的关系"
+                    },
+                    {
+                        "id": 20675,
+                        "content": "与同事的关系"
+                    },
+                    {
+                        "id": 20673,
+                        "content": "与伴侣的关系"
+                    }
+                ]
+            },
+            {
+                "id": 5608,
+                "showIndex": 7,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "根据霍尔姆斯生活事件压力指数表，一年之内所积累的压力总分数不超过（）分，表明其外部压力源处于正常范围。",
+                "questionItems": [
+                    {
+                        "id": 20328,
+                        "content": "150"
+                    },
+                    {
+                        "id": 20326,
+                        "content": "300"
+                    },
+                    {
+                        "id": 20329,
+                        "content": "100"
+                    },
+                    {
+                        "id": 20327,
+                        "content": "200"
+                    }
+                ]
+            },
+            {
+                "id": 5606,
+                "showIndex": 8,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "根据霍尔姆斯生活事件压力指数表，一年之内所积累的压力总分数超过（）分，可能发生重大生理、心理疾病。",
+                "questionItems": [
+                    {
+                        "id": 20318,
+                        "content": "300"
+                    },
+                    {
+                        "id": 20321,
+                        "content": "100"
+                    },
+                    {
+                        "id": 20319,
+                        "content": "200"
+                    },
+                    {
+                        "id": 20320,
+                        "content": "150"
+                    }
+                ]
+            },
+            {
+                "id": 5657,
+                "showIndex": 9,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "下列选项中，不属于数字化工作给我们带来的挑战是（）。",
+                "questionItems": [
+                    {
+                        "id": 20507,
+                        "content": "更多独立思考和反思"
+                    },
+                    {
+                        "id": 20506,
+                        "content": "工作生活失衡"
+                    },
+                    {
+                        "id": 20504,
+                        "content": "互联网干扰"
+                    },
+                    {
+                        "id": 20505,
+                        "content": "工作不确定性"
+                    }
+                ]
+            },
+            {
+                "id": 5623,
+                "showIndex": 10,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "时间贫困会导致（），即它让我们在面对事情的时候更多考虑的是如何避免犯错而不是怎样才能做的更好。",
+                "questionItems": [
+                    {
+                        "id": 20383,
+                        "content": "预防结果"
+                    },
+                    {
+                        "id": 20381,
+                        "content": "预防定向"
+                    },
+                    {
+                        "id": 20384,
+                        "content": "以上均错误"
+                    },
+                    {
+                        "id": 20382,
+                        "content": "预防偏向"
+                    }
+                ]
+            },
+            {
+                "id": 5660,
+                "showIndex": 11,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "2020年，我国数字经济同比增长速度为（），位居全球第（）。",
+                "questionItems": [
+                    {
+                        "id": 20519,
+                        "content": "10.2%、二"
+                    },
+                    {
+                        "id": 20517,
+                        "content": "10.2%、一"
+                    },
+                    {
+                        "id": 20516,
+                        "content": "9.6%、一"
+                    },
+                    {
+                        "id": 20518,
+                        "content": "9.6%、二"
+                    }
+                ]
+            },
+            {
+                "id": 5689,
+                "showIndex": 12,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "实事求是的第一个原则是（）。",
+                "questionItems": [
+                    {
+                        "id": 20625,
+                        "content": "诚实守信"
+                    },
+                    {
+                        "id": 20624,
+                        "content": "求同存异"
+                    },
+                    {
+                        "id": 20622,
+                        "content": "真诚待人"
+                    },
+                    {
+                        "id": 20623,
+                        "content": "公平公正"
+                    }
+                ]
+            },
+            {
+                "id": 5634,
+                "showIndex": 13,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "人的大脑有三个部分，我们分别叫做大脑皮层、情绪脑、（）。",
+                "questionItems": [
+                    {
+                        "id": 20427,
+                        "content": "左脑"
+                    },
+                    {
+                        "id": 20429,
+                        "content": "脑干"
+                    },
+                    {
+                        "id": 20426,
+                        "content": "本能脑"
+                    },
+                    {
+                        "id": 20428,
+                        "content": "右脑"
+                    }
+                ]
+            },
+            {
+                "id": 5704,
+                "showIndex": 14,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "我国的调查数据显示，女性在家务劳动中的时间平均比男性多出（）。",
+                "questionItems": [
+                    {
+                        "id": 20679,
+                        "content": "一两个小时"
+                    },
+                    {
+                        "id": 20677,
+                        "content": "四个小时"
+                    },
+                    {
+                        "id": 20678,
+                        "content": "三个小时"
+                    },
+                    {
+                        "id": 20680,
+                        "content": "五小时"
+                    }
+                ]
+            },
+            {
+                "id": 5690,
+                "showIndex": 15,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "下面哪项不属于人际关系中的交往法则？（）",
+                "questionItems": [
+                    {
+                        "id": 20628,
+                        "content": "反黄金法则"
+                    },
+                    {
+                        "id": 20627,
+                        "content": "白金法则"
+                    },
+                    {
+                        "id": 20629,
+                        "content": "互相尊重原则"
+                    },
+                    {
+                        "id": 20626,
+                        "content": "黄金法则"
+                    }
+                ]
+            },
+            {
+                "id": 5674,
+                "showIndex": 16,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "新冠肺炎疫情期间，中国痊愈年龄最大的患者是（）岁的老奶奶。",
+                "questionItems": [
+                    {
+                        "id": 20567,
+                        "content": "92"
+                    },
+                    {
+                        "id": 20568,
+                        "content": "93"
+                    },
+                    {
+                        "id": 20569,
+                        "content": "104"
+                    },
+                    {
+                        "id": 20570,
+                        "content": "95"
+                    }
+                ]
+            },
+            {
+                "id": 5672,
+                "showIndex": 17,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "如果心理反应的早期线索持续超过（），我们应该寻求专业帮助。",
+                "questionItems": [
+                    {
+                        "id": 20561,
+                        "content": "20天"
+                    },
+                    {
+                        "id": 20562,
+                        "content": "半个月"
+                    },
+                    {
+                        "id": 20560,
+                        "content": "三个月"
+                    },
+                    {
+                        "id": 20559,
+                        "content": "六个月"
+                    }
+                ]
+            },
+            {
+                "id": 5659,
+                "showIndex": 18,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "（）年《泰晤士报》文学副刊首次提出“回音室”效应。",
+                "questionItems": [
+                    {
+                        "id": 20515,
+                        "content": "2000"
+                    },
+                    {
+                        "id": 20512,
+                        "content": "1970"
+                    },
+                    {
+                        "id": 20513,
+                        "content": "1980"
+                    },
+                    {
+                        "id": 20514,
+                        "content": "1990"
+                    }
+                ]
+            },
+            {
+                "id": 5645,
+                "showIndex": 19,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "对（）岁儿童的纵向队列研究表明，更长的屏幕使用时间与更高的新发破坏性行为障碍率有关。",
+                "questionItems": [
+                    {
+                        "id": 20463,
+                        "content": "9-11"
+                    },
+                    {
+                        "id": 20464,
+                        "content": "10-15"
+                    },
+                    {
+                        "id": 20461,
+                        "content": "2-5"
+                    },
+                    {
+                        "id": 20462,
+                        "content": "5-9"
+                    }
+                ]
+            },
+            {
+                "id": 5658,
+                "showIndex": 20,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "针对信息过载，我们有哪些缓解方式？（）",
+                "questionItems": [
+                    {
+                        "id": 20511,
+                        "content": "设置信息优先顺序、设置断网时间"
+                    },
+                    {
+                        "id": 20508,
+                        "content": "独立思考和自我反思"
+                    },
+                    {
+                        "id": 20510,
+                        "content": "多平台、多角度地获取信息"
+                    },
+                    {
+                        "id": 20509,
+                        "content": "阅读不同形式的创作内容"
+                    }
+                ]
+            },
+            {
+                "id": 5701,
+                "showIndex": 21,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "为什么很多女性在确立职业道路的过程中需要更长的时间？（）",
+                "questionItems": [
+                    {
+                        "id": 20666,
+                        "content": "女性更倾向于选择稳定的职业"
+                    },
+                    {
+                        "id": 20665,
+                        "content": "女性发展的人生导师可能更加稀有"
+                    },
+                    {
+                        "id": 20668,
+                        "content": "女性需要更多时间平衡家庭和工作"
+                    },
+                    {
+                        "id": 20667,
+                        "content": "女性在职场中面临更多的性别歧视"
+                    }
+                ]
+            },
+            {
+                "id": 5688,
+                "showIndex": 22,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "在沟通和辩论中，以下哪种策略是双面论证？（）",
+                "questionItems": [
+                    {
+                        "id": 20620,
+                        "content": "仅在辩论结束时简要提及对方观点"
+                    },
+                    {
+                        "id": 20619,
+                        "content": "同时提出自己的观点和可能的反对意见，并进行讨论"
+                    },
+                    {
+                        "id": 20621,
+                        "content": "完全不考虑任何反对意见，只坚持自己的立场"
+                    },
+                    {
+                        "id": 20618,
+                        "content": "只强调自己观点的正确性，忽略反对意见"
+                    }
+                ]
+            },
+            {
+                "id": 5687,
+                "showIndex": 23,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "在沟通策略中，针对文化程度或智商较低的听众，以下哪种论证方式更为合适？（）",
+                "questionItems": [
+                    {
+                        "id": 20614,
+                        "content": "使用复杂的逻辑和详尽的证据进行多面论证"
+                    },
+                    {
+                        "id": 20615,
+                        "content": "仅提供正面观点，采用单面论证并反复强调"
+                    },
+                    {
+                        "id": 20617,
+                        "content": "利用情感上的诉求来替代逻辑论证"
+                    },
+                    {
+                        "id": 20616,
+                        "content": "供正反两方面的观点，进行深入的辩论和分析"
+                    }
+                ]
+            },
+            {
+                "id": 5610,
+                "showIndex": 24,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "霍尔姆斯生活事件压力指数表中，（）的压力指数为100。",
+                "questionItems": [
+                    {
+                        "id": 20335,
+                        "content": "分居"
+                    },
+                    {
+                        "id": 20334,
+                        "content": "其他家庭成员去世"
+                    },
+                    {
+                        "id": 20336,
+                        "content": "离婚"
+                    },
+                    {
+                        "id": 20337,
+                        "content": "配偶死亡"
+                    }
+                ]
+            },
+            {
+                "id": 5686,
+                "showIndex": 25,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "（）的效应叫做首因效应。",
+                "questionItems": [
+                    {
+                        "id": 20613,
+                        "content": "后发制人"
+                    },
+                    {
+                        "id": 20612,
+                        "content": "先入为主"
+                    },
+                    {
+                        "id": 20611,
+                        "content": "潜移默化"
+                    },
+                    {
+                        "id": 20610,
+                        "content": "心理暗示"
+                    }
+                ]
+            },
+            {
+                "id": 5671,
+                "showIndex": 26,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "心理学家欧文·亚隆的著作（）主要讲述了如何面对死亡。",
+                "questionItems": [
+                    {
+                        "id": 20556,
+                        "content": "《存在心理治疗》"
+                    },
+                    {
+                        "id": 20557,
+                        "content": "《心理学与生活》"
+                    },
+                    {
+                        "id": 20555,
+                        "content": "《直视骄阳》"
+                    },
+                    {
+                        "id": 20558,
+                        "content": "《悲伤与哀悼》"
+                    }
+                ]
+            },
+            {
+                "id": 5656,
+                "showIndex": 27,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "信息过载这一概念，最早于（）年由（）提出。",
+                "questionItems": [
+                    {
+                        "id": 20501,
+                        "content": "1999，Schick"
+                    },
+                    {
+                        "id": 20503,
+                        "content": "2000，Kuksov"
+                    },
+                    {
+                        "id": 20502,
+                        "content": "1974，Jacoby"
+                    },
+                    {
+                        "id": 20500,
+                        "content": "1980，Baek"
+                    }
+                ]
+            },
+            {
+                "id": 5673,
+                "showIndex": 28,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "哀伤反应可能持续更长时间，通常为（）。",
+                "questionItems": [
+                    {
+                        "id": 20564,
+                        "content": "一个月"
+                    },
+                    {
+                        "id": 20565,
+                        "content": "三个月"
+                    },
+                    {
+                        "id": 20566,
+                        "content": "半年"
+                    },
+                    {
+                        "id": 20563,
+                        "content": "半个月"
+                    }
+                ]
+            },
+            {
+                "id": 5705,
+                "showIndex": 29,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "女性在追求工作和家庭兼顾的发展道路时，需要的关键支持是（）。",
+                "questionItems": [
+                    {
+                        "id": 20684,
+                        "content": "个人在时间管理上的高效率"
+                    },
+                    {
+                        "id": 20683,
+                        "content": "职场中提供的灵活工作时间"
+                    },
+                    {
+                        "id": 20681,
+                        "content": "社会提供的育儿资源和便利"
+                    },
+                    {
+                        "id": 20682,
+                        "content": "家庭中另一半的支持"
+                    }
+                ]
+            },
+            {
+                "id": 5641,
+                "showIndex": 30,
+                "score": 1.5,
+                "questionType": 1,
+                "questionTypeName": "单选",
+                "title": "如今的人际关系更像（），从一个点出发，便可寻得通往任何其他人的路径。",
+                "questionItems": [
+                    {
+                        "id": 20445,
+                        "content": "尊卑有序的等级制度"
+                    },
+                    {
+                        "id": 20448,
+                        "content": "投石入水的涟漪"
+                    },
+                    {
+                        "id": 20447,
+                        "content": "区域分布的地图"
+                    },
+                    {
+                        "id": 20446,
+                        "content": "一张四通八达的蜘蛛网"
+                    }
+                ]
+            },
+            {
+                "id": 5676,
+                "showIndex": 31,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "以下选项中，哪些属于负性事件、压力或危机相关的心理反应的分水岭？（）",
+                "questionItems": [
+                    {
+                        "id": 20576,
+                        "content": "持续时间"
+                    },
+                    {
+                        "id": 20578,
+                        "content": "主观痛苦"
+                    },
+                    {
+                        "id": 20575,
+                        "content": "客观归因"
+                    },
+                    {
+                        "id": 20579,
+                        "content": "以上都对"
+                    },
+                    {
+                        "id": 20577,
+                        "content": "严重程度"
+                    }
+                ]
+            },
+            {
+                "id": 5709,
+                "showIndex": 32,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "研究者发现女性管理人员可以分为哪几种典型？（）",
+                "questionItems": [
+                    {
+                        "id": 20701,
+                        "content": "具有男性的理性果断，同时保持女性气质如温柔、优雅、关怀"
+                    },
+                    {
+                        "id": 20703,
+                        "content": "强调团队合作，平衡逻辑与情感"
+                    },
+                    {
+                        "id": 20700,
+                        "content": "像男性一样理性果断，努力去除女性化特点"
+                    },
+                    {
+                        "id": 20704,
+                        "content": "倾向于使用权威和控制来管理团队"
+                    },
+                    {
+                        "id": 20702,
+                        "content": "只关注工作业绩，忽视员工的情感需求"
+                    }
+                ]
+            },
+            {
+                "id": 5706,
+                "showIndex": 33,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "女性在家庭中更应该培养的技能包括哪些？（）",
+                "questionItems": [
+                    {
+                        "id": 20685,
+                        "content": "理性控制"
+                    },
+                    {
+                        "id": 20688,
+                        "content": "弹性规则"
+                    },
+                    {
+                        "id": 20687,
+                        "content": "严格的管理"
+                    },
+                    {
+                        "id": 20689,
+                        "content": "过分追求男性化特质"
+                    },
+                    {
+                        "id": 20686,
+                        "content": "情感沟通"
+                    }
+                ]
+            },
+            {
+                "id": 5647,
+                "showIndex": 34,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "随着网络数字生活的深入，人们利用互联网可以实现（）。",
+                "questionItems": [
+                    {
+                        "id": 20472,
+                        "content": "就业选择的更多可能性"
+                    },
+                    {
+                        "id": 20471,
+                        "content": "“高效办公”"
+                    },
+                    {
+                        "id": 20474,
+                        "content": "“学习充电”"
+                    },
+                    {
+                        "id": 20473,
+                        "content": "工作方式灵活"
+                    },
+                    {
+                        "id": 20470,
+                        "content": "“冲浪学习”"
+                    }
+                ]
+            },
+            {
+                "id": 5664,
+                "showIndex": 35,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "推荐系统一般会从那些方面入手，以提升用户对推荐数据的满意度？（）",
+                "questionItems": [
+                    {
+                        "id": 20538,
+                        "content": "用户特征"
+                    },
+                    {
+                        "id": 20535,
+                        "content": "时代特征"
+                    },
+                    {
+                        "id": 20539,
+                        "content": "环境特征"
+                    },
+                    {
+                        "id": 20536,
+                        "content": "系统特征"
+                    },
+                    {
+                        "id": 20537,
+                        "content": "内容特征"
+                    }
+                ]
+            },
+            {
+                "id": 5695,
+                "showIndex": 36,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "在欧美国家的政治竞选演讲和辩论中，影响演讲顺序选择的因素包括哪些？（）",
+                "questionItems": [
+                    {
+                        "id": 20651,
+                        "content": "两个演讲之间的间隔时间"
+                    },
+                    {
+                        "id": 20650,
+                        "content": "演讲的持续时间"
+                    },
+                    {
+                        "id": 20653,
+                        "content": "演讲后是否有茶歇或休息时间"
+                    },
+                    {
+                        "id": 20654,
+                        "content": "投票的时间安排，是否紧随演讲之后"
+                    },
+                    {
+                        "id": 20652,
+                        "content": "演讲者的心理状态"
+                    }
+                ]
+            },
+            {
+                "id": 5679,
+                "showIndex": 37,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "识别心理反应的常见误区有哪些？（）",
+                "questionItems": [
+                    {
+                        "id": 20594,
+                        "content": "及时自我调节"
+                    },
+                    {
+                        "id": 20591,
+                        "content": "允许做不到"
+                    },
+                    {
+                        "id": 20593,
+                        "content": "不能区分分水岭"
+                    },
+                    {
+                        "id": 20592,
+                        "content": "把异常反应不恰当归因"
+                    },
+                    {
+                        "id": 20590,
+                        "content": "把正常反应当作异常"
+                    }
+                ]
+            },
+            {
+                "id": 5665,
+                "showIndex": 38,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "信息过载带来的后果有哪些？（）",
+                "questionItems": [
+                    {
+                        "id": 20541,
+                        "content": "导致社交媒体用户的社交媒体倦怠"
+                    },
+                    {
+                        "id": 20544,
+                        "content": "影响社交媒体用户的信息控制策略"
+                    },
+                    {
+                        "id": 20543,
+                        "content": "导致社交媒体用户的情绪枯竭"
+                    },
+                    {
+                        "id": 20542,
+                        "content": "导致社交媒体用户不再使用此类社交媒体或向其他替代性网络服务转移"
+                    },
+                    {
+                        "id": 20540,
+                        "content": "导致社交媒体用户增加"
+                    }
+                ]
+            },
+            {
+                "id": 5694,
+                "showIndex": 39,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "人际交往中应该坚持的原则有哪些？（）",
+                "questionItems": [
+                    {
+                        "id": 20647,
+                        "content": "实事求是"
+                    },
+                    {
+                        "id": 20649,
+                        "content": "公平公正"
+                    },
+                    {
+                        "id": 20646,
+                        "content": "诚实守信"
+                    },
+                    {
+                        "id": 20648,
+                        "content": "不谋私利"
+                    },
+                    {
+                        "id": 20645,
+                        "content": "自信尊人"
+                    }
+                ]
+            },
+            {
+                "id": 5612,
+                "showIndex": 40,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "高学历者的工作压力源包括（）。",
+                "questionItems": [
+                    {
+                        "id": 20344,
+                        "content": "工作竞争激烈"
+                    },
+                    {
+                        "id": 20343,
+                        "content": "工作强度大、负荷高"
+                    },
+                    {
+                        "id": 20345,
+                        "content": "个人发展空间问题"
+                    },
+                    {
+                        "id": 20346,
+                        "content": "知识技能的储备更新"
+                    },
+                    {
+                        "id": 20347,
+                        "content": "直属领导的影响"
+                    }
+                ]
+            },
+            {
+                "id": 5649,
+                "showIndex": 41,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "数字时代下的亲密关系更容易停留在“暧昧”阶段，原因主要有（）。",
+                "questionItems": [
+                    {
+                        "id": 20483,
+                        "content": "网络使用越多，导致个体会出现更少的同理心"
+                    },
+                    {
+                        "id": 20482,
+                        "content": "社会的原子化或者碎片化，让人容易体验到孤独"
+                    },
+                    {
+                        "id": 20481,
+                        "content": "人际交往中的工具性较强"
+                    },
+                    {
+                        "id": 20484,
+                        "content": "让人快速了解对方生活的细枝末节，为是否要进入一段深入关系提供参考"
+                    },
+                    {
+                        "id": 20480,
+                        "content": "理性先行，在缺乏改变的动力的前提下，过早袒露双方未来可能面对的现实问题"
+                    }
+                ]
+            },
+            {
+                "id": 5627,
+                "showIndex": 42,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "下列属于时间贫困预测生理健康问题的是（）。",
+                "questionItems": [
+                    {
+                        "id": 20401,
+                        "content": "肌肉疼痛"
+                    },
+                    {
+                        "id": 20399,
+                        "content": "高血压"
+                    },
+                    {
+                        "id": 20400,
+                        "content": "冠心病"
+                    },
+                    {
+                        "id": 20398,
+                        "content": "身体疲劳"
+                    },
+                    {
+                        "id": 20402,
+                        "content": "更差的睡眠质量"
+                    }
+                ]
+            },
+            {
+                "id": 5630,
+                "showIndex": 43,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "青少年遭遇的心理风暴有（）。",
+                "questionItems": [
+                    {
+                        "id": 20413,
+                        "content": "学习无动力"
+                    },
+                    {
+                        "id": 20415,
+                        "content": "社交无能力"
+                    },
+                    {
+                        "id": 20416,
+                        "content": "心理无关爱"
+                    },
+                    {
+                        "id": 20417,
+                        "content": "生命无价值感"
+                    },
+                    {
+                        "id": 20414,
+                        "content": "真实世界无兴趣"
+                    }
+                ]
+            },
+            {
+                "id": 5648,
+                "showIndex": 44,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "来自澳大利亚的一项研究表明（2岁11个月-5岁11个月），（）。",
+                "questionItems": [
+                    {
+                        "id": 20475,
+                        "content": "79%的儿童会观看猎奇类节目"
+                    },
+                    {
+                        "id": 20479,
+                        "content": "所有的儿童都会观看游戏类内容"
+                    },
+                    {
+                        "id": 20476,
+                        "content": "59%的儿童会观看令人放松的内容"
+                    },
+                    {
+                        "id": 20478,
+                        "content": "所有的儿童都会观看娱乐类内容"
+                    },
+                    {
+                        "id": 20477,
+                        "content": "86%的儿童观看教育类内容"
+                    }
+                ]
+            },
+            {
+                "id": 5611,
+                "showIndex": 45,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "长期压力会带来（）。",
+                "questionItems": [
+                    {
+                        "id": 20340,
+                        "content": "SBS办公室综合症"
+                    },
+                    {
+                        "id": 20341,
+                        "content": "ACCEPTS技能"
+                    },
+                    {
+                        "id": 20339,
+                        "content": "IBS肠应激综合症"
+                    },
+                    {
+                        "id": 20338,
+                        "content": "CFS慢性疲劳综合症"
+                    },
+                    {
+                        "id": 20342,
+                        "content": "静息状态系统"
+                    }
+                ]
+            },
+            {
+                "id": 5626,
+                "showIndex": 46,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "以下关于伊斯特林悖论的说法正确的是（）。",
+                "questionItems": [
+                    {
+                        "id": 20395,
+                        "content": "又称为“幸福—收入之谜”"
+                    },
+                    {
+                        "id": 20394,
+                        "content": "查理·伊斯特林"
+                    },
+                    {
+                        "id": 20393,
+                        "content": "提出人是理查德·伊斯特林"
+                    },
+                    {
+                        "id": 20396,
+                        "content": "在1974年的著作《经济增长可以在多大程度上提高人们的快乐》中提出"
+                    },
+                    {
+                        "id": 20397,
+                        "content": "在1974年的著作《社会心理学》中提出"
+                    }
+                ]
+            },
+            {
+                "id": 5615,
+                "showIndex": 47,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "自主神经系统包括（）。",
+                "questionItems": [
+                    {
+                        "id": 20362,
+                        "content": "副交感神经系统"
+                    },
+                    {
+                        "id": 20361,
+                        "content": "交感神经系统"
+                    },
+                    {
+                        "id": 20360,
+                        "content": "执行控制系统"
+                    },
+                    {
+                        "id": 20359,
+                        "content": "压力反应系统"
+                    },
+                    {
+                        "id": 20358,
+                        "content": "动机奖赏系统"
+                    }
+                ]
+            },
+            {
+                "id": 5691,
+                "showIndex": 48,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "单双面论证结合听众对象的特点有哪些？（）",
+                "questionItems": [
+                    {
+                        "id": 20633,
+                        "content": "接触反面意见的机会"
+                    },
+                    {
+                        "id": 20632,
+                        "content": "任务时间性"
+                    },
+                    {
+                        "id": 20630,
+                        "content": "最初态度"
+                    },
+                    {
+                        "id": 20631,
+                        "content": "智能水平"
+                    },
+                    {
+                        "id": 20634,
+                        "content": "与做决定间隔"
+                    }
+                ]
+            },
+            {
+                "id": 5661,
+                "showIndex": 49,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "针对信息茧房，我们有哪些缓解的方式？（）",
+                "questionItems": [
+                    {
+                        "id": 20524,
+                        "content": "设立信息的优先级"
+                    },
+                    {
+                        "id": 20520,
+                        "content": "多平台、多角度地获取信息"
+                    },
+                    {
+                        "id": 20521,
+                        "content": "设置断网时间"
+                    },
+                    {
+                        "id": 20523,
+                        "content": "独立思考和自我反思"
+                    },
+                    {
+                        "id": 20522,
+                        "content": "阅读不同形式的创作内容"
+                    }
+                ]
+            },
+            {
+                "id": 5614,
+                "showIndex": 50,
+                "score": 2,
+                "questionType": 2,
+                "questionTypeName": "多选",
+                "title": "在霍尔姆斯生活事件压力指数表中，形成中高程度压力的生活事件包括（）。",
+                "questionItems": [
+                    {
+                        "id": 20354,
+                        "content": "休假"
+                    },
+                    {
+                        "id": 20355,
+                        "content": "配偶死亡"
+                    },
+                    {
+                        "id": 20357,
+                        "content": "分居"
+                    },
+                    {
+                        "id": 20353,
+                        "content": "大型节日"
+                    },
+                    {
+                        "id": 20356,
+                        "content": "离婚"
+                    }
+                ]
+            },
+            {
+                "id": 5617,
+                "showIndex": 51,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "时间贫困会预测易造成健康问题的不良生活习惯。",
+                "questionItems": [
+                    {
+                        "id": 20365,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20366,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5639,
+                "showIndex": 52,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "互联网让工作方式更加灵活。",
+                "questionItems": [
+                    {
+                        "id": 20441,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20442,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5631,
+                "showIndex": 53,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "面对压力的有5个无效行为，分别为：脱离了现实、不合理想法、行动力减弱、回避不舒适、标签试评价。",
+                "questionItems": [
+                    {
+                        "id": 20418,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20419,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5602,
+                "showIndex": 54,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "不是只有负面事件才会带来压力，生活中的积极事件也可能带来压力。",
+                "questionItems": [
+                    {
+                        "id": 20310,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20311,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5667,
+                "showIndex": 55,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "死亡教育在中国是非常普遍的。",
+                "questionItems": [
+                    {
+                        "id": 20547,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20548,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5700,
+                "showIndex": 56,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "女性在家庭和工作中的优先次序是固定不变的。",
+                "questionItems": [
+                    {
+                        "id": 20663,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20664,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5681,
+                "showIndex": 57,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "人际交往的白金法则是你希望别人如何对待你，你就如何对待别人。",
+                "questionItems": [
+                    {
+                        "id": 20600,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20601,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5618,
+                "showIndex": 58,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "患有抑郁症个体的静息额叶EEG相对左侧化，伴随着左侧额叶更大的活动。",
+                "questionItems": [
+                    {
+                        "id": 20367,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20368,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5638,
+                "showIndex": 59,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "对9-10岁儿童的研究发现，电子产品使用时间与高质量的同辈关系并无明显相关。",
+                "questionItems": [
+                    {
+                        "id": 20439,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20440,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5616,
+                "showIndex": 60,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "时间贫困是指有太多想做和必须做的事情却没有足够的时间去做，即日常生活中时间不够用的弥散性感受。",
+                "questionItems": [
+                    {
+                        "id": 20363,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20364,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5666,
+                "showIndex": 61,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "当我们开始寻找差异和不同的时候，差异和不同便会产生。",
+                "questionItems": [
+                    {
+                        "id": 20545,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20546,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5632,
+                "showIndex": 62,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "所谓应激反应就是无意识地有了一个反应。",
+                "questionItems": [
+                    {
+                        "id": 20420,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20421,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5636,
+                "showIndex": 63,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "网络平台为一段恋情的开始提供了更多可能性，但其更容易停留在“暧昧”阶段。",
+                "questionItems": [
+                    {
+                        "id": 20435,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20436,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5697,
+                "showIndex": 64,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "女性的发展道路比男性更复杂，其原因主要来源于工作和家庭之间的冲突。",
+                "questionItems": [
+                    {
+                        "id": 20657,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20658,
+                        "content": "错"
+                    }
+                ]
+            },
+            {
+                "id": 5685,
+                "showIndex": 65,
+                "score": 1,
+                "questionType": 3,
+                "questionTypeName": "判断",
+                "title": "反自我利益的原则认为，如果宣传对宣传者本人没有任何好处，甚至还可能有某种危害，那这个宣传一定会有效。",
+                "questionItems": [
+                    {
+                        "id": 20608,
+                        "content": "对"
+                    },
+                    {
+                        "id": 20609,
+                        "content": "错"
+                    }
+                ]
+            }
+        ],
+        "stuAnswers": [
+            {
+                "questionId": 5622,
+                "answers": [
+                    20377
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5607,
+                "answers": [
+                    20323
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5625,
+                "answers": [
+                    20391
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5643,
+                "answers": [
+                    20454
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5644,
+                "answers": [
+                    20460
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5703,
+                "answers": [
+                    20676
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5608,
+                "answers": [
+                    20328
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5606,
+                "answers": [
+                    20318
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5657,
+                "answers": [
+                    20507
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5623,
+                "answers": [
+                    20381
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5660,
+                "answers": [
+                    20516
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5689,
+                "answers": [
+                    20622
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5634,
+                "answers": [
+                    20426
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5704,
+                "answers": [
+                    20679
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5690,
+                "answers": [
+                    20629
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5674,
+                "answers": [
+                    20569
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5672,
+                "answers": [
+                    20560
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5659,
+                "answers": [
+                    20513
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5645,
+                "answers": [
+                    20463
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5658,
+                "answers": [
+                    20511
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5701,
+                "answers": [
+                    20665
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5688,
+                "answers": [
+                    20619
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5687,
+                "answers": [
+                    20615
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5610,
+                "answers": [
+                    20337
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5686,
+                "answers": [
+                    20612
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5671,
+                "answers": [
+                    20555
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5656,
+                "answers": [
+                    20502
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5673,
+                "answers": [
+                    20566
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5705,
+                "answers": [
+                    20682
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5641,
+                "answers": [
+                    20446
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5676,
+                "answers": [
+                    20576,
+                    20578,
+                    20577
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5709,
+                "answers": [
+                    20701,
+                    20700
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5706,
+                "answers": [
+                    20688,
+                    20686
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5647,
+                "answers": [
+                    20472,
+                    20471,
+                    20474,
+                    20473,
+                    20470
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5664,
+                "answers": [
+                    20538,
+                    20539,
+                    20537
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5695,
+                "answers": [
+                    20651,
+                    20650,
+                    20653,
+                    20654
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5679,
+                "answers": [
+                    20593,
+                    20592,
+                    20590
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5665,
+                "answers": [
+                    20541,
+                    20544,
+                    20543,
+                    20542
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5694,
+                "answers": [
+                    20647,
+                    20648,
+                    20645
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5612,
+                "answers": [
+                    20344,
+                    20343,
+                    20345,
+                    20346
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5649,
+                "answers": [
+                    20480,
+                    20484
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5627,
+                "answers": [
+                    20401,
+                    20399,
+                    20400,
+                    20398,
+                    20402
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5630,
+                "answers": [
+                    20413,
+                    20415,
+                    20417,
+                    20414
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5648,
+                "answers": [
+                    20476,
+                    20478,
+                    20477
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5611,
+                "answers": [
+                    20340,
+                    20339,
+                    20338
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5626,
+                "answers": [
+                    20395,
+                    20393,
+                    20396
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5615,
+                "answers": [
+                    20362,
+                    20361
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5691,
+                "answers": [
+                    20633,
+                    20632,
+                    20630,
+                    20631
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5661,
+                "answers": [
+                    20520,
+                    20523,
+                    20522
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5614,
+                "answers": [
+                    20355,
+                    20357,
+                    20356
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5617,
+                "answers": [
+                    20365
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5639,
+                "answers": [
+                    20441
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5631,
+                "answers": [
+                    20419
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5602,
+                "answers": [
+                    20310
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5667,
+                "answers": [
+                    20548
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5700,
+                "answers": [
+                    20664
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5681,
+                "answers": [
+                    20601
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5618,
+                "answers": [
+                    20368
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5638,
+                "answers": [
+                    20440
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5616,
+                "answers": [
+                    20363
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5666,
+                "answers": [
+                    20545
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5632,
+                "answers": [
+                    20420
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5636,
+                "answers": [
+                    20435
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5697,
+                "answers": [
+                    20657
+                ],
+                "answerTxt": "",
+                "saved": true
+            },
+            {
+                "questionId": 5685,
+                "answers": [
+                    20608
+                ],
+                "answerTxt": "",
+                "saved": true
+            }
+        ],
+        "standardAnswers": [],
+        "scoreKG": null,
+        "scoreZG": null,
+        "startTime": "2025-03-10T16:10:19.638",
+        "endTime": "2025-03-10T17:40:19.638",
+        "submitTime": null,
+        "currentTime": "2025-03-10T16:10:20.2996242+08:00"
+    },
+    "curQuestion": {
+        "id": 5685,
+        "showIndex": 65,
+        "score": 1,
+        "questionType": 3,
+        "questionTypeName": "判断",
+        "title": "反自我利益的原则认为，如果宣传对宣传者本人没有任何好处，甚至还可能有某种危害，那这个宣传一定会有效。",
+        "questionItems": [
+            {
+                "id": 20608,
+                "content": "对"
+            },
+            {
+                "id": 20609,
+                "content": "错"
+            }
+        ]
+    },
+    "index": 64,
+    "questionTypes": [
+        {
+            "id": 1,
+            "name": "单选题"
+        },
+        {
+            "id": 2,
+            "name": "多选题"
+        },
+        {
+            "id": 3,
+            "name": "判断题"
+        },
+        {
+            "id": 10,
+            "name": "简单题"
+        }
+    ],
+    "serverTime": 1741594574000,
+    "leaveTimeStr": "1时24分5秒"
+}
