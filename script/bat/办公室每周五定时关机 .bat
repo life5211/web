@@ -1,0 +1,1 @@
+schtasks /create /tn "Fri23shutdown" /tr "shutdown /s /t 60" /sc weekly /D FRI /st 23:30:00
