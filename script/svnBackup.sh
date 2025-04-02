@@ -1,9 +1,10 @@
 #!/bin/bash
 pth=$(pwd)
 funLog() {
-  echo -e $(date "+[ %Y-%m-%d %H:%M:%S ] ") "  ==>>  " $* >>"../${pth##*/}-script-run.log"
+  echo $*
+  echo -e $(date "+\r\n[ %Y-%m-%d %H:%M:%S ] ") "<<Info>>\r\n $*" >>"../${pth##*/}-script-run.log"
   if [[ $1 != 0 ]]; then
-    echo -e " [[ Error ]] $* " >>"../${pth##*/}-script-error.log"
+    echo -e $(date "+\r\n[ %Y-%m-%d %H:%M:%S ] ") "<<Error>>\r\n $*" >>"../${pth##*/}-script-error.log"
     exit 1
   fi
 }
