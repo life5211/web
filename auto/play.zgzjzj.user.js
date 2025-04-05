@@ -17,45 +17,39 @@ function logUtil(msg, f) {
   localStorage.setItem("log", JSON.stringify(log));
   if (f) alert(msg);
 }
-document.userI = setInterval((_) => {
-  let video = $("video")[0];
+
+let $q = s => document.querySelector(s), $qa = s => Array.from(document.querySelectorAll(s));
+
+document.userI = setInterval(function run() {
+  let video = $q("video");
   if (!video) return logUtil("没有video媒体");
   video.muted = true;
-  if ($("div.feedBackBox").length) {
-    $("div.feedBackBox h3 img")[0].click();
+  if ($q("div.feedBackBox")) {
+    $q("div.feedBackBox h3 img").click();
     logUtil("关闭弹窗");
   }
-  if (
-    $("div.el-message-box__wrapper i.el-message-box__close.el-icon-close")
-      .length
-  ) {
-    $(
-      "div.el-message-box__wrapper i.el-message-box__close.el-icon-close"
-    )[0].click();
+  if ($q("div.el-message-box__wrapper i.el-message-box__close.el-icon-close")) {
+    $q("div.el-message-box__wrapper i.el-message-box__close.el-icon-close").click();
     logUtil("关闭弹窗");
   }
-  // let minute = $("#app div.course-progress a");
-  let progress = document.querySelector(
-    "div.course-progress span:nth-child(3)"
-  )?.innerText;
+  // let minute = $q("#app div.course-progress a");
+  let progress = $q("div.course-progress span:nth-child(3)")?.innerText;
   logUtil(`课程播放进度：${progress}`);
   if (progress !== "100%" && video.ended) {
     logUtil("当前章节视频播放完成,播放下一章节视频");
-    document.querySelector("#app ul > li.nextdontcheatorshit").click();
+    $q("#app ul > li.nextdontcheatorshit").click();
+    setTimeout(run, 6666);
   }
   if (progress === "100%") {
     logUtil("当前课程学习完成");
-    $("div.topnav>li:last-child")[0].click();
-    let next =
-      $("#app div.course-swipper div.swiper-slide-next img")[0] ||
-      $("#app div.course-swipper div.swiper-slide-prev img")[0];
+    $q("div.topnav>li:last-child").click();
+    let next = $q("#app div.course-swipper div.swiper-slide img");
     if (!next) return logUtil("恭喜你，当前课程包全部学习完成！", true);
     next.click();
+    setTimeout(run, 6666);
     logUtil("播放下一课程视频");
   }
 
-  if (!video.paused) {
-    return logUtil("正在播放……");
-  }
+  if (!video.paused) return logUtil("正在播放……");
   if (video.paused) video.play().then(logUtil).catch(logUtil);
 }, 66666);

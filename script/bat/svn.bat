@@ -1,6 +1,13 @@
-cd "/IDEA-Workspace2/校园云盘"
-for /f "tokens=1-2 delims= " %%a in  ('svn st') do ( if "%%a"=="!" svn delete %%b  )
-svn add * --force
-svn up
-svn ci -m "自动提交本地文件，包括删除新增修改"
-pause
+chcp 65001
+set f=false
+for /f "tokens=1-2 delims= " %%a in  ('svn st') do (
+    f = true
+    if "%%a"=="!" svn delete %%b
+)
+if %f% == true (
+    svn add * --force
+    svn update
+    svn commmit -m "update by svn.bat"
+) else (
+    svn update
+)
