@@ -1,4 +1,6 @@
 @echo off
+chcp 65001
+
 title Win_soft_install_auto
 color 02
 

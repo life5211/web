@@ -1,8 +1,9 @@
-
+@echo off
+chcp 65001
 title IP_Set
 color 02
 
-set NAME="��������"
+set NAME="本地连接"
 set ADDR=10.160.124.28
 set MASK=255.255.255.0
 set GATEWAY=10.160.124.1
@@ -18,6 +19,6 @@ pause
 
 ::DHCP
 ::netsh interface ip set address %NAME% dhcp
-::netsh interface ip set dns %NAME% dhcp 
+::netsh interface ip set dns %NAME% dhcp
 
 pause

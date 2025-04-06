@@ -6,8 +6,8 @@
 // @match        https://wljy.scjks.net/*
 // @match        *wljy.scjks.net/*
 // @icon         https://ascjkysvod.yscdn.top/upload/35/52970bea06a24874af80cd75492ead5e.png
-// @downloadURL  https://life5211.github.io/web/auto/wljy.scjky.user.js
-// @updateURL    https://life5211.github.io/web/auto/wljy.scjky.user.js
+// @downloadURL  https://life5211.github.io/web/auto/play.wljy.scjky.user.js
+// @updateURL    https://life5211.github.io/web/auto/play.wljy.scjky.user.js
 // @require      https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js
 // @noframes
 // @grant        GM_addStyle
