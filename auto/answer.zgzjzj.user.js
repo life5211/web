@@ -31,7 +31,6 @@
       ques = ques
         .replace(qs.querySelector("span").innerText, "")
         .replace(/\(\d+分\)/, "")
-        .trim()
         .replaceAll(/\s/g, "");
       let rst = document.qas.filter(
         (qa) => qa.q.trim().replaceAll(/\s/g, "") === ques
@@ -44,7 +43,7 @@
       if (!ques) return console.error("未找到题目");
       let rst = document.qas.filter(
         (qa) =>
-          qa.q.trim().replaceAll(/\s/, "") === ques.trim().replaceAll(/\s/, "")
+          qa.q.trim().replaceAll(/\s/g, "") === ques.trim().replaceAll(/\s/g, "")
       );
       if (rst.length) return show(JSON.stringify(rst, null, "\t"), qs);
     });
