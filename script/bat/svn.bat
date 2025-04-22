@@ -1,16 +1,24 @@
 @echo off
 title svn sync
-
 chcp 65001
-set f=false
+
+set st=false
 for /f "tokens=1-2 delims= " %%a in  ('svn st') do (
-    f = true
-    if "%%a"=="!" svn delete %%b
+  set st=true
+  if "%%a"=="!" svn delete %%b
 )
-if %f% == true (
+
+:: for /f "tokens=1,2 delims= " %%i in ('svn st') do (
+::   if "%%i" == "?" ( svn add "%%j" )
+::   else if "%%i" == "A" ( svn add "%%j" )
+::   else if "%%i" == "!" ( svn del "%%j"  --force  )
+::   else if "%%i" == "C" ( exit  )
+:: )
+
+if %st% == true (
     svn add * --force
     svn update
-    svn commmit -m "update by svn.bat"
+    svn commit -m "update by svn.bat"
 ) else (
     svn update
 )
