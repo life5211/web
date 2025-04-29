@@ -1,20 +1,22 @@
 #!/bin/bash
 pth=$(pwd)
+run_log="../${pth##*/}-script-run.log"
+error_log="../${pth##*/}-script-error.log"
 funLog() {
   echo $*
-  echo -e $(date "+\r\n[ %Y-%m-%d %H:%M:%S ] ") "<<Info>>\r\n $*" >>"../${pth##*/}-script-run.log"
+  echo -e $(date "+\r\n[ %Y-%m-%d %H:%M:%S ] ") "<<Info>> $(pwd)\r\n [[$*]]" >> ${run_log}
   if [[ $1 != 0 ]]; then
-    echo -e $(date "+\r\n[ %Y-%m-%d %H:%M:%S ] ") "<<Error>>\r\n $*" >>"../${pth##*/}-script-error.log"
+    svn status >> ${run_log}
+    echo -e $(date "+\r\n[ %Y-%m-%d %H:%M:%S ] ") "<<Error>> $(pwd)\r\n [[$*]]" >> ${error_log}
     exit 1
   fi
 }
 svn log
 funLog $? "Network Test"
-result=$(svn status)
+svn status >> ${run_log}
+result=$(svn status | grep ^[\?\!AMD])
 if [[ $result ]]; then
-  funLog 0 "[File Update Info]\\n $result"
-  svn add . --force
-  #  funLog 0 "SVN adds all modifications."
+  svn add . --force >> ${run_log}
   delFiles=$(svn status | grep '^\!')
   if [[ $delFiles ]]; then
     #  Delete local missing files by SVN
@@ -23,11 +25,10 @@ if [[ $result ]]; then
     #    svn st | grep '^\!' | sed 's/^! *//' | sed 's/[ ]/\\ /g' | sed 's/[\]/\//g' | xargs svn del --force
     #    svn st | grep '^\!' | awk '{print $2}' | sed 's/[\]/\//g' | sed 's/[ ]/\\ /g' | xargs svn del --force
   fi
-  svn update
+  svn update >> ${run_log}
   svn commit . -m "Automatically upload to svn through script."
-  funLog $? "Automatically upload to svn through script."
-#  funLog $? "\n $(svn commit . -m "Automatically upload to svn through script.") Automatically upload to svn through script."
+  funLog $? "Auto upload to svn through vs.bat."
 else
-  svn update
-  funLog $? "No update locally, synchronizing data from VS."
+  svn update >> ${run_log}
+  funLog $? "No update locally, sync data by vs.bat"
 fi
