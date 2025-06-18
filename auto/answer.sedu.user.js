@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name         四川公需科目答题辅助脚本
 // @namespace    http://tampermonkey.net/
-// @version      2.17
+// @version      3.17
 // @description  查询并显示试题参考答案
 // @icon         https://www.sedu.net/apppc/login/static/jjw-bj-bf11c0d7.png
 // @match        https://www.sctce.cn/apppc/examsys/*
+// @match        https://www.nedu.cn/examsys/*
+// @match        *nedu.cn/examsys/*
 // @match        *www.sctce.cn/*
 // @downloadURL  https://life5211.github.io/web/auto/answer.sedu.user.js
 // @updateURL    https://life5211.github.io/web/auto/answer.sedu.user.js
