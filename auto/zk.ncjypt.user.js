@@ -1,10 +1,20 @@
 // ==UserScript==
 // @name         南充中考成绩采集
-// @namespace    ncjypt
-// @version      1.1
-// @description  高效、快捷成绩查询与采集
-// @match        https://www.ncjypt.com/*
-// @match        *ncjypt.com/*
+//@icon          https://zk.ncedu.net.cn/nczk/png/logo-zk.png
+// @namespace    nczk
+// @version      1.17
+// @description  高效、快捷、批量成绩查询与采集
+// @match        https://zk.ncedu.net.cn/*
+// @match        *zk.ncedu.net.cn/*
+// @require      https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js
+// @noframes
+// @grant        GM_addStyle
+// @grant        unsafeWindow
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_log
+// @grant        GM_listValues
+// @grant        GM_deleteValue
 // ==/UserScript==
 
 function collect() {
@@ -15,7 +25,7 @@ function collect() {
     if (location.pathname.startsWith("/nczk/zk/queryscoreby2img.asp")) {
       let nameIds = document.querySelector("div#studentname")?.innerText;
       let idNumber = nameIds.substr(-19, 18);
-      let stuFilter = studentsInfo?.filter(s => s?.身份证号?.trim() === idNumber);
+      let stuFilter = studentsInfo?.filter(s => s?.idNo?.trim() === idNumber);
       const stuObj = stuFilter?.length ? stuFilter[0] : {};
       //单科成绩采集
       const grades = Array.from(document.querySelectorAll("table.tabscore td")).filter(e => e && e.innerText).map(e => e.innerText);
@@ -28,41 +38,56 @@ function collect() {
       localStorage.setItem("grades_info", JSON.stringify(gradesInfo));
     }
     dataShow();
-    let qryStudents = studentsInfo.filter(s => s?.身份证号 && !gradesInfo[s.身份证号]);
-    if (!qryStudents?.length) return;
-    location.href = `https://www.ncjypt.com/nczk/zk/queryscoreby2img.asp?t=${qryStudents[0].准考证号},${qryStudents[0].姓名},${qryStudents[0].身份证号}`
+    let qryStudents = studentsInfo.filter(s => s?.idNo && !gradesInfo[s.idNo]);
+    if (!qryStudents?.length) return alert("采集完成");
+    location.href = `https://zk.ncedu.net.cn/nczk/zk/queryscoreby2img.asp?t=${qryStudents[0].examNo},${qryStudents[0].name},${qryStudents[0].idNo}`
   }, 500 + Math.random() * 3000);
 }
 
 if (sessionStorage.getItem("collect_state")) collect();
 
-(await fetch("https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js")).text().then(eval);
+// (await fetch("https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js")).text().then(eval);
 
 const div = document.createElement("div");
-div.innerHTML = `信息导入<input type="file" onchange="importStuInfo()"/> 
-<button onclick="downloadExcel(false)">信息导入模板</button> 
+div.innerHTML = `<textarea id="stuInfos" rows="2" cols="30"></textarea>
+<button onclick="importStuInfo()">信息导入</button> 
 <button onclick="downloadExcel(true)">查询结果导出</button>
-<span id="num"></span>
 <button onclick="collectionStateChange()" id="coll">开始采集</button>
+<hr/>
+<div id="result"></div>
 <hr/>
 `;
 document.body.insertBefore(div, document.body.firstChild);
 
 document.importStuInfo = async function () {
-  const file = target.files[0];
-  const wb = await new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsBinaryString(file);
-    reader.onload = e => resolve(XLSX.read(e.target.result, {type: 'binary', cellDates: true, cellText: false}));
-  });
-  const xlsxArray = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {row: false, dateNF: 'yyyy/m/d'});
-  localStorage.setItem("students_info", JSON.stringify(xlsxArray));
-  dataShow();
+    const infoTxt = document.getElementById("stuInfos").value;
+    if (!infoTxt?.trim()) return alert("信息為空信息为空");
+    let stu = infoTxt.trim().split("\n")
+        .map((s) => s.split(/\s/))
+        .filter((s) => (s.length > 3) && s[5]?.length === 18)
+        .map(s => ({name: s[6], examNo: s[24], idNo: s[5]}));
+    localStorage.setItem("students_info", JSON.stringify(stu));
+    dataShow();
 }
 
 function dataShow() {
-  document.querySelector('div#num').innerHTML = `<span>查询结果：${JSON.parse(localStorage.getItem("students_info"))?.length || 0}</span>
-/<span>${JSON.parse(localStorage.getItem("grades_info"))?.length || 0}</span>`
+    let grades = JSON.parse(localStorage.getItem("grades_info")) || {};
+    let students = JSON.parse(localStorage.getItem("students_info"));
+    if (!students?.length) return;
+    const keys = [...new Set(Object.values(grades).flatMap(json => Object.keys(json)))];
+    document.querySelector('div#result').innerHTML = `<span>查询结果：${grades?.length}</span>/<span>${students?.length || 0}</span>
+<table>
+<thead><tr>${keys.map(k => '<th>' + k + '</th>')}</tr></thead>
+<tbody>
+${students.map(stu => '<tr>' + keys.map(k => '<td>' + getELe(stu, grades, k) + '</td>') + '</tr>')}
+</tbody>
+</table>`
+}
+
+function getELe(stu, grades, k) {
+    let stuObj = Object.assign({}, stu, grades[stu.idNo]);
+    if (k in stuObj) return stuObj[k]
+    return "";
 }
 
 function collectionStateChange() {
@@ -78,7 +103,7 @@ function collectionStateChange() {
 document.downloadExcel = async function (f) {
   // (await fetch("https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js")).text().then(eval);
   let fileName = f ? "学生中考成绩单" : "中考学生信息导入模板",
-      objArr = f ? Object.values(JSON.parse(localStorage.getItem("grades_info")) || {}) : [{姓名: '', 身份证号: '', 准考证号: ''}];
+      objArr = f ? Object.values(JSON.parse(localStorage.getItem("grades_info")) || {}) : [{name: '', idNo: '', examNo: ''}];
   if (!objArr?.length) return alert("导出数据为空！");
   let workbook = XLSX.utils.book_new();
   let worksheet = XLSX.utils.json_to_sheet(objArr);
@@ -88,7 +113,7 @@ document.downloadExcel = async function (f) {
 
 // (function (excel) {//学生信息导入
 //   const students = excel.split("\n").map(stu => stu.split("\t")).sort((a, b) => Math.random() - 0.3)
-//       .map((stu, i) => ({姓名: stu[0], 身份证号: stu[1], 准考证号: stu[2], i}));
+//       .map((stu, i) => ({name: stu[0], idNo: stu[1], examNo: stu[2], i}));
 //   localStorage.setItem("students_info", JSON.stringify(students));
 // })(``)
 

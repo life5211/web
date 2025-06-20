@@ -3,8 +3,8 @@
 // @namespace    ncjypt
 // @version      0.1
 // @description  高效、快捷成绩查询与采集
-// @match        https://www.ncjypt.com/*
-// @match        *ncjypt.com/*
+// @match        https://zk.ncedu.net.cn/*
+// @match        *zk.ncedu.net.cn/*
 // ==/UserScript==
 
 (function () {
@@ -30,7 +30,7 @@
     }
     let qryStudents = studentsInfo.filter(s => s?.身份证号 && !gradesInfo[s.身份证号]);
     if (!qryStudents?.length) return;
-    location.href = `https://www.ncjypt.com/nczk/zk/queryscoreby2img.asp?t=${qryStudents[0].准考证号},${qryStudents[0].姓名},${qryStudents[0].身份证号}`
+    location.href = `https://zk.ncedu.net.cn/nczk/zk/queryscoreby2img.asp?t=${qryStudents[0].准考证号},${qryStudents[0].姓名},${qryStudents[0].身份证号}`
   }, 500 + Math.random() * 3000);
 
 })();
@@ -40,6 +40,18 @@
     .map((stu, i) => ({ 姓名: stu[0], 身份证号: stu[1], 准考证号: stu[2], i }));
   localStorage.setItem("students_info", JSON.stringify(students));
 })(``)
+
+document.importStuInfo = async function () {
+  const file = target.files[0];
+  const wb = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsBinaryString(file);
+    reader.onload = e => resolve(XLSX.read(e.target.result, {type: 'binary', cellDates: true, cellText: false}));
+  });
+  const xlsxArray = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {row: false, dateNF: 'yyyy/m/d'});
+  localStorage.setItem("students_info", JSON.stringify(xlsxArray));
+  dataShow();
+}
 
 javascript: (function () {
   let grades = Object.values(JSON.parse(localStorage.getItem("grades_info")) || {});
