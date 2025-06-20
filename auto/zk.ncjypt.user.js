@@ -51,66 +51,81 @@ if (sessionStorage.getItem("collect_state")) collect();
 const div = document.createElement("div");
 div.innerHTML = `<textarea id="stuInfos" rows="2" cols="30"></textarea>
 <button onclick="importStuInfo()">信息导入</button> 
-<button onclick="downloadExcel(true)">查询结果导出</button>
+<button onclick="downloadExportCsv()">查询结果导出</button>
 <button onclick="collectionStateChange()" id="coll">开始采集</button>
 <hr/>
-<div id="result"></div>
+<div id="result" style="max-height: 300px; overflow: auto"></div>
 <hr/>
 `;
 document.body.insertBefore(div, document.body.firstChild);
 
 document.importStuInfo = async function () {
-    const infoTxt = document.getElementById("stuInfos").value;
-    if (!infoTxt?.trim()) return alert("信息為空信息为空");
-    let stu = infoTxt.trim().split("\n")
-        .map((s) => s.split(/\s/))
-        .filter((s) => (s.length > 3) && s[5]?.length === 18)
-        .map(s => ({name: s[6], examNo: s[24], idNo: s[5]}));
-    localStorage.setItem("students_info", JSON.stringify(stu));
-    dataShow();
+  const infoTxt = document.getElementById("stuInfos").value;
+  if (!infoTxt?.trim()) return alert("信息為空信息为空");
+  let stu = infoTxt.trim().split("\n")
+    .map((s) => s.split(/\s/))
+    .filter((s) => (s.length > 3) && s[5]?.length === 18)
+    .map(s => ({name: s[6], examNo: s[24], idNo: s[5]}));
+  localStorage.setItem("students_info", JSON.stringify(stu));
+  dataShow();
 }
+dataShow();
 
 function dataShow() {
-    let grades = JSON.parse(localStorage.getItem("grades_info")) || {};
-    let students = JSON.parse(localStorage.getItem("students_info"));
-    if (!students?.length) return;
-    const keys = [...new Set(Object.values(grades).flatMap(json => Object.keys(json)))];
-    document.querySelector('div#result').innerHTML = `<span>查询结果：${grades?.length}</span>/<span>${students?.length || 0}</span>
-<table>
-<thead><tr>${keys.map(k => '<th>' + k + '</th>')}</tr></thead>
-<tbody>
-${students.map(stu => '<tr>' + keys.map(k => '<td>' + getELe(stu, grades, k) + '</td>') + '</tr>')}
-</tbody>
-</table>`
+  document.querySelector("button#coll").innerText = sessionStorage.getItem("collect_state") ? `暂停采集` : '开始采集';
+  let grades = JSON.parse(localStorage.getItem("grades_info")) || {};
+  let students = JSON.parse(localStorage.getItem("students_info"));
+  if (!students?.length) return;
+  const keys = ["name", "idNo", "examNo", ...new Set(Object.values(grades).flatMap(json => Object.keys(json)))];
+  document.querySelector('div#result').innerHTML = `<span>查询结果：${Object.values(grades)?.length}</span>/<span>${students?.length || 0}</span>
+        <table border="1" style="border-collapse: collapse;border: 2px solid rgb(140 140 140);">
+            <thead><tr>${keys.map(k => '<th>' + k + '</th>')}</tr></thead>
+            <tbody>
+            ${students.map(stu => '<tr>' + keys.map(k => '<td>' + getELe(stu, grades, k) + '</td>') + '</tr>').join("")}
+            </tbody>
+        </table>`
 }
 
 function getELe(stu, grades, k) {
-    let stuObj = Object.assign({}, stu, grades[stu.idNo]);
-    if (k in stuObj) return stuObj[k]
-    return "";
+  let stuObj = Object.assign({}, stu, grades[stu.idNo]);
+  if (k in stuObj) return stuObj[k]
+  return "";
 }
 
-function collectionStateChange() {
+document.collectionStateChange = function () {
   if (sessionStorage.getItem("collect_state")) {
     sessionStorage.removeItem("collect_state")
   } else {
     sessionStorage.setItem("collect_state", "run");
   }
-  document.querySelector("button#coll").innerText = sessionStorage.getItem("collect_state") ? `暂停采集` : '开始采集';
+  dataShow();
   collect();
 }
 
-document.downloadExcel = async function (f) {
-  // (await fetch("https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js")).text().then(eval);
-  let fileName = f ? "学生中考成绩单" : "中考学生信息导入模板",
-      objArr = f ? Object.values(JSON.parse(localStorage.getItem("grades_info")) || {}) : [{name: '', idNo: '', examNo: ''}];
-  if (!objArr?.length) return alert("导出数据为空！");
-  let workbook = XLSX.utils.book_new();
-  let worksheet = XLSX.utils.json_to_sheet(objArr);
-  XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
-  XLSX.writeFile(workbook, `${fileName}details_${Date.now()}.xlsx`);
+// document.downloadExportExcel = async function (f) {
+//   // (await fetch("https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js")).text().then(eval);
+//   let fileName = f ? "学生中考成绩单" : "中考学生信息导入模板",
+//       objArr = f ? Object.values(JSON.parse(localStorage.getItem("grades_info")) || {}) : [{name: '', idNo: '', examNo: ''}];
+//   if (!objArr?.length) return alert("导出数据为空！");
+//   let workbook = XLSX.utils.book_new();
+//   let worksheet = XLSX.utils.json_to_sheet(objArr);
+//   XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
+//   XLSX.writeFile(workbook, `${fileName}details_${Date.now()}.xlsx`);
+// }
+document.downloadExportCsv = function () {  // csv 导出
+  let grades = Object.values(JSON.parse(localStorage.getItem("grades_info")) || {});
+  if (!grades.length) return alert("无成绩数据");
+  const titles = [...new Set(grades.flatMap(s => Object.keys(s)))];
+  let student_string = grades.map(s => titles.map(col => `"\t${s[col]}"`).join(",")).join("\n");
+  (function downloadCsv(fileName, content) {
+    let blob = new Blob([`\ufeff${content}`], {type: "text/csv;charset=utf-8"});
+    const csvUrl = URL.createObjectURL(blob);
+    let link = document.createElement('a');
+    link.download = `${fileName}details_${new Date().getTime()}.csv`;
+    link.href = csvUrl;
+    link.click();
+  })("学生成绩单", `${titles.join(",")}\n${student_string}`);
 }
-
 // (function (excel) {//学生信息导入
 //   const students = excel.split("\n").map(stu => stu.split("\t")).sort((a, b) => Math.random() - 0.3)
 //       .map((stu, i) => ({name: stu[0], idNo: stu[1], examNo: stu[2], i}));
