@@ -4,6 +4,8 @@
 // @namespace    nczk
 // @version      1.17
 // @description  高效、快捷、批量成绩查询与采集
+// @match        https://www.ncjypt.com/*
+// @match        *ncjypt.com/*
 // @match        https://zk.ncedu.net.cn/*
 // @match        *zk.ncedu.net.cn/*
 // @require      https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js
@@ -22,8 +24,10 @@ function collect() {
     if (document.querySelector("table.textbox>tbody")?.innerText?.includes("还未开通成绩查询")) return;
     let studentsInfo = JSON.parse(localStorage.getItem("students_info") || "[]");
     const gradesInfo = JSON.parse(localStorage.getItem("grades_info") || "{}");
+    dataShow();
     if (location.pathname.startsWith("/nczk/zk/queryscoreby2img.asp")) {
       let nameIds = document.querySelector("div#studentname")?.innerText;
+      if (!nameIds) return alert("数据查询失败，请重试！");
       let idNumber = nameIds.substr(-19, 18);
       let stuFilter = studentsInfo?.filter(s => s?.idNo?.trim() === idNumber);
       const stuObj = stuFilter?.length ? stuFilter[0] : {};
@@ -40,7 +44,7 @@ function collect() {
     dataShow();
     let qryStudents = studentsInfo.filter(s => s?.idNo && !gradesInfo[s.idNo]);
     if (!qryStudents?.length) return alert("采集完成");
-    location.href = `https://zk.ncedu.net.cn/nczk/zk/queryscoreby2img.asp?t=${qryStudents[0].examNo},${qryStudents[0].name},${qryStudents[0].idNo}`
+    location.href = `${location.origin}/nczk/zk/queryscoreby2img.asp?t=${qryStudents[0].examNo},${qryStudents[0].name},${qryStudents[0].idNo}`
   }, 500 + Math.random() * 3000);
 }
 
@@ -112,11 +116,12 @@ document.collectionStateChange = function () {
 //   XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
 //   XLSX.writeFile(workbook, `${fileName}details_${Date.now()}.xlsx`);
 // }
+
 document.downloadExportCsv = function () {  // csv 导出
   let grades = Object.values(JSON.parse(localStorage.getItem("grades_info")) || {});
   if (!grades.length) return alert("无成绩数据");
   const titles = [...new Set(grades.flatMap(s => Object.keys(s)))];
-  let student_string = grades.map(s => titles.map(col => `"\t${s[col]}"`).join(",")).join("\n");
+  let student_string = grades.map(s => titles.map(col => `"${s[col]}"`).join(",")).join("\n");
   (function downloadCsv(fileName, content) {
     let blob = new Blob([`\ufeff${content}`], {type: "text/csv;charset=utf-8"});
     const csvUrl = URL.createObjectURL(blob);
@@ -124,8 +129,9 @@ document.downloadExportCsv = function () {  // csv 导出
     link.download = `${fileName}details_${new Date().getTime()}.csv`;
     link.href = csvUrl;
     link.click();
-  })("学生成绩单", `${titles.join(",")}\n${student_string}`);
+  })("学生中考成绩单", `${titles.join(",")}\n${student_string}`);
 }
+
 // (function (excel) {//学生信息导入
 //   const students = excel.split("\n").map(stu => stu.split("\t")).sort((a, b) => Math.random() - 0.3)
 //       .map((stu, i) => ({name: stu[0], idNo: stu[1], examNo: stu[2], i}));
