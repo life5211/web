@@ -19,20 +19,21 @@
 // @grant        GM_deleteValue
 // ==/UserScript==
 
-let studentsGrades, titles, studentsArr, gradesObj;
+let studentsGrades, titles, studentsArr, gradesObj, next;
 
 function getGrades() {
   studentsArr = JSON.parse(localStorage.getItem("students_info") || "[]");
   gradesObj = JSON.parse(localStorage.getItem("grades_info") || "{}");
   studentsGrades = studentsArr.map(stu => Object.assign({}, stu, gradesObj[stu.IdNo]));
   titles = ["Name", "IdNo", "ExamNo", ...new Set(Object.values(gradesObj).flatMap(grade => Object.keys(grade)))];
+  next = studentsArr.filter(s => s?.IdNo && !gradesObj[s.IdNo]).pop();
   dataShow();
-  console.log([studentsGrades, titles, studentsArr, gradesObj]);
+  console.log([studentsGrades, titles, studentsArr, gradesObj, next]);
   return [studentsGrades, titles, studentsArr, gradesObj];
 }
 
 function collect() {
-  setTimeout(_ => {
+    if (!sessionStorage.getItem("collect_state")) return;
     if (document.querySelector("table.textbox>tbody")?.innerText?.includes("还未开通成绩查询")) return;
     if (location.pathname.startsWith("/nczk/zk/queryscoreby2img.asp")) {
       let nameIds = document.querySelector("div#studentname")?.innerText;
@@ -51,40 +52,31 @@ function collect() {
       localStorage.setItem("grades_info", JSON.stringify(gradesObj));
       getGrades();
     }
-
-    let q = studentsArr.filter(s => s?.IdNo && !gradesObj[s.IdNo])[0];
-    if (!q) return alert("采集完成");
-    location.href = `${location.origin}/nczk/zk/queryscoreby2img.asp?t=${q.ExamNo},${encodeURI(q.Name)},${q.IdNo}`
-  }, 500 + Math.random() * 3000);
+    // 下一个考生成绩
+    if (!studentsArr?.length) return alert("请导入考生名单");
+    if (!next) return alert("采集完成");
+  setTimeout(_ => location.href = `${location.origin}/nczk/zk/queryscoreby2img.asp?t=${next.ExamNo},${encodeURI(next.Name)},${next.IdNo}`, Math.random() * 1500 + 600);
 }
 
+function nextGrades() {
+
+}
 
 // (await fetch("https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js")).text().then(eval);
 
 const div = document.createElement("div");
-div.innerHTML = `<textarea id="stuInfos" rows="2" cols="30"></textarea>
-<button onclick="importStuInfo()">信息导入</button> 
-<button onclick="downloadExportCsv()">查询结果导出</button>
-<button onclick="collectionStateChange()" id="coll">开始采集</button>
-<hr/>
-<div id="result" style="max-height: 300px; overflow: auto"></div>
-<hr/>
-`;
+div.innerHTML = `<div>
+    <textarea id="stuInfos" rows="2" cols="30"></textarea>
+    <button onclick="importStuInfo()">信息导入</button> 
+    <button onclick="downloadExportCsv()">查询结果导出</button>
+    <button onclick="collectionStateChange()" id="coll">开始采集</button>
+    <hr/>
+    <div id="result" style="max-height: 300px; overflow: auto"></div>
+    <hr/>
+</div>`;
 document.body.insertBefore(div, document.body.firstChild);
-
-document.importStuInfo = async function () {
-  const infoTxt = document.getElementById("stuInfos").value;
-  if (!infoTxt?.trim()) return alert("信息為空信息为空");
-  let stu = infoTxt.trim().split("\n")
-    .map((s) => s.split(/\s/))
-    .filter((s) => (s.length > 3) && s[5]?.length === 18)
-    .map(s => ({Name: s[6], ExamNo: s[24], IdNo: s[5]}));
-  localStorage.setItem("students_info", JSON.stringify(stu));
-  getGrades();
-}
-
 getGrades();
-if (sessionStorage.getItem("collect_state")) collect();
+collect();
 
 function getVal(obj, k, f) {
   if (obj[k] instanceof Date) return obj[k].toLocaleDateString();
@@ -117,16 +109,26 @@ document.collectionStateChange = function () {
   dataShow();
 }
 
+document.importStuInfo = async function () {
+  const infoTxt = document.getElementById("stuInfos").value;
+  if (!infoTxt?.trim()) return alert("信息為空信息为空");
+  let stu = infoTxt.trim().split("\n")
+    .map((s) => s.split(/\s/))
+    .filter((s) => (s.length > 3) && s[5]?.length === 18)
+    .map(s => ({Name: s[6], ExamNo: s[24], IdNo: s[5]}));
+  localStorage.setItem("students_info", JSON.stringify(stu));
+  getGrades();
+}
+
 document.downloadExportCsv = function () {
   // csv 导出
   if (!studentsGrades.length) return alert("无成绩数据");
   let student_string = studentsGrades.map(stu => titles.map(title => `${getVal(stu, title, true)}`).join("\t")).join("\r\n");
   (function downloadCsv(fileName, content) {
     let blob = new Blob([`\ufeff${content}`], {type: "text/csv;charset=utf-8"});
-    const csvUrl = URL.createObjectURL(blob);
     let link = document.createElement('a');
     link.download = `${fileName}details_${new Date().toLocaleString()}.csv`;
-    link.href = csvUrl;
+    link.href = URL.createObjectURL(blob);
     link.click();
   })("学生中考成绩单", `${titles.join("\t")}\r\n${student_string}`);
 }
