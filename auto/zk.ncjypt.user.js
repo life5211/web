@@ -65,7 +65,7 @@ function nextGrades() {
 
 const div = document.createElement("div");
 div.innerHTML = `<div>
-    <textarea id="stuInfos" rows="2" cols="30"></textarea>
+    <textarea id="stuInfos" rows="2" cols="30" placeholder="学生信息表.csv中内容复制粘贴后点击导入"></textarea>
     <button onclick="importStuInfo()">信息导入</button> 
     <button onclick="downloadExportCsv()">查询结果导出</button>
     <button onclick="collectionStateChange()" id="coll">开始采集</button>
