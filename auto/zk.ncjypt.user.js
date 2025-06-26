@@ -46,7 +46,7 @@ function collect() {
       for (let i = 0; i < grades.length; i++) if (!(i % 2)) stuObj[grades[i]] = grades[i + 1];
       for (let i = 0; i < grades.length; i++) if (isNaN(grades[i]) && !isNaN(grades[i + 1])) stuObj[grades[i]] = grades[i + 1];
       stuObj.Name = name
-      stuObj.GredeText = document.querySelector("table.tabscore").innerText;
+      stuObj.GredeText = document.querySelector("div.infobox>table").innerText;
       gradesObj[stuObj.IdNo] = stuObj;
       localStorage.setItem("grades_info", JSON.stringify(gradesObj));
       getGrades();
@@ -54,7 +54,7 @@ function collect() {
     // 下一个考生成绩
     if (!studentsArr?.length) return alert("请导入考生名单");
     if (!next) return alert("采集完成");
-  // setTimeout(_ => location.href = `${location.origin}/nczk/zk/queryscoreby2img.asp?t=${next.ExamNo},${encodeURI(next.Name)},${next.IdNo}`, Math.random() * 1500 + 600);
+  setTimeout(_ => location.href = `${location.origin}/nczk/zk/queryscoreby2img.asp?t=${next.ExamNo},${encodeURI(next.Name)},${next.IdNo}`, Math.random() * 1500 + 600);
 }
 
 function nextGrades() {
