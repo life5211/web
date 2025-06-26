@@ -36,19 +36,18 @@ function collect() {
     if (!sessionStorage.getItem("collect_state")) return;
     if (document.querySelector("table.textbox>tbody")?.innerText?.includes("还未开通成绩查询")) return;
     if (location.pathname.startsWith("/nczk/zk/queryscoreby2img.asp")) {
-      let nameIds = document.querySelector("div#studentname")?.innerText;
-      if (!nameIds) return alert("数据查询失败，请重试！");
-      let idNumber = nameIds.substr(-19, 18);
-      let stuFilter = studentsArr?.filter(s => s?.IdNo?.trim() === idNumber);
+      let name = document.querySelector("tr.tr-02>.tdvalue")?.innerText;
+      // if (!name) return alert("数据查询失败，请重试！");
+      // let idNumber = nameIds.substr(-19, 18);
+      let stuFilter = studentsArr?.filter(s => s?.Name?.trim() === name);
       const stuObj = stuFilter?.length ? stuFilter[0] : {};
       //单科成绩采集
-      const grades = Array.from(document.querySelectorAll("table.tabscore td")).filter(e => e && e.innerText).map(e => e.innerText);
+      const grades = Array.from(document.querySelectorAll("div.infobox>table>tbody td")).filter(e => e && e.innerText).map(e => e.innerText);
       for (let i = 0; i < grades.length; i++) if (!(i % 2)) stuObj[grades[i]] = grades[i + 1];
       for (let i = 0; i < grades.length; i++) if (isNaN(grades[i]) && !isNaN(grades[i + 1])) stuObj[grades[i]] = grades[i + 1];
-      stuObj.Name = nameIds.substring(0, nameIds.indexOf("("));
-      stuObj.IdNo = idNumber;
-      stuObj.GredeText = document.querySelector("table.tabscore").innerText;
-      gradesObj[idNumber] = stuObj;
+      stuObj.Name = name
+      stuObj.GredeText = document.querySelector("div.infobox>table").innerText;
+      gradesObj[stuObj.IdNo] = stuObj;
       localStorage.setItem("grades_info", JSON.stringify(gradesObj));
       getGrades();
     }
