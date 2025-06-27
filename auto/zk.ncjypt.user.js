@@ -34,7 +34,7 @@ function getGrades() {
 
 function collect() {
     if (!sessionStorage.getItem("collect_state")) return;
-    if (document.querySelector("table.textbox>tbody")?.innerText?.includes("还未开通成绩查询")) return;
+    if (document.querySelector("#showInfo>table")?.innerText?.includes("还未开通成绩查询")) return;
     if (location.pathname.startsWith("/nczk/zk/queryscoreby2img.asp")) {
       let name = document.querySelector("tr.tr-02>.tdvalue")?.innerText;
       // if (!name) return alert("数据查询失败，请重试！");
