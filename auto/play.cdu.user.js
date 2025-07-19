@@ -25,31 +25,34 @@ window.addEventListener("load", function () {
         if (f) alert(msg);
       };
 
-  setTimeout(function () {
-    let startBtn = $q(".btn.spl-startbtn");
-    if (startBtn) {
-      $log({m: "点击开始学习"})
-      return startBtn.click();
-    }
-  }, 5667);
-
-  setTimeout(function run() {
+  document.userI = setInterval(function run() {
     let video = $q("video");
-    if (!video) return $log("没有video媒体");
-    video.muted = true;
-    // if (video.playbackRate < 2) video.playbackRate = 2;
-    $log({m: "播放进度", t: video.currentTime, l: video.duration, now: Date.now()});
+    let startBtn = $q(".btn.spl-startbtn");
+    console.log("按钮定位", video, startBtn);
+
+    if (!video) {
+      if (startBtn) {
+        $log("没有Video,开始学习；")
+        return startBtn.click();
+      }
+      return $log("没有video媒体");
+    }
+
     if (video.ended) {
       return setTimeout(function next() {
         let v2 = $q("video");
         $log([v2, v2.ended]);
         if (v2?.ended) $q("goto-btn").click();
-        else setTimeout(run, 66666);
       }, 6666); // 延时校验当前课程包已结束
     }
+
+    if (!video.muted) video.muted = true;
+    if (!video.autoplay) video.autoplay = true;
+    if (video.playbackRate < 2) video.playbackRate = 2;
+    $log({m: "播放进度", t: video.currentTime, l: video.duration, now: Date.now()});
+
     if (!video.paused) return $log("正在播放……");
     if (video.paused) video.play().then($log).catch($log);
     $log("继续播放");
-    setTimeout(run, 66666);
-  }, 6666);
+  }, 36666);
 });
