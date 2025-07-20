@@ -1,31 +1,61 @@
 // ==UserScript==
-// @name         中小学智慧教育平台教师暑假研修学习脚本
-// @version      v240731
-// @description  登录中小学智慧云平台后需要快速切换需要观看的视频
+// @name         中小学智慧教育平台假期研修学习脚本
+// @version      v17250720
+// @icon         https://basic.smartedu.cn/img/logo-icon.abf693b9.png
+// @description  支持2倍速，下一视频切换
 // @author       user
 // @match        https://basic.smartedu.cn/*
+// @downloadURL  https://life5211.github.io/web/auto/play.smart.zxx.user.js
+// @updateURL    https://life5211.github.io/web/auto/play.smart.zxx.user.js
+// @noframes
 // @license      MIT
 // ==/UserScript==
 
+let $q = s => document.querySelector(s),
+    $qa = s => Array.from(document.querySelectorAll(s)),
+    $localGet = (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def,
+    $localSet = (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+    $log = (msg, f) => {
+      console.log(msg);
+      let log = $localGet("log", []);
+      log.push(`[${new Date().toLocaleString()}]${msg}`);
+      $localSet("log", log);
+      if (f) alert(msg);
+    };
+window.addEventListener("load", function () {
+  document.userI2 = setInterval(function () {
+    let b = $q("button.fish-btn");
+    if (b) b.click();
+  }, 555);
 
-(function studyFun() {
-  console.log("开始学习")
-  document.querySelector("video").muted = true;
-  document.querySelector("video").autoplay = true;
-  document.querySelector("video").playbackRate = 2;
-  document.querySelector("video").playbackRate = 16;
-  document.querySelector("video").currentTime = document.querySelector("video").duration;
-  document.querySelector("video").dispatchEvent(new Event("ended"));
-  if (video.paused) document.querySelector("video").play()
-  document.querySelector("video").pause();
-  document.querySelector("video").play().then(r => 0);
-  setTimeout(_ => {
-    document.querySelector("video").play();
-    console.log("完成学习")
-  }, 180)
-})()
+  function end_next_video() {
+    console.log('视频播放完了')
+    let i = $q("i[title=未开始]");
+    if (i) i.parentElement.parentElement.parentElement.click();
+  }
 
-video = document.getElementById('video')
+  document.userI = setInterval(function run() {
+    let video = $q("video");
+    if (!video) {
+      return $log("没有video媒体");
+    }
+
+    if (!video.muted) {
+      video.muted = true;
+      video.autoplay = true;
+      video.playbackRate = 2;
+      video.addEventListener('ended', end_next_video);
+      // document.querySelector("video").dispatchEvent(new Event("ended"));
+    }
+    $log({m: "播放进度", t: video.currentTime, l: video.duration, now: Date.now()});
+
+    if (video.ended) end_next_video();
+
+    if (!video.paused) return $log("正在播放……");
+    if (video.paused) video.play().then($log).catch($log);
+    $log("继续播放");
+  }, 36666);
+});
 
 
 // 6、canplay：可播放监听。当浏览器能够开始播放指定的音频/视频时触发
