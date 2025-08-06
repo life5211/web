@@ -131,6 +131,7 @@
    */
   function updateSubject() {
     all_kcs.forEach(k => k.script = k.his = k.zbgk = k.dbgk = k.yjxs = '');
+    all_kcs.filter(k => k.name.includes("普高新课程新教材培训")).forEach(k => k.s = 1);
     all_kcs.filter(k => user.scriptKcIds.includes(k.id)).forEach(k => k.script = k.his = 'script');
     if (user.playHistory)
       for (let re_his = /\n(.+)\n+(总计直播观看:\s*(.+分钟)\s*总计点播观看：\s*(.+分钟))/g; !!(r = re_his.exec(user.playHistory));)
@@ -287,7 +288,6 @@
         ids.push(s.id);
       }
       all_kcs = githubSubjects;
-      all_kcs.filter(k => k.name.includes("普高新课程新教材培训")).forEach(k => k.s = 1);
       all_kcs.sort((a, b) => -1 * utils.compareFn(a, b, 'crt', 'name')).forEach(k => k.crt = new Date(k.crt).toLocaleString());
       utils.localSet("all_kcs", all_kcs);
       utils.run(updateSubject, insertForm, showForm);
