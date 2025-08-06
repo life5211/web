@@ -14,6 +14,10 @@
 // @grant        unsafeWindow
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_listValues
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_unregisterMenuCommand
 // @grant        GM_log
 // ==/UserScript==
 
@@ -43,6 +47,7 @@
     if (!usrName) return utils.log("用户未登录");
     clearInterval(document.i_1);
     usrKey = `${usrName}_info`;
+    utils.localSet("usrKey", usrKey);
     subjectId = location.hash.substring(11);
     subjectName = all_kcs.filter(k => k.id === subjectId).reduce((a, b) => b?.name, {});
     user = utils.localGet(usrKey, {scriptKcIds: [], state: 1});
@@ -89,15 +94,24 @@
   function nextProject(log = '') {
     utils.log(subjectId, log, subjectName);
     user.scriptKcIds.push(subjectId);
+    utils.updateUser();
     updateSubject();
+    location.href = `/redirect`;
+  }
+
+  (function redirectPage() {
+    user = utils.localGet(utils.localGet("usrKey"), {scriptKcIds: [], state: 1});
+    updateSubject();
+    if (location.pathname !== '/redirect') return;
     let next;
     if (user.join_kcs?.length) next = user.join_kcs.pop();
     else if (needSubjects?.length) next = needSubjects[0];
     utils.updateUser();
     if (!next) return document.infoUp(0) & utils.log("学完了") & alert("当前课程学习已完成");
+    // window.open(`https://wljy.scjks.net/a/#/activity/${next.id}`, "_top");
     location.href = `https://wljy.scjks.net/a/#/activity/${next.id}`;
-    location.reload();
-  }
+    // location.reload();
+  })();
 
   function getMin(...arr) {
     return arr.map(s => {
@@ -244,20 +258,40 @@
 
   async function downloadExcel(fileName, objArr) {
     if (!objArr?.length) return alert("导出数据为空！");
-    (await fetch("https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js")).text().then(eval).then(_ => {
-      let workbook = XLSX.utils.book_new();
-      let worksheet = XLSX.utils.json_to_sheet(objArr);
-      XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
-      XLSX.writeFile(workbook, `${fileName}_${Date.now()}.xlsx`);
-    })
+    let workbook = XLSX.utils.book_new();
+    let worksheet = XLSX.utils.json_to_sheet(objArr);
+    XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
+    XLSX.writeFile(workbook, `${fileName}_${Date.now()}.xlsx`);
   }
 
-  (await fetch("https://life5211.github.io/web/data/scjky.jy.json")).json().then(d => {
-    if (d?.length && d.length ===all_kcs.length) return utils.log("无新增")
-    all_kcs = d;
-    all_kcs.filter(k => k.name.includes("普高新课程新教材培训") || k.name.includes("义教新修订教材教师培训")).forEach(k => k.s = 1);
-    all_kcs.sort((a, b) => -1 * utils.compareFn(a, b, 'crt', 'name')).forEach(k => k.crt = new Date(k.crt).toLocaleString());
-    utils.localSet("all_kcs", all_kcs);
-    utils.run(updateSubject, insertForm, showForm);
-  });
+  GM_registerMenuCommand("更新全部课程", getAllKcs, "");
+
+  async function getAllKcs() {
+    let rsp = await fetch("https://life5211.github.io/web/data/scjky.jy.json");
+    if (!rsp.ok) utils.log(`"github请求失败-${rsp.statusText}`, true);
+    let githubSubjects = await rsp.json();
+    utils.localSet("_kc_github", githubSubjects);
+    let ids = githubSubjects.map(k => k.id);
+
+    let api = "/sd-api/event/resourcePageNew/selectTeachInfoByPage/0?catalogId=-1&gradeId=-1&labelId=-1&noteId=-1&queryType=0&resourceFamily=-1&resourceName=&resourceType=0&sortType=1&stageId=-1&subjectId=-1&versionId=-1";
+    let init = {headers: {authorization: localStorage.Authorization}};
+    let rsp2 = await fetch(`${api}&pageSize=200&pageNo=1`, init);
+    if (!rsp2.ok) utils.log(`"课程列表请求失败，${i}-${rsp.statusText}`, true);
+
+    await rsp2.json().then(json => {
+      utils.localSet("_kc_wljy", json);
+      let subjects = json.data.resResourceList.map(e => ({id: e.id, name: e.name, crt: new Date(e.createTime).toLocaleString()}));
+      for (let s of subjects) {
+        if (ids.includes(s.id)) break;
+        githubSubjects.push(s);
+        ids.push(s.id);
+      }
+      all_kcs = githubSubjects;
+      all_kcs.filter(k => k.name.includes("普高新课程新教材培训")).forEach(k => k.s = 1);
+      all_kcs.sort((a, b) => -1 * utils.compareFn(a, b, 'crt', 'name')).forEach(k => k.crt = new Date(k.crt).toLocaleString());
+      utils.localSet("all_kcs", all_kcs);
+      utils.run(updateSubject, insertForm, showForm);
+    }).catch(utils.log);
+
+  }
 })();
