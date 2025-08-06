@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         网络教研学习自动化
 // @namespace    http://tampermonkey.net/
-// @version      2.17.2
+// @version      2.17.3
 // @description  自动化播放网络教研视频，支持设置学科和已经播放的课程过滤
 // @match        https://wljy.scjks.net/*
 // @match        *wljy.scjks.net/*
@@ -53,14 +53,6 @@
     user = utils.localGet(usrKey, {scriptKcIds: [], state: 1});
     if (!user.playLog) user.playLog = {}
     if (!user.join_kcs) user.join_kcs = []
-    let video = document.querySelector('video');
-    if (video) setTimeout(function jump() {
-      if (user.playLog[subjectId]) {
-        let recordList = Array.from(document.querySelectorAll("div.video-list div.record-list div.recode-item"));
-        recordList[user.playLog[subjectId].currIdx].click();
-        setTimeout(_ => video.currentTime = user.playLog[subjectId].currentTime, utils.rf(4, 6));
-      }
-    }, utils.rf(10, 20));
     utils.run(updateSubject, insertForm, showForm);
     document.i_2 = setInterval(studyFun, utils.rf(60, 80));
   }, utils.rf(1, 2));
@@ -69,15 +61,24 @@
     if (!user.state) return; // 暂停学习
     let video = document.querySelector('video');
     if (!video) return utils.log("没有video媒体"); // 没在播放界面，不处理直接退出
-    video.muted = true;
     let recordList = Array.from(document.querySelectorAll("div.video-list div.record-list div.recode-item"));
+    if (!recordList?.length) return nextProject("没有录播列表");
+    if (!video.title) {
+      video.muted = true;
+      video.autoplay = true;
+      video.title = "脚本运行中";
+      video.scrollIntoView({behavior: 'smooth'});
+      if (user.playLog[subjectId]) return setTimeout(function jump() {
+        recordList[user.playLog[subjectId].currIdx].click();
+        setTimeout(_ => video.currentTime = user.playLog[subjectId].currentTime, utils.rf(2, 4));
+      }, utils.rf(3, 5));
+    }
     let currIdx = recordList.map(e => e.className.includes("current")).indexOf(true);
     utils.log({t: video.currentTime, i: currIdx, subjectId, subjectName, usrName, length: video.duration});
     if (!video.paused) {// 正在播放，break，继续等待，否者判断暂停原因
       user.playLog[subjectId] = {currIdx, currentTime: video.currentTime, length: video.duration}
       return utils.updateUser();
     }
-    if (!recordList?.length) return nextProject("没有录播列表");
     if (document.querySelector("div.video-list div.live.current")) return recordList[0].click();
     if (video.ended) {
       user.playLog[subjectId] = {currIdx, currentTime: video.currentTime, length: video.duration}
@@ -276,7 +277,7 @@
 
     let api = "/sd-api/event/resourcePageNew/selectTeachInfoByPage/0?catalogId=-1&gradeId=-1&labelId=-1&noteId=-1&queryType=0&resourceFamily=-1&resourceName=&resourceType=0&sortType=1&stageId=-1&subjectId=-1&versionId=-1";
     let init = {headers: {authorization: localStorage.Authorization}};
-    let rsp2 = await fetch(`${api}&pageSize=200&pageNo=1`, init);
+    let rsp2 = await fetch(`${api}&pageSize=100&pageNo=1`, init);
     if (!rsp2.ok) utils.log(`"课程列表请求失败，${i}-${rsp.statusText}`, true);
 
     await rsp2.json().then(json => {
@@ -292,6 +293,5 @@
       utils.localSet("all_kcs", all_kcs);
       utils.run(updateSubject, insertForm, showForm);
     }).catch(utils.log);
-
   }
 })();
