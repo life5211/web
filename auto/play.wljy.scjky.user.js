@@ -56,7 +56,8 @@
     if (!user.playLog) user.playLog = {}
     if (!user.join_kcs) user.join_kcs = []
     utils.run(updateSubject, insertForm, showForm);
-    document.i_2 = setInterval(studyFun, utils.rf(60, 80));
+    if (location.hash.startsWith("#/activity/"))
+      document.i_2 = setInterval(studyFun, utils.rf(60, 80));
   }, utils.rf(1, 2));
 
   function studyFun() {
