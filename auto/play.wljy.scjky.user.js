@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 (async function () {
-  let usrName, usrKey, user, allSubjects, needSubjects, learned_kcs, subjectId, subjectName, r, re, t, utils = {
+  let usrName, usrKey, user, allSubjects, needSubjects, learned_kcs, subjectId, subjectName, r, logK, logs, utils = {
     rf: (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
     localGet: (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def,
     localSet: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
@@ -36,11 +36,13 @@
     },
     log(...msg) {
       console.log(msg);
-      let k = `logs${new Date().toLocaleDateString()}`, logs = this.localGet(k, []);
-      logs.push(JSON.stringify([...msg, new Date().toLocaleString()]));
-      this.localSet(k, logs);
+      logs.unshift(JSON.stringify([new Date().toLocaleString(), ...msg, location.href]));
+      this.localSet(logK, logs);
+      document.getElementById("_logs").innerText = JSON.stringify(logs, null, "\t");
     }
   }, all_kcs = utils.localGet("all_kcs", []);
+  logK = `log_${location.hash}`;
+  logs = utils.localGet(logK, []);
 
   document.i_1 = setInterval(function init() {
     usrName = document.querySelector("div.login-name").innerText;
@@ -101,14 +103,19 @@
   }
 
   (function redirectPage() {
-    user = utils.localGet(utils.localGet("usrKey"), {scriptKcIds: [], state: 1});
-    updateSubject();
     if (location.pathname !== '/redirect') return;
+    usrKey = utils.localGet("usrKey");
+    user = utils.localGet(usrKey);
+    updateSubject();
     let next;
     if (user.join_kcs?.length) next = user.join_kcs.pop();
     else if (needSubjects?.length) next = needSubjects[0];
     utils.updateUser();
-    if (!next) return document.infoUp(0) & utils.log("学完了") & alert("当前课程学习已完成");
+    if (!next) {
+      user.state = 0;
+      utils.updateUser();
+      location.href = "/";
+    }
     // window.open(`https://wljy.scjks.net/a/#/activity/${next.id}`, "_top");
     location.href = `https://wljy.scjks.net/a/#/activity/${next.id}`;
     // location.reload();
@@ -177,6 +184,8 @@
           <button onclick="infoUp(1)">&nbsp;设&nbsp;置&nbsp;</button>
         </div>
       </td>
+    </tr>
+    <tr>
       <td>
         <textarea id="form_playHistory" rows="2" cols="30"></textarea>
         <div>观看记录
@@ -195,7 +204,9 @@
           <button onclick="infoUp(5)">&nbsp;设&nbsp;置&nbsp;</button>
         </div>
       </td>
-      <td style="width:8em">
+    </tr>
+    <tr>
+      <td style="width:8em" colspan="3">
         <div onclick="downLog()">
           <button>导出学习记录</button>
         </div>
@@ -206,6 +217,9 @@
         </div>
       </td>
     </tr>
+    <tr><td colspan="3">
+          运行日志【<div><pre id="_logs"></pre></div>】
+    </td></tr>
   </table>
   <table border="1" style="border-collapse: collapse;border: 2px solid rgb(140 140 140);">
     <caption>四川省网络教研平台学习记录表</caption>
@@ -278,7 +292,7 @@
     let api = "/sd-api/event/resourcePageNew/selectTeachInfoByPage/0?catalogId=-1&gradeId=-1&labelId=-1&noteId=-1&queryType=0&resourceFamily=-1&resourceName=&resourceType=0&sortType=1&stageId=-1&subjectId=-1&versionId=-1";
     let init = {headers: {authorization: localStorage.Authorization}};
     let rsp2 = await fetch(`${api}&pageSize=100&pageNo=1`, init);
-    if (!rsp2.ok) utils.log(`"课程列表请求失败，${i}-${rsp.statusText}`, true);
+    if (!rsp2.ok) utils.log(`"课程列表请求失败，${rsp.statusText}`, true);
 
     await rsp2.json().then(json => {
       utils.localSet("_kc_wljy", json);
