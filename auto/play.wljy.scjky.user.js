@@ -34,9 +34,9 @@
       for (let f of fields) if (f && a[f] !== b[f]) return fnc(a[f], b[f]);
       return 0;
     },
-    log(...msg) {
+    log(msg) {
       console.log(msg);
-      logs.unshift(JSON.stringify([new Date().toLocaleString(), ...msg, location.href]));
+      logs.unshift(JSON.stringify([new Date().toLocaleString(), msg, location.href.replace(location.origin, '')]));
       this.localSet(logK, logs);
       document.getElementById("_logs").innerText = JSON.stringify(logs, null, "\t");
     }
@@ -54,8 +54,11 @@
     subjectName = all_kcs.filter(k => k.id === subjectId).reduce((a, b) => b?.name, {});
     user = utils.localGet(usrKey, {scriptKcIds: [], state: 1});
     if (!user.playLog) user.playLog = {}
-    if (!user.join_kcs) user.join_kcs = []
+    if (!user.join_kcs) user.join_kcs = [];
     utils.run(updateSubject, insertForm, showForm);
+    if (!user.state) return; // 暂停学习
+    if (location.hash === '#/newResource/res-research?redirectNext')
+      setTimeout(redirectPage, utils.rf(3, 8));
     if (location.hash.startsWith("#/activity/"))
       document.i_2 = setInterval(studyFun, utils.rf(60, 80));
   }, utils.rf(1, 2));
@@ -100,14 +103,10 @@
     user.scriptKcIds.push(subjectId);
     utils.updateUser();
     updateSubject();
-    location.href = `/redirect`;
+    location.href = `/a//#/newResource/res-research?redirectNext`;
   }
 
-  (function redirectPage() {
-    if (location.pathname !== '/redirect') return;
-    usrKey = utils.localGet("usrKey");
-    user = utils.localGet(usrKey);
-    updateSubject();
+  function redirectPage() {
     let next;
     if (user.join_kcs?.length) next = user.join_kcs.pop();
     else if (needSubjects?.length) next = needSubjects[0];
@@ -115,12 +114,12 @@
     if (!next) {
       user.state = 0;
       utils.updateUser();
-      location.href = "/";
+      utils.log("当前科目学习完成；");
     }
     // window.open(`https://wljy.scjks.net/a/#/activity/${next.id}`, "_top");
-    location.href = `https://wljy.scjks.net/a/#/activity/${next.id}`;
+    location.href = `/a/#/activity/${next.id}`;
     // location.reload();
-  })();
+  }
 
   function getMin(...arr) {
     return arr.map(s => {
@@ -219,7 +218,9 @@
       </td>
     </tr>
     <tr><td colspan="3">
-          运行日志【<div><pre id="_logs"></pre></div>】
+        <hr/>
+          页面运行日志<div><pre id="_logs"></pre></div>
+        <hr/>
     </td></tr>
   </table>
   <table border="1" style="border-collapse: collapse;border: 2px solid rgb(140 140 140);">
@@ -287,6 +288,7 @@
     let rsp = await fetch("https://life5211.github.io/web/data/scjky.jy.json");
     if (!rsp.ok) utils.log(`"github请求失败-${rsp.statusText}`, true);
     let githubSubjects = await rsp.json();
+    let length = githubSubjects.length;
     utils.localSet("_kc_github", githubSubjects);
     let ids = githubSubjects.map(k => k.id);
 
@@ -294,19 +296,25 @@
     let init = {headers: {authorization: localStorage.Authorization}};
     let rsp2 = await fetch(`${api}&pageSize=100&pageNo=1`, init);
     if (!rsp2.ok) utils.log(`"课程列表请求失败，${rsp.statusText}`, true);
-
-    await rsp2.json().then(json => {
+    let json = await rsp2.json();
+    {
       utils.localSet("_kc_wljy", json);
       let subjects = json.data.resResourceList.map(e => ({id: e.id, name: e.name, crt: new Date(e.createTime).toLocaleString()}));
+      let flag = false;
       for (let s of subjects) {
-        if (ids.includes(s.id)) break;
+        if (ids.includes(s.id)) {
+          flag = true;
+          continue;
+        }
         githubSubjects.push(s);
         ids.push(s.id);
       }
       all_kcs = githubSubjects;
-      all_kcs.sort((a, b) => -1 * utils.compareFn(a, b, 'crt', 'name')).forEach(k => k.crt = new Date(k.crt).toLocaleString());
+      all_kcs.forEach(k => k.t = new Date(k.crt).getTime());
+      all_kcs.sort((a, b) => -1 * utils.compareFn(a, b, 't', 'name'));
       utils.localSet("all_kcs", all_kcs);
       utils.run(updateSubject, insertForm, showForm);
-    }).catch(utils.log);
+    }
+    utils.log(`课程更新完成，课程数量${length} - ${all_kcs.length}`);
   }
 })();

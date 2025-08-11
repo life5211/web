@@ -76,7 +76,10 @@
 
   function nextVideo(target) {
     let next = $play.urls.filter(a => !$play.ended[$play.urlPath[a]])[0];
-    if (!next) return $log("学习完成，没有下一课程", true);
+    if (!next) {
+      location.href = "/web/index.php"
+      return $log("学习完成，没有下一课程", true);
+    }
     $log(`播放下一课程"${next}`);
     document.studyFun(next, target);
   }
