@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         网络教研学习自动化
 // @namespace    http://tampermonkey.net/
-// @version      2.17.3
+// @version      2.17.4
 // @description  自动化播放网络教研视频，支持设置学科和已经播放的课程过滤
 // @match        https://wljy.scjks.net/*
 // @match        *wljy.scjks.net/*
@@ -36,9 +36,9 @@
     },
     log(msg) {
       console.log(msg);
-      logs.unshift(JSON.stringify([new Date().toLocaleString(), msg, location.href.replace(location.origin, '')]));
+      logs.unshift([new Date().toLocaleString(), msg, location.href.replace(location.origin, '')]);
       this.localSet(logK, logs);
-      document.getElementById("_logs").innerText = JSON.stringify(logs, null, "\t");
+      document.getElementById("_logs").innerText = logs.map(JSON.stringify).join('\n');
     }
   }, all_kcs = utils.localGet("all_kcs", []);
   logK = `log_${location.hash}`;
@@ -56,8 +56,9 @@
     if (!user.playLog) user.playLog = {}
     if (!user.join_kcs) user.join_kcs = [];
     utils.run(updateSubject, insertForm, showForm);
+    utils.log("页面信息初始化完成");
     if (!user.state) return; // 暂停学习
-    if (location.hash === '#/newResource/res-research?redirectNext')
+    if (localStorage.getItem("_redirect"))
       setTimeout(redirectPage, utils.rf(3, 8));
     if (location.hash.startsWith("#/activity/"))
       document.i_2 = setInterval(studyFun, utils.rf(60, 80));
@@ -71,12 +72,14 @@
     if (!recordList?.length) return nextProject("没有录播列表");
     if (!video.title) {
       video.muted = true;
-      video.autoplay = true;
       video.title = "脚本运行中";
       video.scrollIntoView({behavior: 'smooth'});
+      utils.log("视频播放初始化完成");
       if (user.playLog[subjectId]) return setTimeout(function jump() {
+        utils.log("恢复播放记录");
         recordList[user.playLog[subjectId].currIdx].click();
-        setTimeout(_ => video.currentTime = user.playLog[subjectId].currentTime, utils.rf(2, 4));
+        setTimeout(video.play, utils.rf(2, 4));
+        setTimeout(_ => video.currentTime = user.playLog[subjectId].currentTime, utils.rf(6, 8));
       }, utils.rf(3, 5));
     }
     let currIdx = recordList.map(e => e.className.includes("current")).indexOf(true);
@@ -98,27 +101,40 @@
   /**
    * 下一个视频，用户加入播放或未学习学科视频
    */
-  function nextProject(log = '') {
-    utils.log(subjectId, log, subjectName);
-    user.scriptKcIds.push(subjectId);
-    utils.updateUser();
-    updateSubject();
-    location.href = `/a//#/newResource/res-research?redirectNext`;
+  function nextProject(log = '下一课') {
+    localStorage.setItem("_redirect", log);
+    if (location.hash.startsWith("#/activity/")) {
+      utils.log(subjectId, log, subjectName);
+      user.scriptKcIds.push(subjectId);
+      utils.updateUser();
+      updateSubject();
+      utils.log("页面视频播放完毕，下一条");
+      document.querySelector("a[title=返回门户]").click();
+      return;
+    }
+    setTimeout(redirectPage, utils.rf(3, 5))
   }
 
   function redirectPage() {
-    let next;
-    if (user.join_kcs?.length) next = user.join_kcs.pop();
-    else if (needSubjects?.length) next = needSubjects[0];
-    utils.updateUser();
-    if (!next) {
-      user.state = 0;
-      utils.updateUser();
-      utils.log("当前科目学习完成；");
+    if (location.hash.startsWith("#/Layout/index")) {
+      // location.href = `/a//#/newResource/res-research?dingToken=${localStorage.Authorization.substring(7)}`;
+      document.querySelector("div#index-head ul li.text-overflow>div").click();
+      return setTimeout(window.close, utils.rf(3, 5));
     }
-    // window.open(`https://wljy.scjks.net/a/#/activity/${next.id}`, "_top");
-    location.href = `/a/#/activity/${next.id}`;
-    // location.reload();
+    if (location.hash.startsWith("#/newResource")) {
+      let next;
+      if (user.join_kcs?.length) next = user.join_kcs.pop();
+      else if (needSubjects?.length) next = needSubjects[0];
+      utils.updateUser();
+      if (!next) {
+        user.state = 0;
+        utils.updateUser();
+        utils.log("当前科目学习完成；");
+      }
+      localStorage.removeItem("_redirect");
+      window.open(`/a/#/activity/${next.id}?dingToken=${localStorage.Authorization.substring(7)}`);
+      return setTimeout(window.close, utils.rf(10, 15));
+    }
   }
 
   function getMin(...arr) {
