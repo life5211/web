@@ -328,6 +328,7 @@
       all_kcs = githubSubjects;
       all_kcs.forEach(k => k.t = new Date(k.crt).getTime());
       all_kcs.sort((a, b) => -1 * utils.compareFn(a, b, 't', 'name'));
+      all_kcs.forEach(k => delete k.t);
       utils.localSet("all_kcs", all_kcs);
       utils.run(updateSubject, insertForm, showForm);
     }
