@@ -1,32 +1,87 @@
 // ==UserScript==
 // @name         四川继续教育自动播放
 // @namespace    http://tampermonkey.net/
-// @version      0.17
+// @version      1.17
 // @description  四川继续教育多课程自动连续播放
 // @icon         https://www.sedu.net/apppc/login/static/jjw-bj-bf11c0d7.png
 // @match        https://trplayer.sctce.cn/*
+// @match        https://www.sedu.net/student/*
 // @downloadURL  https://life5211.github.io/web/auto/play.sedu.user.js
 // @updateURL    https://life5211.github.io/web/auto/play.sedu.user.js
 // @noframes
+// @grant        unsafeWindow
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_listValues
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_unregisterMenuCommand
 // ==/UserScript==
 
+window.GMSetValue = unsafeWindow.GMSetValue = GM_setValue;
+window.GMGetValue = unsafeWindow.GMGetValue = GM_getValue;
 
-let userI = setInterval(_ => {
-  let text = document.querySelector("div.scrollbar-demo-item.active span:nth-child(2)")?.innerText;
-  console.log("用户脚本,当前课程包学习进度：", text);
-  if (text === "100.00%") {
-    let ls = document.querySelectorAll("div.scrollbar-demo-item>div");
-    if (ls?.length && ls.length > 1) return ls[1].click();
+let $q = s => document.querySelector(s),
+  $qa = s => Array.from(document.querySelectorAll(s)),
+  $localGet = (key, def) => localStorage.hasOwnProperty(key) ? JSON.parse(localStorage[key]) : def,
+  $localSet = (key, val) => localStorage.setItem(key, JSON.stringify(val)),
+  $GmGet = (key, def) => JSON.parse(GMGetValue(key, JSON.stringify(def))),
+  $GmSet = (key, val) => GMSetValue(key, JSON.stringify(val)),
+  $log = (msg, f) => {
+    console.log(msg);
+    let k = `log_${new Date().getDate()}`;
+    let log = $localGet(k, []);
+    log.push(`[${new Date().toLocaleString()}]${msg}`);
+    $localSet(k, log);
+    if (f) alert(msg);
+  };
+
+(async function redirectNext() {
+  if ("#/our-course" === location.hash && "nextStudy" === $GmGet("nextStudy")) {
+    $GmSet("nextStudy", "");
+    // document.getElementById("tab-study").click();
+    await fetch("https://xdgp-learn.sctce.cn/api/app/stuCourse/getRecordsByPage?pageIndex=1&pageSize=10&stuCourseStatus=0", {
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+        "authorization": `Bearer ${$localGet("STUDENT-TOKEN").value || $localGet("STUDENT-USER-STORE").token}`,
+        "content-type": "application/json",
+        "priority": "u=1, i",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "cross-site"
+      },
+      "method": "GET",
+      "mode": "cors",
+      "credentials": "include"
+    }).then(r => r.json()).then(json => {
+      //https://trplayer.sctce.cn/?token={TOKEN}&stuCourseId=41614455-3963-497e-888f-b35100b1e7e0&ts=1757226026207#/70dcb28e-7135-48da-8f73-b03b00a2b6c7/26f4b295-bcbb-f6d5-1c0c-3a03cea87741/pc/teachlearn
+      if (json.totalRecordCount) setTimeout(_ => window.open(json.listData[0].pcStudyUrl, "_top"), 662);
+      else $log("学习完成", 1);
+    }).catch(err => console.log(err));
   }
+})();
 
-  let videos = Array.from(document.querySelectorAll("div.video-item"));
-  let curr = document.querySelector("div.video-item.active");
-  if (curr?.innerText) {
-    if (document.videoText === curr.innerText) location.reload();//进度不更新就刷新
-    document.videoText = curr.innerText;
-    let idx = videos.indexOf(curr);
-    console.log("用户脚本,当前课程学习进度：", curr.innerText, "课程序号", idx);
-    if (curr.innerText.includes("已学习100.00%") && videos[idx + 1]) videos[idx + 1].click();
-  }
-}, 72000);
+(function videoStudy() {
+  if (location.href.startsWith("https://trplayer.sctce.cn/"))
+    setInterval(_ => {
+      let subjectPackStatus = document.querySelector("span>span.light-white").innerText;
+      $log(subjectPackStatus);
+      if ("完成100.00%" === subjectPackStatus) {
+        $GmSet("nextStudy", "nextStudy");
+        return location.href = "https://www.sedu.net/student/#/our-course";
+      }
 
+      // 课程视频切换（系统自带，仅辅助）
+      let videos = Array.from(document.querySelectorAll("div.video-item"));
+      let curr = document.querySelector("div.video-item.active");
+      let playingStatus = curr?.innerText;
+      if (playingStatus) {
+        if (document.videoText === playingStatus) location.reload();//进度不更新就刷新
+        document.videoText = playingStatus;
+        let idx = videos.indexOf(curr);
+        $log(`用户脚本,当前课程学习进度${playingStatus}, 课程序号, ${idx}`);
+        if (playingStatus.includes("已学习100.00%") && videos[idx + 1]) videos[idx + 1].click();
+      }
+    }, 66600);
+})();
