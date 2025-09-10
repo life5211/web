@@ -36,8 +36,6 @@
         "examedTotalTimes": 0,
         "score": null,
         "planArrangeId": 0,
-        "name": "许洪智",
-        "examNo": "511324199611120052",
         "picUrl": "",
         "outerId": ""
     },
@@ -51,8 +49,6 @@
         "planArrangeId": 33,
         "planArrangeName": "2025年公需科目（心理健康与职业发展）",
         "planArrangeStuId": 66681,
-        "stuName": "许洪智",
-        "examNo": "511324199611120052",
         "isMoni": false,
         "questions": [
             {

@@ -55,10 +55,20 @@ let $q = s => document.querySelector(s),
       "mode": "cors",
       "credentials": "include"
     }).then(r => r.json()).then(json => {
+      //https://learn.ourteacher.com.cn
       //https://trplayer.sctce.cn/?token={TOKEN}&stuCourseId=41614455-3963-497e-888f-b35100b1e7e0&ts=1757226026207#/70dcb28e-7135-48da-8f73-b03b00a2b6c7/26f4b295-bcbb-f6d5-1c0c-3a03cea87741/pc/teachlearn
-      if (json.totalRecordCount) setTimeout(_ => window.open(json.listData[0].pcStudyUrl, "_top"), 662);
-      else $log("学习完成", 1);
+      if (json.totalRecordCount) {
+        let urls = json.listData.map(e => e.pcStudyUrl).filter(e => e.startsWith("https://trplayer.sctce.cn"));
+        setTimeout(_ => window.open(urls[0], "_top"), 662);
+      } else $log("学习完成", 1);
     }).catch(err => console.log(err));
+  }
+})();
+
+(function reload() {
+  if ("https://www.sedu.net" === location.origin) {
+    $log("定时刷新页面Key")
+    document.reloadNo = setInterval(location.reload, 29 * 60000);
   }
 })();
 
@@ -69,6 +79,7 @@ let $q = s => document.querySelector(s),
       $log(subjectPackStatus);
       if ("完成100.00%" === subjectPackStatus) {
         $GmSet("nextStudy", "nextStudy");
+        $log("100.00%下一个课程");
         return location.href = "https://www.sedu.net/student/#/our-course";
       }
 
@@ -76,11 +87,14 @@ let $q = s => document.querySelector(s),
       let videos = Array.from(document.querySelectorAll("div.video-item"));
       let curr = document.querySelector("div.video-item.active");
       let playingStatus = curr?.innerText;
+      let idx = videos.indexOf(curr);
+      $log(`用户脚本,当前课程学习进度${playingStatus}, 课程序号, ${idx}`);
       if (playingStatus) {
-        if (document.videoText === playingStatus) location.reload();//进度不更新就刷新
+        if (document.videoText === playingStatus) {
+          $log("播放进度暂停，刷新页面")
+          location.reload();
+        }
         document.videoText = playingStatus;
-        let idx = videos.indexOf(curr);
-        $log(`用户脚本,当前课程学习进度${playingStatus}, 课程序号, ${idx}`);
         if (playingStatus.includes("已学习100.00%") && videos[idx + 1]) videos[idx + 1].click();
       }
     }, 66600);
