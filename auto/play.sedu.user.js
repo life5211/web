@@ -36,6 +36,12 @@ let $q = s => document.querySelector(s),
     if (f) alert(msg);
   };
 
+(function reload() {
+  if ("https://www.sedu.net" === location.origin) {
+    document.reloadNo = setInterval(location.reload, 56000);
+  }
+})();
+
 (async function redirectNext() {
   if ("#/our-course" === location.hash && "nextStudy" === $GmGet("nextStudy")) {
     $GmSet("nextStudy", "");
