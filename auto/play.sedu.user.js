@@ -67,35 +67,41 @@ let $q = s => document.querySelector(s),
 
 (function reload() {
   if ("https://www.sedu.net" === location.origin) {
-    $log("定时刷新页面Key")
-    document.reloadNo = setInterval(location.reload, 29 * 60000);
+    document.reloadNo = setInterval(_ => {
+      if (document.reloadNo) clearInterval(document.reloadNo);
+      $log("定时刷新页面Key");
+      location.reload();
+    }, 29 * 60000);
   }
 })();
 
 (function videoStudy() {
-  if (location.href.startsWith("https://trplayer.sctce.cn/"))
-    setInterval(_ => {
-      let subjectPackStatus = document.querySelector("span>span.light-white").innerText;
-      $log(subjectPackStatus);
-      if ("完成100.00%" === subjectPackStatus) {
-        $GmSet("nextStudy", "nextStudy");
-        $log("100.00%下一个课程");
-        return location.href = "https://www.sedu.net/student/#/our-course";
-      }
+  if (!location.href.startsWith("https://trplayer.sctce.cn/")) return;
+  let pauseTime = 0;
+  setInterval(_ => {
+    let subjectPackStatus = document.querySelector("span>span.light-white").innerText;
+    $log(subjectPackStatus);
+    if ("完成100.00%" === subjectPackStatus) {
+      $GmSet("nextStudy", "nextStudy");
+      $log("当前课程包已完成100.00%，开始下一个课程");
+      return location.href = "https://www.sedu.net/student/#/our-course";
+    }
 
-      // 课程视频切换（系统自带，仅辅助）
-      let videos = Array.from(document.querySelectorAll("div.video-item"));
-      let curr = document.querySelector("div.video-item.active");
-      let playingStatus = curr?.innerText;
-      let idx = videos.indexOf(curr);
-      $log(`用户脚本,当前课程学习进度${playingStatus}, 课程序号, ${idx}`);
-      if (playingStatus) {
-        if (document.videoText === playingStatus) {
-          $log("播放进度暂停，刷新页面")
-          location.reload();
-        }
-        document.videoText = playingStatus;
-        if (playingStatus.includes("已学习100.00%") && videos[idx + 1]) videos[idx + 1].click();
+    let videos = Array.from(document.querySelectorAll("div.video-item"));
+    let curr = document.querySelector("div.video-item.active");
+    let playingStatus = curr?.innerText;
+    let idx = videos.indexOf(curr);
+    $log(`用户脚本,当前课程学习进度${playingStatus}, 课程序号, ${idx}`);
+    if (!playingStatus) return;
+    if (document.videoText === playingStatus) {
+      pauseTime++;
+      if (pauseTime > 8) {
+        $log(`播放进度暂停${pauseTime}次，刷新页面`);
+        location.reload()
       }
-    }, 66600);
+    }
+    document.videoText = playingStatus;
+    //`课程视频100%切换（系统自带，仅辅助）`);
+    if (playingStatus.includes("已学习100.00%") && videos[idx + 1]) videos[idx + 1].click();
+  }, 66600);
 })();
