@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         四川继续教育自动播放
 // @namespace    http://tampermonkey.net/
-// @version      1.17
+// @version      2.17
 // @description  四川继续教育多课程自动连续播放
 // @icon         https://www.sedu.net/apppc/login/static/jjw-bj-bf11c0d7.png
 // @match        https://trplayer.sctce.cn/*
@@ -36,12 +36,6 @@ let $q = s => document.querySelector(s),
     if (f) alert(msg);
   };
 
-(function reload() {
-  if ("https://www.sedu.net" === location.origin) {
-    document.reloadNo = setInterval(location.reload, 56000);
-  }
-})();
-
 (async function redirectNext() {
   if ("#/our-course" === location.hash && "nextStudy" === $GmGet("nextStudy")) {
     $GmSet("nextStudy", "");
@@ -71,13 +65,20 @@ let $q = s => document.querySelector(s),
   }
 })();
 
+function tokenFun() {
+  let token = $GmGet("token");
+  $log(`Token过期时间 ${new Date(token.expiry)}`);
+  if (token.expiry - Date.now() < 3600000) {
+    $log(`Token临近过期，主动刷新，转到学时平台`);
+    location.href = `https://www.sedu.net/student/#/wx-login-result?loginOrgId=1&token=${token.value}`;
+  }
+}
+
 (function reload() {
-  if ("https://www.sedu.net" === location.origin) {
-    document.reloadNo = setInterval(_ => {
-      if (document.reloadNo) clearInterval(document.reloadNo);
-      $log("定时刷新页面Key");
-      location.reload();
-    }, 29 * 60000);
+  if (location.href.startsWith("https://www.sedu.net/student/")) {
+    $GmSet("token", $localGet("STUDENT-TOKEN"));
+    tokenFun();
+    document.reloadNo = setInterval(tokenFun, 29 * 60000);
   }
 })();
 
@@ -105,6 +106,8 @@ let $q = s => document.querySelector(s),
         $log(`播放进度暂停${pauseTime}次，刷新页面`);
         location.reload()
       }
+    } else {
+      pauseTime = 0;
     }
     document.videoText = playingStatus;
     //`课程视频100%切换（系统自带，仅辅助）`);
