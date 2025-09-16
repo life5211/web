@@ -22,8 +22,9 @@ GM_registerMenuCommand("一键下载", getInfoByScript, "");
 
 function getInfoByScript() {
   let token = sessionStorage["SZ_YSX_WEBTOKEN"] || sessionStorage["SZ_XSC_WEBTOKEN"];
-  let _jhPcId = sessionStorage["SZ_YSX_WEB_planId"] || sessionStorage["SZ_XSC_WEB_planId"]
-  fetch("/zssxapi/xx/checks/studentList", {
+  let _jhPcId = sessionStorage["SZ_YSX_WEB_planId"] || sessionStorage["SZ_XSC_WEB_planId"];
+  let type = sessionStorage["SZ_YSX_WEBTOKEN"] ? "xx" : "cz";
+  fetch(`/zssxapi/${type}/checks/studentList`, {
     "headers": {
       "accept": "application/json, text/plain, */*",
       "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
@@ -36,7 +37,6 @@ function getInfoByScript() {
       "sec-fetch-site": "same-origin",
       token
     },
-    "referrer": "https://bigapp.scbdc.edu.cn/zssx/web/ysxIndex.html",
     "referrerPolicy": "strict-origin-when-cross-origin",
     "body": `{\"jhpcid\":\"${_jhPcId}\",\"condition\":\"\",\"zshpid\":\"\",\"sfbd\":-1,\"cpage\":1,\"psize\":50}`,
     "method": "POST",
@@ -49,7 +49,7 @@ function getInfoByScript() {
     (function getFun() {
       let stu = arr.pop();
       if (stu) {
-        fetch(`/zssxapi/xx/student/get_stu_audit_info?stuid=${stu.xsxxid}&jhpcid=${stu.jhpcid}&qtpc=true`, {
+        fetch(`/zssxapi/${type}/student/get_stu_audit_info?stuid=${stu.xsxxid}&jhpcid=${stu.jhpcid}&qtpc=true`, {
           "headers": {
             "accept": "application/json, text/plain, */*",
             "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
@@ -62,7 +62,6 @@ function getInfoByScript() {
             "sec-fetch-site": "same-origin",
             token
           },
-          "referrer": "https://bigapp.scbdc.edu.cn/zssx/web/ysxIndex.html",
           "referrerPolicy": "strict-origin-when-cross-origin",
           "body": null,
           "method": "GET",
