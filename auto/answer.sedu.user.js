@@ -4112,7 +4112,7 @@ let $q = s => document.querySelector(s),
     }, 666);
 })();
 
-if (location.hash === "#/stu/trainOnPc") GM_registerMenuCommand("练习界面，全部题库采集");
+if (location.hash === "#/stu/trainOnPc") GM_registerMenuCommand("练习界面，全部题库采集", getQuestionsUpdate, "");
 
 function getQuestionsUpdate() {
   // 获取训练题库信息
