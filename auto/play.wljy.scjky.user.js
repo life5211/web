@@ -143,6 +143,7 @@
   function updateSubject() {
     all_kcs.forEach(k => k.script = k.his = k.zbgk = k.dbgk = k.yjxs = '');
     all_kcs.filter(k => k.name.includes("普高新课程新教材培训")).forEach(k => k.s = 1);
+    all_kcs.filter(k => k.name.includes("义教新修订教材教师培训")).forEach(k => k.s = 1);
     all_kcs.filter(k => user.scriptKcIds.includes(k.id)).forEach(k => k.script = k.his = 'script');
     if (user.playHistory)
       for (let re_his = /\n(.+)\n+(总计直播观看:\s*(.+分钟)\s*总计点播观看：\s*(.+分钟))/g; !!(r = re_his.exec(user.playHistory));)
