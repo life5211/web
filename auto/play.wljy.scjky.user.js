@@ -28,6 +28,11 @@
     localSet: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
     updateUser: _ => utils.localSet(usrKey, user),
     run: (...fun) => fun.forEach(f => f()),
+    runInterval: function (min, max, handler) {
+      let number = setInterval(_ => setTimeout(handler, this.rf(min, max)), this.rf(min, max));
+      handler();
+      return number;
+    },
     compareFn(a, b, ...fields) {
       const fnc = (m, n) => m === undefined ? -1 : n === undefined ? 1 : m.localeCompare ? m.localeCompare(n) : m > n ? 1 : m < n ? -1 : 0;
       if (!fields?.length) return fnc(a, b);
@@ -58,8 +63,8 @@
     utils.run(updateSubject, insertForm, showForm);
     utils.log("页面信息初始化完成");
     if (!user.state) return; // 暂停学习
-    if (localStorage.getItem("_redirect"))
-      setTimeout(redirectPage, utils.rf(3, 8));
+    // if (localStorage.getItem("_redirect"))
+    //   setTimeout(redirectPage, utils.rf(3, 8));
     if (location.hash.startsWith("#/activity/"))
       document.i_2 = setInterval(studyFun, utils.rf(60, 80));
   }, utils.rf(1, 2));
