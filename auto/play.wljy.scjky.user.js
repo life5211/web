@@ -102,39 +102,21 @@
    * 下一个视频，用户加入播放或未学习学科视频
    */
   function nextProject(log = '下一课') {
-    localStorage.setItem("_redirect", log);
-    if (location.hash.startsWith("#/activity/")) {
-      utils.log(subjectId, log, subjectName);
-      user.scriptKcIds.push(subjectId);
+    utils.log(subjectId, log, subjectName);
+    user.scriptKcIds.push(subjectId);
+    utils.updateUser();
+    updateSubject();
+    utils.log("页面视频播放完毕，下一条");
+    let next = null;
+    if (user.join_kcs?.length) next = user.join_kcs.pop();
+    else if (needSubjects?.length) next = needSubjects[0];
+    utils.updateUser();
+    if (!next) {
+      user.state = 0;
       utils.updateUser();
-      updateSubject();
-      utils.log("页面视频播放完毕，下一条");
-      document.querySelector("a[title=返回门户]").click();
-      return;
-    }
-    setTimeout(redirectPage, utils.rf(3, 5))
-  }
-
-  function redirectPage() {
-    if (location.hash.startsWith("#/Layout/index")) {
-      // location.href = `/a//#/newResource/res-research?dingToken=${localStorage.Authorization.substring(7)}`;
-      document.querySelector("div#index-head ul li.text-overflow>div").click();
-      return setTimeout(window.close, utils.rf(3, 5));
-    }
-    if (location.hash.startsWith("#/newResource")) {
-      let next;
-      if (user.join_kcs?.length) next = user.join_kcs.pop();
-      else if (needSubjects?.length) next = needSubjects[0];
-      utils.updateUser();
-      if (!next) {
-        user.state = 0;
-        utils.updateUser();
-        utils.log("当前科目学习完成；");
-      }
-      localStorage.removeItem("_redirect");
-      window.open(`/a/#/activity/${next.id}?dingToken=${localStorage.Authorization.substring(7)}`);
-      return setTimeout(window.close, utils.rf(10, 15));
-    }
+      utils.log("当前科目学习完成；");
+    } else
+      window.open(`${location.pathname.length === 4 ? '/a/' : '/a//'}#/activity/${next.id}?dingToken=${localStorage.Authorization.substring(7)}`, "_top");
   }
 
   function getMin(...arr) {
@@ -251,6 +233,7 @@
       <th>回放</th>
       <th>脚本</th>
       <th>记录</th>
+      <th>操作</th>
     </tr>
     </thead>
     <tbody id="learnedTable"></tbody>
@@ -274,6 +257,12 @@
   }
   document.fNext = _ => nextProject('手动点击');
   document.downLog = _ => downloadExcel(`${usrName}网络教研`, learned_kcs);
+  document.reStudyKc = id => {
+    let kcs = all_kcs.filter(k => k.id === id);
+    if (kcs.length !== 1) return alert(`搜索结果数量：【${kcs.length}】`);
+    user.join_kcs.push(kcs[0]);
+    document.infoUp();
+  };
 
   function showForm() {
     document.getElementById("info0").innerText = ` ${needSubjects.length} / ${allSubjects.length} `;
@@ -286,8 +275,17 @@
     document.getElementById("noStudy").innerHTML = needSubjects.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
     document.getElementById("join_kcs").innerHTML = user.join_kcs?.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
     document.getElementById("all_kcs").innerHTML = all_kcs.map(k => `<option value="${k.name}">${k.id}</option>`).join('\n');
-    document.getElementById('learnedTable').innerHTML = learned_kcs
-        .map(k => `<tr><td>${k.crt}</td><td>${k.id}</td><td>${k.name}</td><td>${k.yjxs}</td><td>${k.zbgk}</td><td>${k.dbgk}</td><td>${k.script}</td><td>${k.his}</td></tr>`).join('\n');
+    document.getElementById('learnedTable').innerHTML = learned_kcs.map(k => `<tr>
+          <td>${k.crt}</td>
+          <td>${k.id}</td>
+          <td>${k.name}</td>
+          <td>${k.yjxs}</td>
+          <td>${k.zbgk}</td>
+          <td>${k.dbgk}</td>
+          <td>${k.script}</td>
+          <td>${k.his}</td>
+          <td><a href="#" onclick="reStudyKc('${k.id}')">重学</a></td>
+        </tr>`).join('\n');
   }
 
   async function downloadExcel(fileName, objArr) {
