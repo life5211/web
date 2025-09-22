@@ -77,10 +77,11 @@ function getInfoByScript() {
 
         function flatObj(obj, pre = '', result = {}) {
           Object.keys(obj).forEach(k => {
+            if ("txxyq" === k) return;
             let preKey = pre ? `${pre}.${k}` : k;
             const val = obj[k];
             if ('object' === typeof val && val) flatObj(val, preKey, result);
-            else result[preKey] = val;
+            else if (val || val === 0 || val === false) result[preKey] = val;
           });
           return result;
         }
