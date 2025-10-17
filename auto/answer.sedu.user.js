@@ -27,7 +27,7 @@ let $q = s => document.querySelector(s),
     $qa = s => Array.from(document.querySelectorAll(s)),
     $localGet = (key, def) => localStorage.hasOwnProperty(key) ? JSON.parse(localStorage[key]) : def,
     $localSet = (key, val) => localStorage.setItem(key, JSON.stringify(val)),
-    $GmGet = (key, def) => JSON.parse(GMGetValue(key, JSON.stringify(def))),
+    $GmGet = (key, def = "") => JSON.parse(GMGetValue(key, JSON.stringify(def))),
     $GmSet = (key, val) => GMSetValue(key, JSON.stringify(val)),
     $log = (msg, f) => {
           console.log(msg);
