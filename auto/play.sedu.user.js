@@ -36,8 +36,21 @@ let $q = s => document.querySelector(s),
     if (f) alert(msg);
   };
 
+(function tokenSetFun() {
+  if (location.href.startsWith("https://www.sedu.net/student/")) {
+    $GmSet("token", $localGet("STUDENT-TOKEN"));
+    tokenExpireConfirmFun();
+    document.reloadNo = setInterval(tokenExpireConfirmFun, 29 * 60000);
+  }
+})();
+
 (async function redirectNext() {
-  if ("#/our-course" === location.hash && "nextStudy" === $GmGet("nextStudy")) {
+  // let next = $GmGet("nextStudy");
+  let next = "nextStudy";
+  if ("nextStudy" === next && location.href.startsWith("https://www.sedu.net/student/")) {
+    if ("#/our-course" !== location.hash) {
+      document.querySelector('a[href="#/our-course"]').click()
+    }
     $GmSet("nextStudy", "");
     // document.getElementById("tab-study").click();
     await fetch("https://xdgp-learn.sctce.cn/api/app/stuCourse/getRecordsByPage?pageIndex=1&pageSize=10&stuCourseStatus=0", {
@@ -60,32 +73,26 @@ let $q = s => document.querySelector(s),
       if (json.totalRecordCount) {
         let urls = json.listData.map(e => e.pcStudyUrl).filter(e => e.startsWith("https://trplayer.sctce.cn"));
         setTimeout(_ => window.open(urls[0], "_top"), 662);
-      } else $log("学习完成", 1);
+      } else $log("学习完成");
     }).catch(err => console.log(err));
   }
 })();
 
-function tokenFun() {
+function tokenExpireConfirmFun() {
   let token = $GmGet("token");
-  $log(`Token过期时间 ${new Date(token.expiry)}`);
+  $log(`当前时间【${new Date()}】，Token过期时间 【${new Date(token.expiry)}】`);
   if (token.expiry - Date.now() < 3600000) {
     $log(`Token临近过期，主动刷新，转到学时平台`);
     location.href = `https://www.sedu.net/student/#/wx-login-result?loginOrgId=1&token=${token.value}`;
   }
 }
 
-(function reload() {
-  if (location.href.startsWith("https://www.sedu.net/student/")) {
-    $GmSet("token", $localGet("STUDENT-TOKEN"));
-    tokenFun();
-    document.reloadNo = setInterval(tokenFun, 29 * 60000);
-  }
-})();
 
 (function videoStudy() {
   if (!location.href.startsWith("https://trplayer.sctce.cn/")) return;
   let pauseTime = 0;
   setInterval(_ => {
+    tokenExpireConfirmFun();
     let subjectPackStatus = document.querySelector("span>span.light-white").innerText;
     $log(subjectPackStatus);
     if ("完成100.00%" === subjectPackStatus) {
