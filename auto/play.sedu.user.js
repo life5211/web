@@ -22,31 +22,46 @@ window.GMSetValue = unsafeWindow.GMSetValue = GM_setValue;
 window.GMGetValue = unsafeWindow.GMGetValue = GM_getValue;
 
 let $q = s => document.querySelector(s),
-  $qa = s => Array.from(document.querySelectorAll(s)),
-  $localGet = (key, def = "") => localStorage.hasOwnProperty(key) ? JSON.parse(localStorage[key]) : def,
-  $localSet = (key, val) => localStorage.setItem(key, JSON.stringify(val)),
-  $GmGet = (key, def = "") => JSON.parse(GMGetValue(key, JSON.stringify(def))),
-  $GmSet = (key, val) => GMSetValue(key, JSON.stringify(val)),
-  $log = (msg, f) => {
-    console.log(msg);
-    let k = `log_${new Date().getDate()}`;
-    let log = $localGet(k, []);
-    log.push(`[${new Date().toLocaleString()}]${msg}`);
-    $localSet(k, log);
-    if (f) alert(msg);
-  };
+    $qa = s => Array.from(document.querySelectorAll(s)),
+    $localGet = (key, def = "") => localStorage.hasOwnProperty(key) ? JSON.parse(localStorage[key]) : def,
+    $localSet = (key, val) => localStorage.setItem(key, JSON.stringify(val)),
+    $GmGet = (key, def = "") => JSON.parse(GMGetValue(key, JSON.stringify(def))),
+    $GmSet = (key, val) => GMSetValue(key, JSON.stringify(val)),
+    $rf = (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
+    $runInterval = (fun, min = 60, max = 180, ids = []) => {
+      ids.unshift(setTimeout(_ => {
+        fun();
+        $runInterval(fun, min, max, ids);
+      }, $rf(min, max)));
+      return ids;
+    },
+    $log = (msg, f) => {
+      console.log(msg);
+      let k = `log_${new Date().getDate()}`;
+      let log = $localGet(k, []);
+      log.push(`[${new Date().toLocaleString()}]${msg}`);
+      $localSet(k, log);
+      if (f) alert(msg);
+    };
 
 (function tokenSetFun() {
-  if (location.href.startsWith("https://www.sedu.net/student/")) {
-    $GmSet("token", $localGet("STUDENT-TOKEN"));
-    tokenExpireConfirmFun();
-    document.reloadNo = setInterval(tokenExpireConfirmFun, 29 * 60000);
-  }
+  if (!location.href.startsWith("https://www.sedu.net/student/")) return;
+  $GmSet("token", $localGet("STUDENT-TOKEN"));
+  tokenExpireConfirmFun();
+  document.reloadNo = $runInterval(tokenExpireConfirmFun, 1300, 1700);
 })();
 
+function tokenExpireConfirmFun() {
+  let token = $GmGet("token");
+  $log(`当前时间【${new Date()}】，Token过期时间 【${new Date(token.expiry)}】`);
+  if (token.expiry - Date.now() < 3600000) {
+    $log(`Token临近过期，主动刷新，转到学时平台`);
+    location.href = `https://www.sedu.net/student/#/wx-login-result?loginOrgId=1&token=${token.value}`;
+  }
+}
+
 (async function redirectNext() {
-  // let next = $GmGet("nextStudy");
-  let next = "nextStudy";
+  let next = $GmGet("nextStudy");
   if ("nextStudy" === next && location.href.startsWith("https://www.sedu.net/student/")) {
     if ("#/our-course" !== location.hash) {
       document.querySelector('a[href="#/our-course"]').click()
@@ -57,7 +72,7 @@ let $q = s => document.querySelector(s),
       "headers": {
         "accept": "application/json, text/plain, */*",
         "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-        "authorization": `Bearer ${$localGet("STUDENT-TOKEN").value || $localGet("STUDENT-USER-STORE").token}`,
+        "authorization": `Bearer ${$localGet("STUDENT-TOKEN")?.value || $localGet("STUDENT-USER-STORE")?.token}`,
         "content-type": "application/json",
         "priority": "u=1, i",
         "sec-fetch-dest": "empty",
@@ -78,20 +93,10 @@ let $q = s => document.querySelector(s),
   }
 })();
 
-function tokenExpireConfirmFun() {
-  let token = $GmGet("token");
-  $log(`当前时间【${new Date()}】，Token过期时间 【${new Date(token.expiry)}】`);
-  if (token.expiry - Date.now() < 3600000) {
-    $log(`Token临近过期，主动刷新，转到学时平台`);
-    location.href = `https://www.sedu.net/student/#/wx-login-result?loginOrgId=1&token=${token.value}`;
-  }
-}
-
-
 (function videoStudy() {
   if (!location.href.startsWith("https://trplayer.sctce.cn/")) return;
   let pauseTime = 0;
-  setInterval(_ => {
+  $runInterval(_ => {
     tokenExpireConfirmFun();
     let subjectPackStatus = document.querySelector("span>span.light-white").innerText;
     $log(subjectPackStatus);
@@ -119,5 +124,5 @@ function tokenExpireConfirmFun() {
     document.videoText = playingStatus;
     //`课程视频100%切换（系统自带，仅辅助）`);
     if (playingStatus.includes("已学习100.00%") && videos[idx + 1]) videos[idx + 1].click();
-  }, 66600);
+  }, 60, 120);
 })();
