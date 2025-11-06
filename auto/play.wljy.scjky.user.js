@@ -306,8 +306,13 @@
 
   async function getAllKcs() {
     let rsp = await fetch("https://life5211.github.io/web/data/scjky.jy.json");
-    if (!rsp.ok) utils.log(`"github请求失败-${rsp.statusText}`, true);
-    let githubSubjects = await rsp.json();
+    let githubSubjects;
+    if (!rsp.ok) {
+      utils.log(`"github请求失败-${rsp.statusText}`, true);
+      githubSubjects = utils.localGet("all_kcs");
+    } else {
+      githubSubjects = await rsp.json();
+    }
     let length = githubSubjects.length;
     utils.localSet("_kc_github", githubSubjects);
     let ids = githubSubjects.map(k => k.id);
