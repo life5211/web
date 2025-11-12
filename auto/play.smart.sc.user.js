@@ -32,7 +32,8 @@
       $log("播放器初始化设置");
       // if (!video.muted) video.muted = true;
       // if (!video.autoplay) video.autoplay = true;
-      if (video.playbackRate < 4) document.querySelector("video").playbackRate = 4;
+      if (video.playbackRate < 4) video.playbackRate = 4;
+      if (!video.currentTime) video.play().then($log).catch($log);
       document.querySelector("video").removeAttribute("disableremoteplayback")
       document.querySelector("video").removeAttribute("disablePictureInPicture")
       document.querySelector("video").removeAttribute("controlsList")
@@ -58,7 +59,7 @@
     }
     if (video.ended) return $log("播放完毕，等待同步进度");
     if (!video.paused) return $log("正在播放……");
-    if (video.paused) return video.play().then($log).catch($log);
+    if (video.paused && video.currentTime) return video.play().then($log).catch($log);
     $log("暂停视频继续播放");
   }, 36666);
 })();
