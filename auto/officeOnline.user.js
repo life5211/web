@@ -6,6 +6,7 @@
 // @author       nickname
 // @match        *.e21cn.com/*
 // @match        *.ncpta.cn/*
+// @match        *.scpta.com.cn/*
 // @match        *.gov.cn/*
 // @match        *.edu.cn/*
 // @icon         https://media-cdn.microsoftstore.com.cn/media/category/office2019/icon-word.png
@@ -34,6 +35,8 @@
             aTag,
             `https://staticsz.e21cn.com/${aTag.href.split("id=")[1]}`
           );
+        if (aTag.href.includes("/download"))
+          return nodeCloneWeb2312(aTag, aTag.href);
         //  return nodeCloneWeb2312(aTag, `http://static.sz.e21cn.com/${aTag.href.split('id=')[1]}`);
         if (fileTypes2312.includes(aTag.href.match(/\.([^.]+)$/)[1]))
           return nodeCloneWeb2312(aTag, aTag.href);
@@ -54,10 +57,11 @@
       <a target="_blank" style="color: red" href="https://view.xdocin.com/view?src=${encodeUri}"> [[xdoc]] </a>
       <a target="_blank" style="color: green" href="https://view.officeapps.live.com/op/view.aspx?src=${encodeUri}">[microsoft]</a>
       <a target="_blank" style="color: blue" href="https://file.kkview.cn/onlinePreview?url=${eu(
-        btoa(href)
-      )}"> [[kkView]] </a>
+      btoa(href)
+    )}"> [[kkView]] </a>
     `;
   }
+
   document.createLink2312 = () => {
     const ie = document.getElementById("crtLink2312");
     if (!ie.value) return;
