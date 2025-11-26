@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         四川智慧教育平台学习脚本
 // @version      0.17
+// @description  try to take over the world!
 // @icon         https://basic.smartedu.cn/img/logo-icon.abf693b9.png
 // @author       user
 // @match        https://basic.sc.smartedu.cn/*

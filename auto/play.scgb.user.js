@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name         四川网络干部学院学习
 // @version      0.17
-// @icon         https://basic.smartedu.cn/img/logo-icon.abf693b9.png
+// @icon         https://web.scgb.gov.cn/favicon.ico
 // @author       user
+// @description  try to take over the world!
 // @match        https://web.scgb.gov.cn/*
 // @downloadURL  https://life5211.github.io/web/auto/play.scgb.user.js
 // @updateURL    https://life5211.github.io/web/auto/play.scgb.user.js
@@ -44,9 +45,13 @@
 
     if (video.ended) {
       $log("当前课程学习结束");
+      let next = document.querySelector("div.tab-list div.item.active div").nextElementSibling;
+      if (next) return next.click();
       fetch("https://api.scgb.gov.cn/api/services/app/course/app/getCourseUserAutoLearnPage?maxResultCount=96&skipCount=0&pageIndex=1",
           {"headers": {authorization: `Bearer ${$localGet("store")?.session.accessToken}`}}
-      ).then(r => r.json().result.records).then(learned => {
+      ).then(r => r.json()).then(r => {
+        if (document.userI) clearInterval(document.userI);
+        let learned = r.result.records;
         $localSet("learned", learned);
         let learnedId = learned.map(e => e.id);
         let hours = learned.map(e => Math.floor((e.curTimes / 3600) * 100) / 100).reduce((prev, cur) => prev + cur, 0);
@@ -61,17 +66,31 @@
       });
     }
     if (video.ended) return $log("播放完毕，等待同步进度");
-    if (!video.paused) return $log("正在播放……");
     if (video.paused) return video.play().then($log).catch($log);
-    $log("暂停视频继续播放");
-  }, 36666);
+  }, 66666);
 
-  let resourceId = GM_registerMenuCommand("学习列表采集", resourceCache);
-  if (!localStorage.resource) resourceCache();
+  (function parseJWT(token) {
+    const base64Url = token.split('.')[1]; // 获取载荷部分
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // 替换Base64字符
+    const jsonPayload = decodeURIComponent(
+        atob(base64).split('')
+            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+    );
+    let jwt = JSON.parse(jsonPayload);
+    $localSet("jwt", jwt);
+    let exp = new Date(jwt?.exp * 1000).toLocaleString();
+    $localSet('exp', exp);
+    console.log(jwt, exp);
+    return jwt; // 返回JSON对象
+  })(JSON.parse(localStorage.store)?.session.accessToken);
 
   function resourceCache() {
     fetch("https://api.scgb.gov.cn/api/services/app/course/site/getCoursePublicPage?maxResultCount=256&skipCount=0&pageIndex=41&changePageIndex=41&filterString=&contentId=&orderByType=&tagName=&year=",
         {"headers": {authorization: `Bearer ${$localGet("store")?.session.accessToken}`}}
     ).then(r => r.json()).then(r => $localSet("resource", r.result.records));
   }
+
+  let resourceId = GM_registerMenuCommand("学习列表采集", resourceCache);
+  if (!localStorage.resource) resourceCache();
 })();
