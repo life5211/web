@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 
-(function () {
+(async function () {
   let $q = s => document.querySelector(s),
       $qa = s => Array.from(document.querySelectorAll(s)),
       $localGet = (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def,
@@ -52,16 +52,30 @@
       ).then(r => r.json()).then(r => {
         if (document.userI) clearInterval(document.userI);
         let learned = r.result.records;
+        learned.forEach(e => e.hours = Math.floor((e.curTimes / 3600) * 100) / 100);
+        let learnedObj = learned.reduce(function (prev, curr) {
+          prev[curr.id] = curr;
+          return prev;
+        }, {});
+        let resource = $localGet("resource", []).map(e => Object.assign({}, e, learnedObj[e.id]));
         $localSet("learned", learned);
-        let learnedId = learned.map(e => e.id);
-        let hours = learned.map(e => Math.floor((e.curTimes / 3600) * 100) / 100).reduce((prev, cur) => prev + cur, 0);
-        $log(`当前共学习${hours}学时`);
-        if (hours > 51) return $log("学习完成")
-        let resource = $localGet("resource");
-        let filter = resource.filter(e => !learnedId.includes(e.id));
-        if (filter.length) {
+        let flag = fun(resource.filter(e => ['理论教育', '党史教育'].includes(e.label)), 21)
+            && fun(resource.filter(e => !['理论教育', '党史教育'].includes(e.label)), 31);
+        if (flag) {
+          $log("全部学习完成啦；")
+          clearInterval(document.userI)
+        }
+
+        function fun(filterRecourse, hours) {
+          let reduce = filterRecourse.reduce((prev, cur) => prev + (cur.hours || 0), 0);
+          $log(`当前模块学习进度${reduce}/${hours}`);
+          if (reduce > hours) return true;
+          let filter = filterRecourse.filter(e => !e.hours);
+          if (!filter.length) return true;
+          $log(filter[0]);
           location.href = `/#/course?id=${filter[0].id}&className=`;
           location.reload();
+          return false;
         }
       });
     }

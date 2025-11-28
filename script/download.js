@@ -5,6 +5,6 @@ javascript:(async function downloadExcel(fileName, objArr) {
     let workbook = XLSX.utils.book_new();
     let worksheet = XLSX.utils.json_to_sheet(objArr);
     XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
-    XLSX.writeFile(workbook, `${fileName}details_${new Date().getTime()}.xlsx`);
+    XLSX.writeFile(workbook, `${fileName}.xlsx`);
   })
-})(`Result${new Date().toLocaleString()}`, temp1);
+})(`Result${new Date().toLocaleString().replaceAll(/[^\d]/g, '')}`, temp2);
