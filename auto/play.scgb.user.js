@@ -24,12 +24,12 @@
   let $qa = s => Array.from(document.querySelectorAll(s));
   let $localGet = (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def;
   let $localSet = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-  let $log = (msg, k = `Log_${new Date().toLocaleDateString()}`) => {
-    if (msg instanceof Object) msg.crt = new Date().toLocaleTimeString();
-    else msg = {msg, crt: new Date().toLocaleTimeString()};
+  let $log = (msg, k = `Log_${new Date().toLocaleDateString()}`, crt = new Date().toLocaleTimeString()) => {
+    if (msg instanceof Object) msg.crt = crt;
+    else msg = {msg, crt};
     console.log(msg);
     let log = $localGet(k, []);
-    log.push(msg);
+    log.unshift(msg);
     $localSet(k, log);
   };
 
@@ -66,10 +66,10 @@
         let reduce = filterRecourse.reduce((prev, cur) => prev + (cur.hours || 0), 0);
         $log(`当前模块学习进度${reduce}/${hours}`);
         if (reduce > hours) return true;
-        let filter = filterRecourse.filter(e => !e.hours);
-        if (!filter.length) return true;
-        $log(filter[0]);
-        location.href = `/#/course?id=${filter[0].id}&className=`;
+        let next = filterRecourse.filter(e => !e.hours).shift();
+        if (!next) return true;
+        $log(next);
+        location.href = `/#/course?id=${next.id}&className=`;
         location.reload();
         return false;
       }
