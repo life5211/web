@@ -19,22 +19,22 @@
 // ==/UserScript==
 
 
-(async function () {
-  let $q = s => document.querySelector(s),
-      $qa = s => Array.from(document.querySelectorAll(s)),
-      $localGet = (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def,
-      $localSet = (k, v) => localStorage.setItem(k, JSON.stringify(v)),
-      $log = (msg, k = `Log_${new Date().toLocaleDateString()}`) => {
-        if (msg instanceof Object) msg.crt = new Date().toLocaleTimeString();
-        else msg = {msg, crt: new Date().toLocaleTimeString()};
-        console.log(msg);
-        let log = $localGet(k, []);
-        log.push(msg);
-        $localSet(k, log);
-      };
+(function () {
+  let $q = s => document.querySelector(s);
+  let $qa = s => Array.from(document.querySelectorAll(s));
+  let $localGet = (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def;
+  let $localSet = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+  let $log = (msg, k = `Log_${new Date().toLocaleDateString()}`) => {
+    if (msg instanceof Object) msg.crt = new Date().toLocaleTimeString();
+    else msg = {msg, crt: new Date().toLocaleTimeString()};
+    console.log(msg);
+    let log = $localGet(k, []);
+    log.push(msg);
+    $localSet(k, log);
+  };
 
   if (document.userI) clearInterval(document.userI);
-  document.userI = setInterval(function run() {
+  document.userI = setInterval(async function () {
     let video = document.querySelector("video");
     if (!video) return $log("没有video元素");
     if (!video.title) {
@@ -45,39 +45,34 @@
 
     if (video.ended) {
       $log("当前课程学习结束");
+      if (document.userI) clearInterval(document.userI);
       let next = document.querySelector("div.tab-list div.item.active div").nextElementSibling;
       if (next) return next.click();
-      fetch("https://api.scgb.gov.cn/api/services/app/course/app/getCourseUserAutoLearnPage?maxResultCount=96&skipCount=0&pageIndex=1",
+      let learned = await fetch("https://api.scgb.gov.cn/api/services/app/course/app/getCourseUserAutoLearnPage?maxResultCount=96&skipCount=0&pageIndex=1",
           {"headers": {authorization: `Bearer ${$localGet("store")?.session.accessToken}`}}
-      ).then(r => r.json()).then(r => {
-        if (document.userI) clearInterval(document.userI);
-        let learned = r.result.records;
-        learned.forEach(e => e.hours = Math.floor((e.curTimes / 3600) * 100) / 100);
-        let learnedObj = learned.reduce(function (prev, curr) {
-          prev[curr.id] = curr;
-          return prev;
-        }, {});
-        let resource = $localGet("resource", []).map(e => Object.assign({}, e, learnedObj[e.id]));
-        $localSet("learned", learned);
-        let flag = fun(resource.filter(e => ['理论教育', '党史教育'].includes(e.label)), 21)
-            && fun(resource.filter(e => !['理论教育', '党史教育'].includes(e.label)), 31);
-        if (flag) {
-          $log("全部学习完成啦；")
-          clearInterval(document.userI)
-        }
+      ).then(r => r.json()).then(r => r.result.records);
+      learned.forEach(e => e.hours = Math.floor((e.curTimes / 3600) * 100) / 100);
+      let learnedObj = learned.reduce(function (prev, curr) {
+        prev[curr.id] = curr;
+        return prev;
+      }, {});
+      let resource = $localGet("resource", []).map(e => Object.assign({}, e, learnedObj[e.id]));
+      $localSet("learned", learned);
+      fun(resource.filter(e => ['理论教育', '党史教育'].includes(e.label)), 21)
+      && fun(resource.filter(e => !['理论教育', '党史教育'].includes(e.label)), 31)
+      && $log("全部学习完成啦；");
 
-        function fun(filterRecourse, hours) {
-          let reduce = filterRecourse.reduce((prev, cur) => prev + (cur.hours || 0), 0);
-          $log(`当前模块学习进度${reduce}/${hours}`);
-          if (reduce > hours) return true;
-          let filter = filterRecourse.filter(e => !e.hours);
-          if (!filter.length) return true;
-          $log(filter[0]);
-          location.href = `/#/course?id=${filter[0].id}&className=`;
-          location.reload();
-          return false;
-        }
-      });
+      function fun(filterRecourse, hours) {
+        let reduce = filterRecourse.reduce((prev, cur) => prev + (cur.hours || 0), 0);
+        $log(`当前模块学习进度${reduce}/${hours}`);
+        if (reduce > hours) return true;
+        let filter = filterRecourse.filter(e => !e.hours);
+        if (!filter.length) return true;
+        $log(filter[0]);
+        location.href = `/#/course?id=${filter[0].id}&className=`;
+        location.reload();
+        return false;
+      }
     }
     if (video.ended) return $log("播放完毕，等待同步进度");
     if (video.paused) return video.play().then($log).catch($log);
