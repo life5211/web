@@ -95,11 +95,22 @@
   })(JSON.parse(localStorage.store)?.session.accessToken);
 
   function resourceCache() {
-    fetch("https://api.scgb.gov.cn/api/services/app/course/site/getCoursePublicPage?maxResultCount=256&skipCount=0&pageIndex=41&changePageIndex=41&filterString=&contentId=&orderByType=&tagName=&year=",
-        {"headers": {authorization: `Bearer ${$localGet("store")?.session.accessToken}`}}
+    fetch("https://api.scgb.gov.cn/api/services/app/course/site/getCoursePublicPage?maxResultCount=256&skipCount=0&pageIndex=1&filterString=&contentId=&orderByType=&tagName=&year=",
+        {"headers": {authorization: `Bearer ${JSON.parse(localStorage.store)?.session.accessToken}`}}
     ).then(r => r.json()).then(r => $localSet("resource", r.result.records));
   }
 
-  let resourceId = GM_registerMenuCommand("学习列表采集", resourceCache);
+  async function resourceCacheAll() {
+    let all = await fetch("https://api.scgb.gov.cn/api/services/app/course/site/getAllCoursePublicPage?maxResultCount=2000&skipCount=0&pageIndex=1&filterString=&contentId=&orderByType=&tagName=&year=")
+        .then(r => r.json()).then(r => r.result.records);
+    $localSet("allResource", all);
+    if (!window.XLSX) await fetch("https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js").then(r => r.text()).then(eval).catch(console.log);
+    let workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(all), 'all');
+    XLSX.writeFile(workbook, `四川干部课程列表.xlsx`);
+  }
+
   if (!localStorage.resource) resourceCache();
+  GM_registerMenuCommand("学习列表更新采集", resourceCache);
+  GM_registerMenuCommand("全部列表采集", resourceCacheAll);
 })();
