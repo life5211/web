@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="//h5static.epaynfc.com/front/c/css/default.min.css">
+  <link rel="stylesheet" href="//h5static.epaynfc.com/front/c/css/CustomBox2.min.css">
+  <script src="//cdn.epaynfc.com/Activities/publicJs/jquery/jquery3.71.min.js"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/prohibit.min.js"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/bfmPassport.min.js"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/activity/claimCoupon.min.js"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/CustomBox2.min.js"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/activity/activityLottery.min.js"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/activity/awardRotate.min.js"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/activity/buyCoupon.min.js"></script>
+  <script src="https://webapi.amap.com/maps?v=1.4.15&key=17f8b0a61cf9ca8c2a63380656082cc6"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/weixin2.min.js"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/newJsxx.min.js"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/tripartite/nonghangPartner.min.js"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/tripartite/tripartite.min.js"></script>
+  <script src="https://gw.alipayobjects.com/as/g/h5-lib/alipayjsapi/3.1.1/alipayjsapi.min.js"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/utilsNoUser.min.js"></script>
+  <script src="//h5static.epaynfc.com/front/c/js/other/activityClose.min.js"></script>
+  <script src="//referer.epaynfc.com/js/eruda.min.js"></script>
+  <script>
+    var _hmt = _hmt || [];
+    !function () {
+      var t = document.createElement("script");
+      t.setAttribute("id", "23e90bcc5f14ebb306494be737d314cc"),
+        t.setAttribute("class", "winner-tongji"),
+        t.src = "https://cdn-smart.epaynfc.com/webstatistics/winner.statics.v2.min.js?" + Math.random();
+      var e = document.getElementsByTagName("script")[0];
+      e.parentNode.insertBefore(t, e)
+    }()
+  </script>
+  <title>普惠出行 加油满减</title>
+  <style>
+      html {
+          font-size: 12px
+      }
+
+      .mainCon {
+          background: #59b680 url('//h5static.epaynfc.com/front/h5/07418ae44e/img/250228-newbg.jpg') center -6px no-repeat;
+          background-size: 100% auto !important;
+          color: #313131
+      }
+
+      p {
+          font-size: 1.1rem !important;
+          margin: 4px 0
+      }
+
+      .modelCon {
+          width: 100%;
+          background-color: #fff;
+          border-radius: 10px;
+          padding: 1px 1rem 1rem;
+          margin-bottom: 3rem
+      }
+
+      .modelCon-title {
+          text-align: center;
+          color: #fff;
+          width: 100%;
+          border-radius: 12px 0 12px 0;
+          height: 33px;
+          line-height: 31px;
+          font-weight: 700;
+          letter-spacing: 2px;
+          font-size: 1.3rem;
+          background: url('//h5static.epaynfc.com/front/h5/07418ae44e/img/16867new_titleBG.png') top center no-repeat;
+          background-size: auto 100% !important;
+          margin: -8px auto .5rem
+      }
+
+      .btnCon {
+          background: #37a064
+      }
+
+      .rightFixedItem {
+          background-color: #fff;
+          color: #37a064;
+          box-shadow: #37a064 0 1px 1px 1px
+      }
+
+      .other, .redC {
+          color: #37a064;
+          font-weight: 700
+      }
+
+      .yaan_bottom {
+          padding: 2rem 5% 1px
+      }
+
+      .postbird-box-close-btn {
+          margin-right: 0 !important
+      }
+
+      .btnBox {
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+          margin: 1rem auto 1px
+      }
+
+      .btnBox div {
+          width: 45%
+      }
+
+      .indent24 {
+          text-indent: 18px
+      }
+
+      .textRight {
+          text-align: right
+      }
+
+      .processcontainer {
+          background: #4caf50;
+          height: 1rem;
+          width: 75%;
+          border-radius: 20px;
+          left: 1rem
+      }
+
+      #processbar {
+          background: #ccc;
+          height: 1rem;
+          border-radius: 20px;
+          font-size: 12px;
+          text-align: right
+      }
+
+      .box {
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+          margin: .6rem 0 1rem
+      }
+
+      .nofooter {
+          display: none
+      }
+  </style>
+</head>
+<body id="app">
+<div class="isLoginBtn divMore1" onclick="toLogin()"></div>
+<div class="mainCon padBtm60">
+  <div class="yaan_top">
+    <img class="" src="//h5static.epaynfc.com/front/h5/07418ae44e/img/250228-newbanner.jpg">
+  </div>
+  <div class="yaan_bottom">
+    <div class="modelCon">
+      <div class="modelCon-title">活动时间</div>
+      <p style="text-align:center" class="other">2025年7月1日-2025年12月31日</p>
+      <p style="text-align:center" class="other">（每周六10:00:00-23:59:59）</p>
+    </div>
+    <div class="modelCon">
+      <div class="modelCon-title">活动内容</div>
+      <p>
+        活动期内，通过活动页面，点击“立即抢券”按钮，使用四川省工会会员服务卡支付即有机会享受<span class="other">满200元立减40元</span>
+        的加油优惠。<span class="other">同一会员每月累计限享1次，名额有限，先到先得</span>
+        。
+      </p>
+    </div>
+    <div class="modelCon" style="margin-bottom:1px">
+      <div class="modelCon-title">注意事项</div>
+      <p>
+        1.新办卡、更换卡片工会会员，<span class="other">在卡片激活15日后方可参加活动</span>
+        （如2025年7月1日激活，则在2025年7月16日后可参与活动，遇国家法定节假日则顺延）。
+      </p>
+      <p>2.同一身份证、同一手机号、同一工会会员卡号均视为同一会员。</p>
+      <p>
+        3.<span class="other">同一用户每月限享1次</span>
+        ，活动期间每周六投放活动名额7692个，当周未使用活动名额累加至下一周， 活动期间总名额199992个，名额有限，先到先得。<span
+          class="other">活动页面剩余名额进度条仅供参考</span>
+        2024年10月1日-2025年12月31日期间的四川省工会会员服务卡信用卡发卡新客户， 可在每月累计限享1次优惠基础上，再增加1次活动参与机会 <span class="other">(注:活动期间新客户活动累计限享1次，已享受过2025年1-6月活动新客户权益的本期活动不再重复享受)。</span>
+      </p>
+      <p>4.请先绑定四川省工会会员服务卡（信用卡必须激活实体卡再绑定）。</p>
+      <p>
+        5.所获加油电子券仅可用于汽油品使用，不退换、不找零，需在有效期内使用<span class="other">（有效期以券面有效期为准）</span>
+        ， 过期无效。加油电子券使用方法详见侧边栏说明。
+      </p>
+      <p>6.活动油站：适用四川省内中石油油站（页面可查看活动油站地址）。</p>
+      <p>
+        7.参与活动，<span class="other">油站无法提供发票</span>
+        ，如需发票（优惠部分不能开具发票）请致电：400-770-7768。
+      </p>
+      <p>
+        8.活动期间，法律许可范围内，四川省总工会、中国邮政集团有限公司四川省分公司、中国邮政储蓄银行股份有限公司四川省分行保留 调整本活动条款及细则（包括但不限于名额调整、暂停或取消本活动）的权利,并经<span
+          class="other">邮储银行四川分行公众号</span>
+        公示后调整。
+      </p>
+      <p>9.对卡片使用有疑问或投诉，请致电：400-889-5580；对活动如有疑问或投诉，请致电服务商陕西维纳客服：400-770-7768。</p>
+    </div>
+  </div>
+</div>
+<div class="fixedBtn">
+  <div class="btnCon" onclick='goGet("17213")'>普惠加油抢券</div>
+</div>
+<div class="rule-model" id="flow">
+  <div class="rule-modelCon">
+    <div class="model_img">
+      <img style="border-radius:10px" src="//h5static.epaynfc.com/front/h5/07418ae44e/img/16867_lc.png">
+    </div>
+    <img class="closeImg" src="//referer.epaynfc.com/1/html/webSD/frame/close_button.png" onclick="toClose()">
+  </div>
+</div>
+<div class="rule-model" id="flow1">
+  <div class="rule-modelCon">
+    <div class="model_img" style="background-color:#fff;padding:10px;border-radius:10px">
+      <p style="font-weight:700">常见问题及解决方案：</p>
+      <p>1、问题：支付时提示“请使用符合活动规则的银行卡支付”。</p>
+      <p>解决方案：说明当前支付银行卡不符合活动要求，请切换符合要求的银行卡后，再尝试支付。</p>
+      <p>2、问题：支付时提示“当前订单无优惠，请稍后再试”。</p>
+      <p>解决方案：频繁点击购券按钮导致系统判定为名额占用，建议15-30分钟后再重新进入活动页面尝试下单。</p>
+      <p>3、问题：提示“此银行卡已有其他账号绑定！”</p>
+      <p>解决方案：用户有多个手机号，银行卡可能绑定在其他手机号上，可以拨打客服电话4007707768，要求客服协助解绑后，在页面上重新绑卡。</p>
+      <p>4、问题：支付时报错“支付失败，详情请咨询您的发卡行”。</p>
+      <p>解决方案：问题原因是用户实体卡未激活，请通过拨打邮储银行客服或邮储银行信用卡APP进行实体卡激活。</p>
+    </div>
+    <img class="closeImg" src="//referer.epaynfc.com/1/html/webSD/frame/close_button.png" onclick="toClose1()">
+  </div>
+</div>
+<div class="rule-model" id="flow2">
+  <div class="rule-modelCon">
+    <div class="model_img" style="background-color:#fff;padding:2rem 10px;border-radius:10px">
+      <p style="text-align:center">
+        维纳客服热线：<a href="tel:4007707768">4007707768</a>
+      </p>
+    </div>
+    <img class="closeImg" src="//referer.epaynfc.com/1/html/webSD/frame/close_button.png" onclick="toClose2()">
+  </div>
+</div>
+<div class="rule-model" id="flow3">
+  <div class="rule-modelCon">
+    <div class="model_img" style="background-color:#fff;padding:1rem 10px;border-radius:10px">
+      <h2 style="text-align:center;letter-spacing:2px">温馨提示</h2>
+      <p style="text-align:center;margin:.5rem auto">活动名额已全部占用</p>
+      <div class="btnBox">
+        <div class="btnCon" onclick="toClose3()">关闭</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="rule-model" id="flow4">
+  <div class="rule-modelCon">
+    <div class="model_img" style="background-color:#fff;padding:1rem 10px;border-radius:10px;max-height:86vh">
+      <h2 style="text-align:center;letter-spacing:2px">关于修改2025年一季度</h2>
+      <h2 style="text-align:center;letter-spacing:2px">普惠出行加油满减活动</h2>
+      <h2 style="text-align:center;letter-spacing:2px">2025年3月活动规则的公告</h2>
+      <p>尊敬的工会会员：</p>
+      <p class="indent24">为了优化活动体验，提升活动质量，我行将对2025年一季度普惠出行加油满减活动2025年3月的现有规则进行部分调整。具体修改内容如下：</p>
+      <p class="indent24">一、活动时间及活动名额</p>
+      <p class="indent24">
+        <strong class="redC">原规则：</strong>
+        活动时间：2025年3月1日-2025年3月31日（每天10:00:00-23:59:59）；2.活动名额：活动期间每日投放活动名额1296个。
+      </p>
+      <p class="indent24">
+        <strong class="redC">新规则：</strong>
+        1.活动时间：2025年3月1日-2025年3月31日（<strong class="redC">每周六10:00:00-23:59:59</strong>
+        ）； 2.活动名额：活动期间每周六投放活动名额<strong class="redC">7861</strong>
+        个。
+      </p>
+      <p class="indent24">二、生效时间</p>
+      <p class="indent24">
+        本次调整将于2025年3月1日正式生效。2025年3月1日起参与活动的工会会员将适用新规则，2025年二季度也将参照新规则继续开展活动。请各位会员知悉并合理安排参与时间。</p>
+      <p class="indent24">如需咨询或投诉，可拨打服务商客服热线：400-770-7768、中国邮政储蓄银行客服热线：95580/40088-95580。感谢您的理解与支持！</p>
+      <p class="textRight">中国邮政储蓄银行股份有限公司四川省分行</p>
+      <p class="textRight">2025年2月28日</p>
+    </div>
+    <img class="closeImg" src="//referer.epaynfc.com/1/html/webSD/frame/close_button.png" onclick="toClose4()">
+  </div>
+</div>
+<div class="rule-model" id="flow5">
+  <div class="rule-modelCon">
+    <div class="model_img" style="background:#fff;border-radius:10px;padding:2rem 1rem">
+      <h2 style="text-align:center;letter-spacing:2px">名额进度</h2>
+      <div class="box">
+        <p>100%</p>
+        <div class="processcontainer">
+          <div id="processbar"></div>
+        </div>
+        <p>0%</p>
+      </div>
+    </div>
+    <img class="closeImg" src="//referer.epaynfc.com/1/html/webSD/frame/close_button.png" onclick="toClose5()">
+  </div>
+</div>
+<div class="rule-model" id="flow6">
+  <div class="rule-modelCon">
+    <div class="model_img" style="background-color:#fff;padding:1rem 10px;border-radius:10px">
+      <h2 style="text-align:center;letter-spacing:2px">温馨提示</h2>
+      <p style="text-align:center;margin:.5rem auto">请在移动端打开</p>
+    </div>
+  </div>
+</div>
+<div class="rightFloatNew" style="top:18%">
+  <div class="rightFixedItem" onclick='toCard("11kohuwkazszrap_117_18")'>邮储绑卡</div>
+  <div class="rightFixedItem" onclick="lookEleCouponsNew()">查看加油券</div>
+  <div class="rightFixedItem" onclick='gotoUrl("https://app.epaynfc.com/fueling/main?appid=h3epvmn2ctnfow4_113_23")'>可用商户</div>
+  <div class="rightFixedItem" onclick="openImg()">流程指引</div>
+  <div class="rightFixedItem" onclick="goSearch()">资格查询</div>
+  <div class="rightFixedItem" onclick="jindu()">名额查询</div>
+  <div class="rightFixedItem" onclick='gotoUrl("https://app.epaynfc.com/mine/card")'>查看卡包</div>
+  <div class="rightFixedItem" onclick='$("#flow1").show()'>常见Q&A</div>
+  <div class="rightFixedItem" onclick='$("#flow2").show()'>联系我们</div>
+</div>
+<script>
+  var num;
+
+  function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Harmony|huawei/i.test(navigator.userAgent)
+  }
+
+  $(document).ready((function () {
+      isMobileDevice() || $("#flow6").show()
+    }
+  ));
+  var couponId = "17213";
+
+  function toLogin() {
+  }
+
+  function toClose1() {
+    $("#flow1").hide()
+  }
+
+  function toClose2() {
+    $("#flow2").hide()
+  }
+
+  function toClose3() {
+    $("#flow3").hide()
+  }
+
+  function toClose4() {
+    $("#flow4").hide()
+  }
+
+  function toClose5() {
+    $("#flow5").hide()
+  }
+
+  function jindu() {
+    sessionStorage.getItem("token") || sessionStorage.getItem("openID") ? click && (click = !1,
+      jindu1()) : bfmPassport.forceLogin((function (o) {
+        sessionStorage.setItem("tel", o.phone),
+          sessionStorage.setItem("token", o.token),
+          sessionStorage.setItem("openID", o.openId),
+        click && (click = !1,
+          jindu1())
+      }
+    ))
+  }
+
+  function jindu1() {
+    PostbirdAlertBox.load({
+      content: "正在努力加载，请稍候...",
+      loadConBg: "rgba(0,0,0,.3)",
+      loadBg: "",
+      loadSrc: ""
+    });
+    var o = document.getElementsByClassName("postbird-box-container active");
+    $.ajax({
+      url: "https://activitiesMore.epaynfc.com/com_coupon_show/couponRedisLimit",
+      data: {
+        token: sessionStorage.getItem("token"),
+        couponId: "17213"
+      },
+      dataType: "jsonp"
+    }),
+      window.callBack = function (e) {
+        console.log(e),
+          PostbirdAlertBox.removeBox(o),
+          click = !0;
+        var t = document.getElementById("processbar");
+        $("#flow5").show(),
+          1 == e.respCode ? t.style.width = "0%" : 2 == e.respCode ? t.style.width = "95%" : t.style.width = "100%"
+      }
+  }
+
+  function goGet(o) {
+    num = 0,
+      $("#flow3").hide(),
+      sessionStorage.getItem("token") || sessionStorage.getItem("openID") ?
+        click && (click = !1, goGet1(o)) : bfmPassport.forceLogin((function (e) {
+          sessionStorage.setItem("tel", e.phone),
+            sessionStorage.setItem("token", e.token),
+            sessionStorage.setItem("openID", e.openId),
+          click && (click = !1,
+            goGet1(o))
+        }
+      ))
+  }
+
+  function goGet1(o) {
+    PostbirdAlertBox.load({
+      content: "正在努力加载，请稍候...",
+      loadConBg: "rgba(0,0,0,.3)",
+      loadBg: "",
+      loadSrc: ""
+    });
+    var e = document.getElementsByClassName("postbird-box-container active");
+    $.ajax({
+      url: "https://activitiesMore.epaynfc.com/com_coupon_show/couponRedisLimit",
+      data: {
+        token: sessionStorage.getItem("token"),
+        couponId: o
+      },
+      dataType: "jsonp",
+      timeout: 2e3,
+      success: function (o) {
+        console.log(o)
+      },
+      error: function (o, t, n) {
+        (console.log(t),
+        "timeout" == t) ? (num = 1,
+          PostbirdAlertBox.removeBox(e),
+          click = !0,
+          showalert((new Date).getHours() >= 10 ? "活动名额已全部占用" : "活动未开始")) : "error" == t && (PostbirdAlertBox.removeBox(e),
+          click = !0,
+          showalert("请求频繁，请重新再试"))
+      }
+    }),
+      window.callBack = function (t) {
+        0 == num && (console.log(t),
+          PostbirdAlertBox.removeBox(e),
+          click = !0,
+          1 == t.respCode ? "17213" == o ? goGet2() : goPayCpsb("a825041f-8a89-4fe4-9571-7ed6bcbdc326") : 3 == t.respCode ? showalert(t.respMsg) : showalert("活动名额已全部占用"))
+      }
+  }
+
+  function goGet2() {
+    PostbirdAlertBox.load({
+      content: "正在努力加载，请稍候...",
+      loadConBg: "rgba(0,0,0,.3)",
+      loadBg: "",
+      loadSrc: ""
+    });
+    var o = document.getElementsByClassName("postbird-box-container active");
+    $.ajax({
+      url: "https://activitiesMore.epaynfc.com/com_gq_ship_check/buyCoupon",
+      data: {
+        token: sessionStorage.getItem("token"),
+        activityId: "16867"
+      },
+      dataType: "jsonp",
+      error: function (e, t, n) {
+        console.log(t),
+        "error" == t && (PostbirdAlertBox.removeBox(o),
+          click = !0,
+          showalert("请求频繁，请重新再试"))
+      }
+    }),
+      window.callBack = function (e) {
+        console.log(e),
+          PostbirdAlertBox.removeBox(o),
+          click = !0,
+          1 == e.respCode ? window.location.href = e.respMsg : "活动尚未开始" == e.respMsg ? showalert("活动10点开始") : "活动维护中，请稍后尝试下单" == e.respMsg ? showalert("今日名额已用完，请明天再来参与") : showalert(e.respMsg)
+      }
+  }
+
+  function goSearch() {
+    sessionStorage.getItem("token") ? click && (click = !1,
+      searchOne()) : bfmPassport.forceLogin((function (o) {
+        sessionStorage.setItem("tel", o.phone),
+          sessionStorage.setItem("token", o.token),
+        click && (click = !1,
+          searchOne())
+      }
+    ))
+  }
+
+  function searchOne() {
+    PostbirdAlertBox.load({
+      content: "正在努力加载，请稍候...",
+      loadConBg: "rgba(0,0,0,.3)",
+      loadBg: "",
+      loadSrc: ""
+    });
+    var o = document.getElementsByClassName("postbird-box-container active");
+    $.ajax({
+      url: "https://activitiesMore.epaynfc.com/com_gq_ship_check/checkUser",
+      data: {
+        token: sessionStorage.getItem("token"),
+        activityId: "16867"
+      },
+      dataType: "jsonp"
+    }),
+      window.callBack = function (e) {
+        console.log(e),
+          PostbirdAlertBox.removeBox(o),
+          click = !0,
+          e.respCode,
+          showalert(e.respMsg)
+      }
+  }
+
+  function goPayCps(o) {
+    sessionStorage.getItem("token") || sessionStorage.getItem("openID") ? click && (click = !1,
+      payCps(o)) : bfmPassport.forceLogin((function (e) {
+        sessionStorage.setItem("tel", e.phone),
+          sessionStorage.setItem("token", e.token),
+          sessionStorage.setItem("openID", e.openId),
+        click && (click = !1,
+          payCps(o))
+      }
+    ))
+  }
+
+  function payCps(o) {
+    PostbirdAlertBox.load({
+      content: "正在努力加载，请稍候...",
+      loadConBg: "rgba(0,0,0,.3)",
+      loadBg: "",
+      loadSrc: ""
+    });
+    var e = document.getElementsByClassName("postbird-box-container active");
+    activity.pay({
+      token: sessionStorage.getItem("token"),
+      uuid: o,
+      openID: sessionStorage.getItem("openID")
+    }, (function (o) {
+        PostbirdAlertBox.removeBox(e),
+          click = !0,
+          "00" == o.respCode ? window.location.href = o.href : "14" == o.respCode || "15" == o.respCode || "16" == o.respCode || "17" == o.respCode ? showConfirm1("您尚未绑定符合活动需求的卡片") : "12" == o.respCode ? showalert("(" + sessionStorage.getItem("tel") + ")</br>暂不符合活动参与资格") : "活动尚未开始" == o.respMsg ? showalert("活动10点开始") : "活动维护中，请稍后尝试下单" == o.respMsg ? showalert("今日名额已用完，请明天再来参与") : showalert(o.respMsg)
+      }
+    ))
+  }
+
+  function goPayCpsb(o) {
+    sessionStorage.getItem("token") && sessionStorage.getItem("openID") ? click && (click = !1,
+      payCpsb(o)) : bfmPassport.forceLogin((function (e) {
+        sessionStorage.setItem("tel", e.phone),
+          sessionStorage.setItem("token", e.token),
+          sessionStorage.setItem("openID", e.openId),
+        click && (click = !1,
+          payCpsb(o))
+      }
+    ))
+  }
+
+  function payCpsb(o) {
+    PostbirdAlertBox.load({
+      content: "正在努力加载，请稍候...",
+      loadConBg: "rgba(0,0,0,.3)",
+      loadBg: "",
+      loadSrc: ""
+    });
+    var e = document.getElementsByClassName("postbird-box-container active");
+    activity.pay({
+      token: sessionStorage.getItem("token"),
+      uuid: o,
+      openID: sessionStorage.getItem("openID")
+    }, (function (o) {
+        PostbirdAlertBox.removeBox(e),
+          click = !0,
+          "00" == o.respCode ? window.location.href = o.href : "08" == o.respCode ? showalert("从12月1日开始") : "14" == o.respCode || "15" == o.respCode || "16" == o.respCode || "17" == o.respCode ? showConfirm1("您尚未绑定符合活动需求的卡片") : "12" == o.respCode ? showalert("(" + sessionStorage.getItem("tel").substring(0, 3) + "****" + sessionStorage.getItem("tel").substr(-4) + ")</br>暂不符合活动参与资格") : "活动尚未开始" == o.respMsg ? showalert("活动10点开始") : "活动维护中，请稍后尝试下单" == o.respMsg ? showalert("今日名额已用完，请明天再来参与") : showalert(o.respMsg)
+      }
+    ))
+  }
+
+  function showalert(o) {
+    PostbirdAlertBox.alert({
+      titleShow: "block",
+      title: "温馨提示",
+      headColor: "#fff",
+      headBg: "#37a064",
+      okBtnColor: "#37a064",
+      okBtn: "确定",
+      content: o,
+      footerCls: "postbird-box-footer",
+      onConfirm: function () {
+      }
+    })
+  }
+
+  function showalert2(o) {
+    PostbirdAlertBox.alert({
+      titleShow: "block",
+      title: "普惠送暖，为您加油",
+      headColor: "#fff",
+      headBg: "#37a064",
+      okBtnColor: "#37a064",
+      okBtn: "暖冬加油抢券",
+      content: o,
+      footerCls: "postbird-box-footer",
+      onConfirm: function () {
+        goPayCpsb("a825041f-8a89-4fe4-9571-7ed6bcbdc326")
+      }
+    })
+  }
+
+  function showConfirm2(o) {
+    PostbirdAlertBox.confirm({
+      titleShow: "block",
+      title: "温馨提示",
+      content: o,
+      cancelBtn: "关闭",
+      headColor: "#fff",
+      okBtn: "去绑卡",
+      headBg: "#37a064",
+      okBtnColor: "#37a064",
+      footerCls: "postbird-box-footer",
+      onConfirm: function () {
+        toCard("11kohuwkazszrap_117_18")
+      },
+      onCancel: function () {
+      }
+    })
+  }
+
+  function showConfirm1(o) {
+    PostbirdAlertBox.confirm({
+      titleShow: "block",
+      title: "温馨提示",
+      content: o,
+      cancelBtn: "关闭",
+      headColor: "#fff",
+      okBtn: "去绑卡",
+      headBg: "#37a064",
+      okBtnColor: "#37a064",
+      footerCls: "postbird-box-footer",
+      onConfirm: function () {
+        toCard("11kohuwkazszrap_117_18")
+      },
+      onCancel: function () {
+      }
+    })
+  }
+
+  function showConfirm3(o) {
+    PostbirdAlertBox.confirm({
+      titleShow: "block",
+      title: "温馨提示",
+      content: o,
+      cancelBtn: "取消",
+      headColor: "#fff",
+      okBtn: "切换账号",
+      headBg: "#37a064",
+      okBtnColor: "#37a064",
+      footerCls: "postbird-box-footer",
+      onConfirm: function () {
+        sessionStorage.removeItem("tel"),
+          sessionStorage.removeItem("token"),
+          bfmPassport.passport(1)
+      },
+      onCancel: function () {
+      }
+    })
+  }
+
+  var toShareBFM = function () {
+    var o = {};
+    o.title = document.title,
+      o.message = "点击详情查看~",
+      o.shareUrl = window.location.href,
+      bfmApp.APPShare(JSON.stringify(o))
+  };
+  weixin({
+    debug: !1,
+    shareInfo: {
+      title: document.title,
+      desc: "点击详情查看~",
+      link: window.location.href,
+      imgUrl: "https://cdn.epaynfc.com/weixin/appIcon.png",
+      success: function () {
+      }
+    },
+    readyFn: function () {
+    }
+  })
+</script>
+</body>
+</html>
