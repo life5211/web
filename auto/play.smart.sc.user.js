@@ -9,6 +9,14 @@
 // @updateURL    https://life5211.github.io/web/auto/play.smart.sc.user.js
 // @noframes
 // @license      MIT
+// @grant        unsafeWindow
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_listValues
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_unregisterMenuCommand
+// @license      MIT
 // ==/UserScript==
 
 (function () {
@@ -25,11 +33,19 @@
         $localSet(k, log);
       };
 
+  (function registerMenu() {
+    window.menu_id = GM_registerMenuCommand(`倍速学习已${localStorage.speed ? '开启' : '关闭'}`, function () {
+      localStorage.speed = localStorage.speed ? '' : 'speed'
+      GM_unregisterMenuCommand(window.menu_id);
+      registerMenu();
+    });
+  })();
+
   if (document.userI) clearInterval(document.userI);
   document.userI = setInterval(function run() {
     let video = document.querySelector("video");
     if (!video) return $log("没有video元素");
-    if (video.controlsList) {
+    if (localStorage.speed && video.controlsList) {
       $log("播放器初始化设置");
       // if (!video.muted) video.muted = true;
       // if (!video.autoplay) video.autoplay = true;
@@ -42,7 +58,7 @@
       document.querySelector("video").classList.remove('hide-timeline');
       document.querySelector("video").title = "UserJavaScriptRunning";
     }
-    if (video.currentTime > 30 && video.currentTime < video.duration - 200) video.currentTime = video.duration - 133;
+    if (localStorage.speed && video.currentTime > 30 && video.currentTime < video.duration - 200) video.currentTime = video.duration - 133;
 
     $log({m: "播放进度", t: video.currentTime, l: video.duration});
     let studying = document.querySelector("div.studying div.subsectionStudy");
