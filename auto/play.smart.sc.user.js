@@ -33,30 +33,15 @@
         $localSet(k, log);
       };
 
-  (function registerMenu() {
-    window.menu_id = GM_registerMenuCommand(`倍速学习已${localStorage.speed ? '开启' : '关闭'}`, function () {
-      localStorage.speed = localStorage.speed ? '' : 'speed'
-      GM_unregisterMenuCommand(window.menu_id);
-      registerMenu();
-    });
-  })();
-
   if (document.userI) clearInterval(document.userI);
   document.userI = setInterval(function run() {
     let video = document.querySelector("video");
     if (!video) return $log("没有video元素");
-    if (localStorage.speed && video.controlsList) {
+    if (!video.title && !video.currentTime) {
+      video.play().then($log).catch($log);
+      video.title = "自动化脚本";
       $log("播放器初始化设置");
-      // if (!video.muted) video.muted = true;
-      // if (!video.autoplay) video.autoplay = true;
-      if (video.playbackRate < 4) video.playbackRate = 4;
-      if (!video.currentTime) video.play().then($log).catch($log);
-      document.querySelector("video").removeAttribute("disableremoteplayback")
-      document.querySelector("video").removeAttribute("disablePictureInPicture")
-      document.querySelector("video").removeAttribute("controlsList")
-      document.querySelector("video").removeAttribute("preload")
-      document.querySelector("video").classList.remove('hide-timeline');
-      document.querySelector("video").title = "UserJavaScriptRunning";
+      if (localStorage.speed) videoAttrSet();
     }
     if (localStorage.speed && video.currentTime > 30 && video.currentTime < video.duration - 200) video.currentTime = video.duration - 133;
 
@@ -78,5 +63,27 @@
     if (!video.paused) return $log("正在播放……");
     if (video.paused && video.currentTime) return video.play().then($log).catch($log);
     $log("暂停视频继续播放");
-  }, 36666);
+  }, 56666);
+
+  function videoAttrSet() {
+    let video = document.querySelector("video");
+    // if (!video.muted) video.muted = true;
+    // if (!video.autoplay) video.autoplay = true;
+    if (video.playbackRate < 4) video.playbackRate = 4;
+    video.removeAttribute("disableremoteplayback")
+    video.removeAttribute("disablePictureInPicture")
+    video.removeAttribute("controlsList")
+    video.removeAttribute("preload")
+    video.classList.remove('hide-timeline');
+  }
+
+  (function registerMenu() {
+    window.menu_id = GM_registerMenuCommand(`倍速学习已${localStorage.speed ? '开启' : '关闭'}`, function () {
+      localStorage.speed = localStorage.speed ? '' : 'speed'
+      GM_unregisterMenuCommand(window.menu_id);
+      if (localStorage.speed) videoAttrSet();
+      else document.querySelector("video").playbackRate = 1;
+      registerMenu();
+    });
+  })();
 })();
