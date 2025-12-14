@@ -52,14 +52,14 @@
           {"headers": {authorization: `Bearer ${$localGet("store")?.session.accessToken}`}}
       ).then(r => r.json()).then(r => r.result.records);
       learned.forEach(e => e.hours = Math.floor((e.curTimes / 3600) * 100) / 100);
-      let learnedObj = learned.reduce(function (prev, curr) {
-        prev[curr.id] = curr;
-        return prev;
+      let learnedObj = learned.reduce(function (obj, curr) {
+        obj[curr.id] = curr;
+        return obj;
       }, {});
       let resource = $localGet("resource", []).map(e => Object.assign({}, e, learnedObj[e.id]));
       $localSet("learned", learned);
       fun(resource.filter(e => ['理论教育', '党史教育'].includes(e.label)), 21)
-      && fun(resource.filter(e => !['理论教育', '党史教育'].includes(e.label)), 31)
+      && fun(resource.filter(e => ['能力培训', '知识培训'].includes(e.label)), 31)
       && $log("全部学习完成啦；");
 
       function fun(filterRecourse, hours) {
