@@ -3,6 +3,8 @@
 // @namespace    com.life5211.jumpDirect
 // @version      0.1
 // @description  try to take over the world!
+// @downloadURL  https://life5211.github.io/web/auto/jumpDirect.user.js
+// @updateURL    https://life5211.github.io/web/auto/jumpDirect.user.js
 // @author       life5211
 // @match        https://*.zhihu.com/*
 // @match        https://*.jianshu.com/*

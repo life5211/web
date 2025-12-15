@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         中小学智慧教育平台电子课本解析下载
-// @version      v250707
+// @version      v17
 // @description  强制显示 PDF.js 工具栏按钮
 // @author       user
+// @downloadURL  https://life5211.github.io/web/auto/smart.zxx.textbook.user.js
+// @updateURL    https://life5211.github.io/web/auto/smart.zxx.textbook.user.js
 // @run-at       document-end
 // @icon         https://basic.smartedu.cn/img/entrance.ebbe1413.png
 // @match        https://basic.smartedu.cn/tchMaterial/detail*

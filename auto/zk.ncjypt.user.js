@@ -4,6 +4,8 @@
 // @namespace    nczk
 // @version      1.17
 // @description  高效、快捷、批量成绩查询与采集
+// @downloadURL  https://life5211.github.io/web/auto/zk.ncjypt.user.js
+// @updateURL    https://life5211.github.io/web/auto/zk.ncjypt.user.js
 // @match        https://www.ncjypt.com/*
 // @match        *ncjypt.com/*
 // @match        https://zk.ncedu.net.cn/*
