@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         四川智慧教育平台学习脚本
-// @version      0.17
+// @version      1.17
 // @description  try to take over the world!
 // @icon         https://basic.smartedu.cn/img/logo-icon.abf693b9.png
 // @author       user
@@ -37,14 +37,14 @@
   document.userI = setInterval(function run() {
     let video = document.querySelector("video");
     if (!video) return $log("没有video元素");
-    if (!video.title && !video.currentTime) {
-      video.play().then($log).catch($log);
+    if (!video.title) {
       video.title = "自动化脚本";
       $log("播放器初始化设置");
-      if (localStorage.speed) videoAttrSet();
     }
-    if (localStorage.speed && video.currentTime > 30 && video.currentTime < video.duration - 200) video.currentTime = video.duration - 133;
-
+    if (!localStorage.normal) {
+      videoAttrSet();
+      if (video.currentTime > 30 && video.currentTime < video.duration - 200) video.currentTime = video.duration - 133;
+    }
     $log({m: "播放进度", t: video.currentTime, l: video.duration});
     let studying = document.querySelector("div.studying div.subsectionStudy");
     if (studying.innerText === '100%') {
@@ -61,28 +61,29 @@
     }
     if (video.ended) return $log("播放完毕，等待同步进度");
     if (!video.paused) return $log("正在播放……");
-    if (video.paused && video.currentTime) return video.play().then($log).catch($log);
+    if (video.paused) return video.play().then($log).catch($log);
     $log("暂停视频继续播放");
   }, 56666);
 
   function videoAttrSet() {
     let video = document.querySelector("video");
+    if (!video.controlsList) return;
     // if (!video.muted) video.muted = true;
     // if (!video.autoplay) video.autoplay = true;
-    if (video.playbackRate < 4) video.playbackRate = 4;
+    // if (video.playbackRate < 4) video.playbackRate = 4;
     video.removeAttribute("disableremoteplayback")
     video.removeAttribute("disablePictureInPicture")
     video.removeAttribute("controlsList")
     video.removeAttribute("preload")
     video.classList.remove('hide-timeline');
+    video.classList.remove('hide-speed-control');
   }
 
   (function registerMenu() {
-    window.menu_id = GM_registerMenuCommand(`倍速学习已${localStorage.speed ? '开启' : '关闭'}`, function () {
-      localStorage.speed = localStorage.speed ? '' : 'speed'
+    window.menu_id = GM_registerMenuCommand(`快速学习已${localStorage.normal ? '关闭' : '开启'}`, function () {
+      localStorage.normal = localStorage.normal ? '' : 'normal'
       GM_unregisterMenuCommand(window.menu_id);
-      if (localStorage.speed) videoAttrSet();
-      else document.querySelector("video").playbackRate = 1;
+      if (!localStorage.normal) videoAttrSet();
       registerMenu();
     });
   })();
