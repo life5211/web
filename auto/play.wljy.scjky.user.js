@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name         网络教研学习自动化
 // @namespace    http://tampermonkey.net/
-// @version      2.17.4
+// @version      2.18
 // @description  自动化播放网络教研视频，支持设置学科和已经播放的课程过滤
 // @match        https://wljy.scjks.net/*
 // @match        *wljy.scjks.net/*
 // @icon         https://ascjkysvod.yscdn.top/upload/35/52970bea06a24874af80cd75492ead5e.png
 // @downloadURL  https://life5211.github.io/web/auto/play.wljy.scjky.user.js
 // @updateURL    https://life5211.github.io/web/auto/play.wljy.scjky.user.js
-// @require      https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js
 // @noframes
 // @grant        GM_addStyle
 // @grant        unsafeWindow
@@ -24,10 +23,17 @@
 (async function () {
   let usrName, usrKey, user, allSubjects, needSubjects, learned_kcs, subjectId, subjectName, r, logK, logs, utils = {
     rf: (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
+    q: selector => document.querySelector(selector),
     localGet: (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def,
     localSet: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
     updateUser: _ => utils.localSet(usrKey, user),
     run: (...fun) => fun.forEach(f => f()),
+    getDateStr: date => {
+      if (!date) return '';
+      if (date instanceof String) date = new Date(date);
+      const [fullYear, month, day] = [date.getFullYear(), `${date.getMonth() + 1}`.padStart(2, '0'), `${date.getDate()}`.padStart(2, '0')];
+      return `${fullYear}-${month}-${day}`
+    },
     runInterval: function (min, max, handler) {
       let number = setInterval(_ => setTimeout(handler, this.rf(min, max)), this.rf(min, max));
       handler();
@@ -141,9 +147,11 @@
    * 更新数据
    */
   function updateSubject() {
-    all_kcs.forEach(k => k.script = k.his = k.zbgk = k.dbgk = k.yjxs = '');
+    all_kcs.forEach(k => k.script = k.his = k.zbgk = k.dbgk = k.yjxs = k.s = '');
     all_kcs.filter(k => k.name.includes("普高新课程新教材培训")).forEach(k => k.s = 1);
     all_kcs.filter(k => k.name.includes("义教新修订教材教师培训")).forEach(k => k.s = 1);
+    if (user.dateStart) all_kcs.filter(k => new Date(k.crt).getTime() < new Date(`${user.dateStart} 00:00:00`).getTime()).forEach(k => k.s = 1);
+    if (user.dateEnd) all_kcs.filter(k => new Date(k.crt).getTime() > new Date(`${user.dateEnd} 23:59:59`).getTime()).forEach(k => k.s = 1);
     all_kcs.filter(k => user.scriptKcIds.includes(k.id)).forEach(k => k.script = k.his = 'script');
     if (user.playHistory)
       for (let re_his = /\n(.+)\n+(总计直播观看:\s*(.+分钟)\s*总计点播观看：\s*(.+分钟))/g; !!(r = re_his.exec(user.playHistory));)
@@ -185,7 +193,7 @@
       <td>
         <input placeholder="eg:语文/高中语文" id="form_subject"/>
         <div>任教科目
-          <button onclick="infoUp(1)">&nbsp;设&nbsp;置&nbsp;</button>
+          <button onclick="infoUp(1)">设置</button>
         </div>
       </td>
     </tr>
@@ -193,24 +201,32 @@
       <td>
         <textarea id="form_playHistory" rows="2" cols="30"></textarea>
         <div>观看记录
-          <button onclick="infoUp(2)">&nbsp;设&nbsp;置&nbsp;</button>
+          <button onclick="infoUp(2)">设置</button>
         </div>
       </td>
       <td>
         <textarea id="form_certApply" rows="2" cols="30"></textarea>
         <div>证书申请(可申请)
-          <button onclick="infoUp(3)">&nbsp;设&nbsp;置&nbsp;</button>
+          <button onclick="infoUp(3)">设置</button>
         </div>
       </td>
       <td>
         <textarea id="form_certApplied" rows="2" cols="30"></textarea>
         <div>证书申请(已获得)
-          <button onclick="infoUp(5)">&nbsp;设&nbsp;置&nbsp;</button>
+          <button onclick="infoUp(5)">设置</button>
         </div>
       </td>
     </tr>
     <tr>
-      <td style="width:8em" colspan="3">
+      <td>
+        <div>
+          <span>课程时间</span>
+          <div>开始<input type="date" id="date_s" onchange="infoUp(6)"></div>
+          <div>结束<input type="date" id="date_e" onchange="infoUp(7)"></div>
+          <button onclick="infoUp(8)">清空时间</button>
+        </div>
+      </td>
+      <td>
         <div onclick="downLog()">
           <button>导出学习记录</button>
         </div>
@@ -221,14 +237,18 @@
         </div>
       </td>
     </tr>
-    <tr><td colspan="3">
-        <hr/>
-          页面运行日志<div><pre id="_logs"></pre></div>
-        <hr/>
-    </td></tr>
+    <hr/>
+    <tr>
+      <td colspan="3">
+        页面运行日志
+        <div>
+          <pre id="_logs"></pre>
+        </div>
+      </td>
+    </tr>
   </table>
   <table border="1" style="border-collapse: collapse;border: 2px solid rgb(140 140 140);">
-    <caption>四川省网络教研平台学习记录表</caption>
+    <caption>课程列表</caption>
     <thead>
     <tr>
       <th>课程时间</th>
@@ -252,13 +272,18 @@
     else if (n === 1) user.subject = document.getElementById("form_subject").value;
     else if (n === 2) user.playHistory = document.getElementById("form_playHistory").value;
     else if (n === 3) user.certApply = document.getElementById("form_certApply").value;
-    else if (n === 5) user.certApplied = document.getElementById("form_certApplied").value;
+    // 搜索
     else if (n === 4) {
       let joinTxt = document.getElementById("form_join").value;
       let kcs = all_kcs.filter(k => k.name.includes(joinTxt));
       if (kcs.length !== 1) return alert(`搜索结果数量：【${kcs.length}】`);
       user.join_kcs.push(kcs[0]);
-    }
+    } else if (n === 5) user.certApplied = document.getElementById("form_certApplied").value;
+    // 课程时间筛选设置
+    else if (n === 6) user.dateStart = utils.q("#date_s").value.replaceAll(/\D/g, '-');
+    else if (n === 7) user.dateEnd = utils.q("#date_e").value.replaceAll(/\D/g, '-');
+    else if (n === 8) user.dateStart = user.dateEnd = utils.q("#date_s").value = utils.q("#date_e").value = "";
+
     utils.run(utils.updateUser, updateSubject, showForm, studyFun);
   }
   document.fNext = _ => nextProject('手动点击');
@@ -276,12 +301,16 @@
     document.getElementById("form_playHistory").value = user.playHistory || '';
     document.getElementById("form_certApply").value = user.certApply || '';
     document.getElementById("form_certApplied").value = user.certApplied || '';
+    document.getElementById("date_s").value = utils.getDateStr(user.dateStart);
+    document.getElementById("date_e").value = utils.getDateStr(user.dateEnd);
+    document.getElementById("date_s").max = utils.getDateStr(user.dateEnd);
+    document.getElementById("date_e").min = utils.getDateStr(user.dateStart);
     document.getElementById("study_state").innerText = `${user.state ? '暂停' : '开始'}运行`;
     document.getElementById("learned").innerHTML = learned_kcs.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
     document.getElementById("noStudy").innerHTML = needSubjects.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
     document.getElementById("join_kcs").innerHTML = user.join_kcs?.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
     document.getElementById("all_kcs").innerHTML = all_kcs.map(k => `<option value="${k.name}">${k.id}</option>`).join('\n');
-    document.getElementById('learnedTable').innerHTML = learned_kcs.map(k => `<tr>
+    document.getElementById('learnedTable').innerHTML = allSubjects.map(k => `<tr>
           <td>${k.crt}</td>
           <td>${k.id}</td>
           <td>${k.name}</td>
@@ -290,51 +319,38 @@
           <td>${k.dbgk}</td>
           <td>${k.script}</td>
           <td>${k.his}</td>
-          <td><a href="#" onclick="reStudyKc('${k.id}')">重学</a></td>
+          <td><a href="#" onclick="reStudyKc('${k.id}')">加入学习列表</a></td>
         </tr>`).join('\n');
   }
 
   async function downloadExcel(fileName, objArr) {
     if (!objArr?.length) return alert("导出数据为空！");
+    if (!window.XLSX) await fetch("https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js").then(r => r.text()).then(eval).catch(console.log);
     let workbook = XLSX.utils.book_new();
-    let worksheet = XLSX.utils.json_to_sheet(objArr);
-    XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
-    XLSX.writeFile(workbook, `${fileName}_${Date.now()}.xlsx`);
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(objArr), fileName);
+    XLSX.writeFile(workbook, `${fileName}.xlsx`);
   }
 
   GM_registerMenuCommand("更新全部课程", getAllKcs, "");
 
   async function getAllKcs() {
-    let rsp = await fetch("https://life5211.github.io/web/data/scjky.jy.json");
-    let githubSubjects;
-    if (!rsp.ok) {
-      utils.log(`"github请求失败-${rsp.statusText}`, true);
-      githubSubjects = utils.localGet("all_kcs");
-    } else {
-      githubSubjects = await rsp.json();
-    }
-    let length = githubSubjects.length;
-    utils.localSet("_kc_github", githubSubjects);
-    let ids = githubSubjects.map(k => k.id);
-
     let api = "/sd-api/event/resourcePageNew/selectTeachInfoByPage/0?catalogId=-1&gradeId=-1&labelId=-1&noteId=-1&queryType=0&resourceFamily=-1&resourceName=&resourceType=0&sortType=1&stageId=-1&subjectId=-1&versionId=-1";
     let init = {headers: {authorization: localStorage.Authorization}};
-    let rsp2 = await fetch(`${api}&pageSize=100&pageNo=1`, init);
-    if (!rsp2.ok) utils.log(`"课程列表请求失败，${rsp.statusText}`, true);
-    let json = await rsp2.json();
-    {
-      utils.localSet("_kc_wljy", json);
+    let pageNo = 1, totalPage = 1000, total = 100000, length = all_kcs.length;
+    while (all_kcs.length < total && pageNo <= totalPage) {
+      let rsp = await fetch(`${api}&pageSize=500&pageNo=${pageNo++}`, init);
+      if (!rsp.ok) utils.log(`"课程列表请求失败，${rsp.statusText}`, true);
+      let json = await rsp.json();
+      console.log(json);
+      total = json.data.accumulated;
+      totalPage = Math.ceil(total / 500);
       let subjects = json.data.resResourceList.map(e => ({id: e.id, name: e.name, crt: new Date(e.createTime).toLocaleString()}));
-      let flag = false;
+      let ids = all_kcs.map(k => k.id);
       for (let s of subjects) {
-        if (ids.includes(s.id)) {
-          flag = true;
-          continue;
-        }
-        githubSubjects.push(s);
+        if (ids.includes(s.id)) continue;
+        all_kcs.push(s);
         ids.push(s.id);
       }
-      all_kcs = githubSubjects;
       all_kcs.forEach(k => k.t = new Date(k.crt).getTime());
       all_kcs.sort((a, b) => -1 * utils.compareFn(a, b, 't', 'name'));
       all_kcs.forEach(k => delete k.t);
