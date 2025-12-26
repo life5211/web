@@ -30,7 +30,7 @@
     run: (...fun) => fun.forEach(f => f()),
     getDateStr: date => {
       if (!date) return '';
-      if (date instanceof String) date = new Date(date);
+      date = new Date(date);
       const [fullYear, month, day] = [date.getFullYear(), `${date.getMonth() + 1}`.padStart(2, '0'), `${date.getDate()}`.padStart(2, '0')];
       return `${fullYear}-${month}-${day}`
     },
@@ -147,12 +147,12 @@
    * 更新数据
    */
   function updateSubject() {
-    all_kcs.forEach(k => k.script = k.his = k.zbgk = k.dbgk = k.yjxs = k.s = '');
+    all_kcs.forEach(k => k.yfxs = k.his = k.zbgk = k.dbgk = k.yjxs = k.s = '');
     all_kcs.filter(k => k.name.includes("普高新课程新教材培训")).forEach(k => k.s = 1);
     all_kcs.filter(k => k.name.includes("义教新修订教材教师培训")).forEach(k => k.s = 1);
     if (user.dateStart) all_kcs.filter(k => new Date(k.crt).getTime() < new Date(`${user.dateStart} 00:00:00`).getTime()).forEach(k => k.s = 1);
     if (user.dateEnd) all_kcs.filter(k => new Date(k.crt).getTime() > new Date(`${user.dateEnd} 23:59:59`).getTime()).forEach(k => k.s = 1);
-    all_kcs.filter(k => user.scriptKcIds.includes(k.id)).forEach(k => k.script = k.his = 'script');
+    all_kcs.filter(k => user.scriptKcIds.includes(k.id)).forEach(k => k.his = 'script');
     if (user.playHistory)
       for (let re_his = /\n(.+)\n+(总计直播观看:\s*(.+分钟)\s*总计点播观看：\s*(.+分钟))/g; !!(r = re_his.exec(user.playHistory));)
         all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.zbgk, k.dbgk] = getMin(r[3], r[4]));
@@ -161,7 +161,7 @@
         all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.zbgk, k.dbgk, k.yjxs] = getMin(r[3], r[4], r[5]));
     if (user.certApplied)
       for (let re_cert_ed = /\n(.+)\n+(已发放学时\s*([\d.]+))\n/g; !!(r = re_cert_ed.exec(user.certApplied));)
-        all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.yjxs] = getMin(r[3]));
+        all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.yfxs] = getMin(r[3]));
     learned_kcs = all_kcs.filter(k => k.his);
     let learned_kcsIds = learned_kcs.map(k => k.id);
     allSubjects = all_kcs.filter(k => !user.subject || k.name.includes(user.subject)).filter(k => !k.s);
@@ -257,7 +257,7 @@
       <th>学时</th>
       <th>直播</th>
       <th>回放</th>
-      <th>脚本</th>
+      <th>已发</th>
       <th>记录</th>
       <th>操作</th>
     </tr>
@@ -317,7 +317,7 @@
           <td>${k.yjxs}</td>
           <td>${k.zbgk}</td>
           <td>${k.dbgk}</td>
-          <td>${k.script}</td>
+          <td>${k.yfxs}</td>
           <td>${k.his}</td>
           <td><a href="#" onclick="reStudyKc('${k.id}')">加入学习列表</a></td>
         </tr>`).join('\n');
