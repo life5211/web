@@ -13,24 +13,45 @@
 // ==/UserScript==
 
 (function () {
+  if (document.querySelector("iframe")) return;
+  const div = document.createElement("div");
+  div.innerHTML = `<div>
+        <textarea id="stuInfos" rows="2" cols="30" placeholder="学生信息表.csv中内容复制粘贴后点击导入"></textarea>
+        <button onclick="importStuInfo()">信息导入</button> 
+        <button onclick="downloadExportCsv()">查询结果导出</button>
+        <button onclick="collectionStateChange()" id="coll">开始采集</button>
+        <hr/>
+        <div id="result" style="max-height: 300px; overflow: auto"></div>
+        <hr/>
+      </div>`;
+  document.body.insertBefore(div, document.body.firstChild);
+
+
   let studentsGrades, titles, studentsArr, gradesObj, next;
 
-  function getGrades() {
+  function dateUpdateShow() {
     studentsArr = JSON.parse(localStorage.getItem("students_info") || "[]");
     gradesObj = JSON.parse(localStorage.getItem("grades_info") || "{}");
     studentsGrades = studentsArr.map(stu => Object.assign({}, stu, gradesObj[stu.IdNo]));
     titles = ["Name", "IdNo", "ExamNo", ...new Set(Object.values(gradesObj).flatMap(grade => Object.keys(grade)))];
     next = studentsArr.filter(s => s?.IdNo && !gradesObj[s.IdNo]).pop();
-    dataShow();
     console.log([studentsGrades, titles, studentsArr, gradesObj, next]);
-    return [studentsGrades, titles, studentsArr, gradesObj];
+    //show view
+    if (!document.getElementById("result")) return;
+    document.querySelector("button#coll").innerText = sessionStorage.getItem("collect_state") ? `暂停采集` : '开始采集';
+    if (!studentsGrades?.length) return;
+    document.querySelector('div#result').innerHTML = `<span>查询结果：${Object.values(gradesObj)?.length}</span>/<span>${studentsArr?.length || 0}</span>
+        <table border="1" style="border-collapse: collapse;border: 2px solid rgb(140 140 140);">
+            <thead><tr>${titles.map(k => '<th>' + k + '</th>').join(" ")}</tr></thead>
+            <tbody>
+            ${studentsGrades.map(stu => '<tr>' + titles.map(k => '<td>' + getVal(stu, k) + '</td>') + '</tr>').join(" ")}
+            </tbody>
+        </table>`;
   }
 
   function collect() {
-    if (!sessionStorage.getItem("collect_state")) return;
     if (!location.pathname.startsWith("/nczk/zk/queryscoreby2img.asp")) return;
     if (document.querySelector("#showInfo>table")?.innerText?.includes("还未开通成绩查询")) return;
-
     let name = document.querySelector("tr.tr-02>.tdvalue")?.innerText;
     // if (!name) return alert("数据查询失败，请重试！");
     // let idNumber = nameIds.substr(-19, 18);
@@ -44,27 +65,19 @@
     stuObj.GredeText = document.querySelector("div.infobox>table").innerText;
     gradesObj[stuObj.IdNo] = stuObj;
     localStorage.setItem("grades_info", JSON.stringify(gradesObj));
-    getGrades();
+    nextStu();
+  }
+
+  function nextStu() {
+    dateUpdateShow();
+    if (!sessionStorage.getItem("collect_state")) return;
     // 下一个考生成绩
     if (!studentsArr?.length) return alert("请导入考生名单");
     if (!next) return alert("采集完成");
     setTimeout(_ => location.href = `/nczk/zk/queryscoreby2img.asp?t=${next.ExamNo},${encodeURI(next.Name)},${next.IdNo}`, Math.random() * 1500 + 600);
   }
 
-  if (window.top === window) {
-    const div = document.createElement("div");
-    div.innerHTML = `<div>
-    <textarea id="stuInfos" rows="2" cols="30" placeholder="学生信息表.csv中内容复制粘贴后点击导入"></textarea>
-    <button onclick="importStuInfo()">信息导入</button> 
-    <button onclick="downloadExportCsv()">查询结果导出</button>
-    <button onclick="collectionStateChange()" id="coll">开始采集</button>
-    <hr/>
-    <div id="result" style="max-height: 300px; overflow: auto"></div>
-    <hr/>
-</div>`;
-    document.body.insertBefore(div, document.body.firstChild);
-  }
-  getGrades();
+  dateUpdateShow();
   collect();
 
   function getVal(obj, k, f) {
@@ -74,27 +87,10 @@
     return "";
   }
 
-  function dataShow() {
-    document.querySelector("button#coll").innerText = sessionStorage.getItem("collect_state") ? `暂停采集` : '开始采集';
-    if (!studentsGrades?.length) return;
-    document.querySelector('div#result').innerHTML = `<span>查询结果：${Object.values(gradesObj)?.length}</span>/<span>${studentsArr?.length || 0}</span>
-        <table border="1" style="border-collapse: collapse;border: 2px solid rgb(140 140 140);">
-            <thead><tr>${titles.map(k => '<th>' + k + '</th>')}</tr></thead>
-            <tbody>
-            ${studentsGrades.map(stu => '<tr>' + titles.map(k => '<td>' + getVal(stu, k) + '</td>') + '</tr>').join("")}
-            </tbody>
-        </table>`;
-  }
-
-
   document.collectionStateChange = function () {
-    if (sessionStorage.getItem("collect_state")) {
-      sessionStorage.removeItem("collect_state")
-    } else {
-      sessionStorage.setItem("collect_state", "run");
-      collect();
-    }
-    dataShow();
+    if (sessionStorage.getItem("collect_state")) sessionStorage.removeItem("collect_state")
+    else sessionStorage.setItem("collect_state", "run");
+    nextStu();
   }
 
   document.importStuInfo = function () {
@@ -103,12 +99,12 @@
 
   function importParse(infoTxt) {
     if (!infoTxt?.trim()) return alert("信息為空信息为空");
-    let stu = infoTxt.trim().split("\n")
+    let stu = infoTxt.trim().split("\r\n")
         .map((s) => s.split(/\s/))
         .filter((s) => (s.length > 3) && s[5]?.length === 18)
         .map(s => ({Name: s[6], ExamNo: s[24], IdNo: s[5]}));
     localStorage.setItem("students_info", JSON.stringify(stu));
-    getGrades();
+    dateUpdateShow();
   }
 
   document.downloadExportCsv = function () {
@@ -123,7 +119,6 @@
       link.click();
     })("学生中考成绩单", `${titles.join("\t")}\r\n${student_string}`);
   }
-
 
   // 学生信息采集
   if (location.pathname !== '/nczk/admin/querystudent.asp') return;
@@ -141,7 +136,7 @@
     let text = await rsp.text();    // f0,temp/a8abb4bb284b5b27aa7cb790dc20f80b_学生信息表.csv
     if (!text) return console.log("未获取到下载链接0");
     let strings = text.split(",");
-    if (!strings[1]) return console.log("未获取到下载链接1");
+    if (!strings[1]) return console.log("未解析到下载链接1");
     // https://zk.ncedu.net.cn/nczk/admin/temp/a8abb4bb284b5b27aa7cb790dc20f80b_%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E8%A1%A8.csv?timestamp=1766929664131
     let response = await fetch(`/nczk/admin/${encodeURI(strings[1])}?timestamp=${Date.now()}`);
     const decoder = new TextDecoder('gbk');
