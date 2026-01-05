@@ -2,10 +2,10 @@
 // @name         南充中考成绩采集
 // @icon         https://zk.ncedu.net.cn/nczk/png/logo-zk.png
 // @namespace    nczk
-// @version      1.17
+// @version      2.17
 // @description  高效、快捷、批量成绩查询与采集
-// @downloadURL  https://life5211.github.io/web/auto/zk.ncjypt.user.js
-// @updateURL    https://life5211.github.io/web/auto/zk.ncjypt.user.js
+// @downloadURL  https://life5211.github.io/web/auto/nczk.ncjypt.user.js
+// @updateURL    https://life5211.github.io/web/auto/nczk.ncjypt.user.js
 // @match        https://www.ncjypt.com/*
 // @match        *ncjypt.com/*
 // @match        https://zk.ncedu.net.cn/*
