@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <title>列表</title>
+</head>
+<body>
+<div id="app">
+  <el-row>
+    <el-col :span="24">
+      <div v-for="({a,p}) in hrefs">
+        <el-link type="primary" :href="a" icon="el-icon-link" target="_blank">{{ p }}</el-link>
+      </div>
+    </el-col>
+  </el-row>
+
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data: function () {
+      return {
+        hrefs: [
+          {a: "answer.sedu.user.js", p: "四川继教网公需科目答题辅助"},
+          {a: "answer.zgzjzj.user.js", p: "四川公需科目精英人才答题辅助"},
+          {a: "get.stu.bigapp.user.js", p: "教育大数据导出信息"},
+          {a: "jumpDirect.user.js", p: "链接直接跳转"},
+          {a: "officeOnline.user.js", p: "文档在线阅读"},
+          {a: "play.cdu.user.js", p: "成都大学继续教育移动端快速播放"},
+          {a: "play.chinamde.user.js", p: "成都理工大学继续教育快速播放"},
+          {a: "play.pep.user.js", p: "人教教材培训播放"},
+          {a: "play.scgb.user.js", p: "四川网络干部学院自动播放"},
+          {a: "play.sedu.user.js", p: "四川继续教育视频自动播放"},
+          {a: "play.smart.sc.user.js", p: "四川智慧教育平台自动播放"},
+          {a: "play.smart.zxx.user.js", p: "中小学智慧教育平台假期研修播放"},
+          {a: "play.wljy.scjky.user.js", p: "网络教研连续播放"},
+          {a: "play.wljy.scjky.vue.html", p: "-"},
+          {a: "play.zgzjzj.user.js", p: "四川专技天下自动播放"},
+          {a: "smart.zxx.textbook.user.js", p: "智慧教育平台电子课本解析下载"},
+          {a: "xxpt.scxfks.user.js", p: "四川学法考试连续播放搜索"},
+          {a: "zk.ncjypt.user.js", p: "南充中考成绩采集"},
+          {a: "greasy-fork/open the link directly.user.js", p: "链接直接跳转"},
+          {a: "greasy-fork/AC-baidu_v27.19.js", p: "AC-baidu_v27.19.js"},
+          {a: "greasy-fork/AC-Baidu_v27.03.js", p: "AC-Baidu_v27.03.js"},
+        ]
+      }
+    }
+  })
+</script>
+</html>
