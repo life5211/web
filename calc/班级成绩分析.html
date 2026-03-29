@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <title>成绩分析系统</title>
@@ -28,8 +28,8 @@
         :file-list="fileList"
         :on-change="handleFileChange"
         accept=".xls,.xlsx"
-        :drag="true"
-        :multiple="true"
+        drag
+        multiple
         :auto-upload="false">
       <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
       <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">导出汇总数据</el-button>
@@ -44,9 +44,9 @@
     </template>
   </el-row>
 
-  <h4>文件列表<{{fileNames.length}}></h4>
-  <el-row v-if="fileNames.length">
-    <el-button v-for="(file,i) in fileNames"
+  <h4>文件列表<{{excelFiles.length}}></h4>
+  <el-row v-if="excelFiles.length">
+    <el-button v-for="(file,i) in excelFiles"
                @click=fileIdx=i :key="file.name" :class="{'el-button--primary':i===fileIdx}"
     >{{file.name}}
     </el-button>
@@ -69,10 +69,43 @@
                      sortable>
     </el-table-column>
   </el-table>
+
+  <h5>一维数据表<{{tableData2.length}}></h5>
+  <el-table
+      :data="tableData2"
+      border
+      style="width: 100%">
+    <el-table-column v-for="(e) in tableCols2"
+                     :prop="e"
+                     :label="e"
+                     :key="e"
+                     sortable>
+    </el-table-column>
+  </el-table>
 </div>
 </body>
 
 <script>
+  let $q = s => document.querySelector(s),
+      $qa = s => Array.from(document.querySelectorAll(s)),
+      $localGet = (key, def = {}) => localStorage.hasOwnProperty(key) ? JSON.parse(localStorage[key]) : def,
+      $localSet = (key, val) => localStorage.setItem(key, JSON.stringify(val)),
+      $rf = (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
+      $log = (msg, f) => {
+        console.log(msg);
+        let k = `log_${new Date().getDate()}`;
+        let log = $localGet(k, []);
+        log.push(`[${new Date().toLocaleString()}]${msg}`);
+        $localSet(k, log);
+        if (f) alert(msg);
+      },
+      $val = e => isNaN(e) ? e : Number(e),
+      $empty = e => {
+        if (e === 0) return false;
+        if (e === false) return false;
+        return !e;
+      };
+
   function downloadTxt(fileName, content) {
     let blob = new Blob([content], {
       type: "text/plain;charset=utf-8"
@@ -96,44 +129,32 @@
       keysObj: {},
       allDataLen: 0,
       tableData: [],
-      fileNames: [],
+      tableData2: [],
+      excelFiles: [],
+      workbookObj: {},
       sheetNames: [],
       fileIdx: -1,
-      sheetIdx: 0,
-      tableCols: []
+      sheetIdx: 0
     },
     methods: {
       submitUpload() {
         const innerHtml = "";
         downloadTxt(`查询网站.html`, innerHtml);
       },
-      parseExcelData(wbs) {
-        const jsonArr = wbs.map(wb =>
-          wb.SheetNames.map(sheet =>
-            XLSX.utils.sheet_to_csv(wb.Sheets[sheet]).split("\n").map(line => line.split(','))
-          ));
-        document.jsonArr = jsonArr;
-      },
-      async handleFileChange(file, fileList) {
-        debugger;
-        let wbs = [];
-        let fileNames = [];
-        for (const {raw} of fileList) {
-          const wb = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsArrayBuffer(raw);
-            reader.onload = e => resolve(XLSX.read(e.target.result, {type: 'binary', cellDates: true}));
-          });
-          fileNames.push({name: raw.name, sheetNames: wb.SheetNames});
-          wbs.push(wb);
-        }
-        this.parseExcelData(wbs);
-        document.wbs = wbs;
-        this.fileNames = fileNames;
+      async handleFileChange({raw}, fileList) {
+        const wb = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsArrayBuffer(raw);
+          reader.onload = e => resolve(XLSX.read(e.target.result, {type: 'binary', cellDates: true}));
+        });
+        this.excelFiles.push({name: raw.name, sheetNames: wb.SheetNames});
+        document.wbs = document.wbs || [];
+        document.wbs.push(wb);
+        this.parseWorkbook(wb, raw.name)
         this.fileIdx = -1;
         this.fileIdx = 0;
         //处理所有列表数据为json数组
-        const jsonArr = wbs.map(wb => wb.SheetNames.map(sheet => XLSX.utils.sheet_to_json(wb.Sheets[sheet])).flatMap(e => e)).flatMap(e => e);
+        const jsonArr = document.wbs.map(wb => wb.SheetNames.map(sheet => XLSX.utils.sheet_to_json(wb.Sheets[sheet])).flatMap(e => e)).flatMap(e => e);
         this.allDataLen = jsonArr.length;
         const keysObj = {};
         jsonArr.map(json => Object.keys(json)).flatMap(e => e).forEach(k => {
@@ -141,31 +162,82 @@
           else keysObj[k] = {field: k, num: 1, checked: false};
         });
         this.keysObj = keysObj;
-        // const keyArr = Object.keys(keysObj).map(k => ({field: k, num: keysObj[k], checked: false}));
-        this.allSheetJson = JSON.stringify(jsonArr);
-        this.allSheetJsonEncode = encodeURI(this.allSheetJson);
+      },
+      parseWorkbook(wb, filename) {
+        let workbookObj = $localGet("workbookObj", {});
+        workbookObj[filename] = wb.SheetNames.reduce((obj, sheetName) => {
+          let csv = XLSX.utils.sheet_to_csv(wb.Sheets[sheetName], {FS: ',,', RS: '[\n]', blankrows: false}).split('[\n]').map(line => line.split(',,'));
+          let lens = csv.map(arr => {
+            for (let i = arr.length - 1; i >= 0; i--) if (!$empty(arr[i])) return i;
+            return 0;
+          });
+          let col = Math.max(...lens) + 1;
+          obj[sheetName] = csv.filter((arr, idx) => lens[idx]).map(arr => arr.slice(0, col));
+          return obj;
+        }, workbookObj[filename] || {});
+        $localSet("workbookObj", workbookObj);
+        let arrOne = Object.values(workbookObj).flatMap(workbooks => Object.values(workbooks)).flatMap(sheetArr => {
+          let title = sheetArr[0].join("");
+          sheetArr[1].forEach((e, i) => {
+            if (i && !e) sheetArr[1][i] = sheetArr[1][i - 1];
+          });
+          // sheetArr[2].forEach((e, i) => {
+          //   if (!e && sheetArr[1][i]) sheetArr[2][i] = sheetArr[1][i];
+          // });
+          let commons = ['区域', '校码', '学校', '类别', '班级', '班级类别', '学校代码', '学校名称', '学校类别'];
+          let subjectCols = [], commonCols = [];
+          sheetArr[1].forEach((e, i) => {
+            if (sheetArr[1][i] !== sheetArr[2][i]) subjectCols.push(i);
+            else commonCols.push(i);
+          });
+          let startCols = Array.from({length: subjectCols[0]}, (val, i) => i);
+          return sheetArr.flatMap((row, r) => {
+            return row.map((val, c) => {
+              if (c < subjectCols[0]) return '';
+              if (r < 3) return '';
+              if ($empty(val)) return '';
+              let obj = {};
+              startCols.forEach((e, i) => obj[sheetArr[1][e]] = $val(sheetArr[r][e]));
+              obj['科目'] = $val(sheetArr[1][c]);
+              if (sheetArr[2][c] && sheetArr[1][c] !== sheetArr[2][c]) obj['小分'] = $val(sheetArr[2][c]);
+              obj.val = $val(val);
+              return obj;
+            }).filter(e => e);
+          });
+        });
+        this.tableData2 = arrOne;
+        $localSet("sheetObj", arrOne);
       },
       loadFileFn(fileIdx, sheetIdx) {
         fileIdx = fileIdx || this.fileIdx;
         sheetIdx = sheetIdx || 0;
-        const sheetName = this.fileNames[fileIdx].sheetNames[sheetIdx];
+        const sheetName = this.excelFiles[fileIdx].sheetNames[sheetIdx];
         const sheetJson = XLSX.utils.sheet_to_json(document.wbs[fileIdx].Sheets[sheetName]);
         if (!sheetJson || !sheetJson.length) {
           return;
         }
-        this.tableCols = Object.keys(sheetJson[0]);
         this.tableData = sheetJson;
       }
 
-    }, watch: {
+    }, computed: {
+      tableCols() {
+        return Object.keys(this.tableData[3] || {});
+      }, tableCols2() {
+        return [...new Set(this.tableData2.flatMap(e => Object.keys(e || {})))];
+      }
+    },
+    watch: {
       fileIdx(index) {
         if (index < 0) return;
         this.sheetIdx = 0;
-        this.sheetNames = this.fileNames[this.fileIdx].sheetNames
+        this.sheetNames = this.excelFiles[this.fileIdx].sheetNames
         this.loadFileFn(index);
       }, sheetIdx(index) {
         this.loadFileFn(0, index);
       }
+    },
+    created() {
+      this.tableData2 = $localGet("sheetObj", []);
     }
   });
 </script>
