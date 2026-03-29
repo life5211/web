@@ -1,12 +1,12 @@
 @echo off
 chcp 65001
-title IP_Set
+title IP设置
 color 02
 
 set NAME="本地连接"
-set ADDR=192.168.21.11
+set ADDR=192.168.17.11
 set MASK=255.255.255.0
-set GATEWAY=192.168.21.1
+set GATEWAY=192.168.17.1
 
 netsh interface ipv4 set address name=%NAME% source=static %ADDR% 255.255.255.0 %GATEWAY% 1
 netsh interface ipv4 set dnsservers name=%NAME% source=static 223.5.5.5 primary validate=no
