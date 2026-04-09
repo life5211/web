@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         网络教研学习自动化
+// @name         网络教研学习
 // @namespace    http://tampermonkey.net/
 // @version      2.18
 // @description  自动化播放网络教研视频，支持设置学科和已经播放的课程过滤
-// @match        https://wljy.scjks.net/*
+// @match        https://wljy.scsjky.cn/a*
 // @match        *wljy.scjks.net/*
 // @icon         https://ascjkysvod.yscdn.top/upload/35/52970bea06a24874af80cd75492ead5e.png
 // @downloadURL  https://life5211.github.io/web/auto/play.wljy.scjky.user.js
@@ -162,6 +162,16 @@
     if (user.certApplied)
       for (let re_cert_ed = /\n(.+)\n+(已发放学时\s*([\d.]+))\n/g; !!(r = re_cert_ed.exec(user.certApplied));)
         all_kcs.filter(k => k.name === r[1]).filter(k => k.his = r[2]).forEach(k => [k.yfxs] = getMin(r[3]));
+    let getVal = (obj, ...keys) => keys.map(k => obj[k]);
+    if (user.hisObj)
+      all_kcs.filter(k => user.hisObj[k.id]).filter(k => k.his = 'his')
+          .forEach(k => [k.zbgk, k.dbgk] = getVal(user.hisObj[k.id], 'live_study_time', 'record_study_time'));
+    if (user.mayApply)
+      all_kcs.filter(k => user.mayApply[k.id]).filter(k => k.his = 'may')
+          .forEach(k => [k.userHour, k.maxHour] = getVal(user.mayApply[k.id], 'userClassHour', 'maxClassHour'));
+    if (user.awarded)
+      all_kcs.filter(k => user.awarded[k.id]).filter(k => k.his = 'result')
+          .forEach(k => [k.userHour, k.maxHour, k.rstHour] = getVal(user.awarded[k.id], 'userClassHour', 'maxClassHour', 'result_class_hour'));
     learned_kcs = all_kcs.filter(k => k.his);
     let learned_kcsIds = learned_kcs.map(k => k.id);
     allSubjects = all_kcs.filter(k => !user.subject || k.name.includes(user.subject)).filter(k => !k.s);
@@ -172,7 +182,7 @@
     if (document.getElementById('insertDiv')) return;
     const div = document.createElement("div");
     document.body.insertBefore(div, document.body.firstChild);
-    div.innerHTML = `<div style="width: 100%;max-height: 400px;overflow: auto;margin-top: 66px;text-align: -webkit-center;" id="insertDiv">
+    div.innerHTML = `<div style="width: 100%;max-height: 720px;overflow: auto;margin-top: 66px;text-align: -webkit-center;" id="insertDiv">
   <table>
     <tr>
       <td>
@@ -196,28 +206,6 @@
           <button onclick="infoUp(1)">设置</button>
         </div>
       </td>
-    </tr>
-    <tr>
-      <td>
-        <textarea id="form_playHistory" rows="2" cols="30"></textarea>
-        <div>观看记录
-          <button onclick="infoUp(2)">设置</button>
-        </div>
-      </td>
-      <td>
-        <textarea id="form_certApply" rows="2" cols="30"></textarea>
-        <div>证书申请(可申请)
-          <button onclick="infoUp(3)">设置</button>
-        </div>
-      </td>
-      <td>
-        <textarea id="form_certApplied" rows="2" cols="30"></textarea>
-        <div>证书申请(已获得)
-          <button onclick="infoUp(5)">设置</button>
-        </div>
-      </td>
-    </tr>
-    <tr>
       <td>
         <div>
           <span>课程时间</span>
@@ -254,10 +242,11 @@
       <th>课程时间</th>
       <th>ID</th>
       <th>课程名称</th>
-      <th>学时</th>
       <th>直播</th>
       <th>回放</th>
-      <th>已发</th>
+      <th>用户学时</th>
+      <th>最大学时</th>
+      <th>已发学时</th>
       <th>记录</th>
       <th>操作</th>
     </tr>
@@ -270,15 +259,13 @@
   document.infoUp = function (n) {
     if (n === 0) user.state = !user.state;
     else if (n === 1) user.subject = document.getElementById("form_subject").value;
-    else if (n === 2) user.playHistory = document.getElementById("form_playHistory").value;
-    else if (n === 3) user.certApply = document.getElementById("form_certApply").value;
     // 搜索
     else if (n === 4) {
       let joinTxt = document.getElementById("form_join").value;
       let kcs = all_kcs.filter(k => k.name.includes(joinTxt));
       if (kcs.length !== 1) return alert(`搜索结果数量：【${kcs.length}】`);
       user.join_kcs.push(kcs[0]);
-    } else if (n === 5) user.certApplied = document.getElementById("form_certApplied").value;
+    }
     // 课程时间筛选设置
     else if (n === 6) user.dateStart = utils.q("#date_s").value.replaceAll(/\D/g, '-');
     else if (n === 7) user.dateEnd = utils.q("#date_e").value.replaceAll(/\D/g, '-');
@@ -298,9 +285,6 @@
   function showForm() {
     document.getElementById("info0").innerText = ` ${needSubjects.length} / ${allSubjects.length} `;
     document.getElementById("form_subject").value = user.subject || '';
-    document.getElementById("form_playHistory").value = user.playHistory || '';
-    document.getElementById("form_certApply").value = user.certApply || '';
-    document.getElementById("form_certApplied").value = user.certApplied || '';
     document.getElementById("date_s").value = utils.getDateStr(user.dateStart);
     document.getElementById("date_e").value = utils.getDateStr(user.dateEnd);
     document.getElementById("date_s").max = utils.getDateStr(user.dateEnd);
@@ -314,10 +298,11 @@
           <td>${k.crt}</td>
           <td>${k.id}</td>
           <td>${k.name}</td>
-          <td>${k.yjxs}</td>
           <td>${k.zbgk}</td>
           <td>${k.dbgk}</td>
-          <td>${k.yfxs}</td>
+          <td>${k.userHour || ''}</td>
+          <td>${k.maxHour || ''}</td>
+          <td>${k.rstHour || ''}</td>
           <td>${k.his}</td>
           <td><a href="#" onclick="reStudyKc('${k.id}')">加入学习列表</a></td>
         </tr>`).join('\n');
@@ -332,16 +317,16 @@
   }
 
   GM_registerMenuCommand("更新全部课程", getAllKcs, "");
+  GM_registerMenuCommand("更新个人播放记录", getAllHistory, "");
+  let init = {headers: {authorization: localStorage.Authorization}};
 
   async function getAllKcs() {
     let api = "/sd-api/event/resourcePageNew/selectTeachInfoByPage/0?catalogId=-1&gradeId=-1&labelId=-1&noteId=-1&queryType=0&resourceFamily=-1&resourceName=&resourceType=0&sortType=1&stageId=-1&subjectId=-1&versionId=-1";
-    let init = {headers: {authorization: localStorage.Authorization}};
     let pageNo = 1, totalPage = 1000, total = 100000, length = all_kcs.length;
     while (all_kcs.length < total && pageNo <= totalPage) {
       let rsp = await fetch(`${api}&pageSize=500&pageNo=${pageNo++}`, init);
       if (!rsp.ok) utils.log(`"课程列表请求失败，${rsp.statusText}`, true);
       let json = await rsp.json();
-      console.log(json);
       total = json.data.accumulated;
       totalPage = Math.ceil(total / 500);
       let subjects = json.data.resResourceList.map(e => ({id: e.id, name: e.name, crt: new Date(e.createTime).toLocaleString()}));
@@ -358,5 +343,34 @@
       utils.run(updateSubject, insertForm, showForm);
     }
     utils.log(`课程更新完成，课程数量${length} - ${all_kcs.length}`);
+  }
+
+  async function getAllHistory() {
+    let api = "/sd-api/event/statistics/optimize/history.data";
+    let pageNo = 1, totalPage = 1000, count = 100000, pageSize = 20;
+    user.hisObj = user.hisObj || {};
+    while (pageNo <= totalPage && Object.keys(user.hisObj).length < count) {
+      let rsp = await fetch(`${api}?&pageSize=${pageSize}&pageNo=${pageNo++}`, init);
+      if (!rsp.ok) utils.log(`播放历史记录-请求失败，${rsp.statusText}`, true);
+      let json = await rsp.json();
+      console.log(json);
+      count = json.totalDatas;
+      totalPage = Math.ceil(count / pageSize);
+      for (let h of json.data) {
+        if (user.hisObj[h.id]) continue;
+        user.hisObj[h.id] = h;
+      }
+    }
+    let rsp = await fetch("/sd-api/event/classHour/getMayApplyAndAwardedEventNew", init);
+    let json = await rsp.json();
+    if (!rsp.ok) utils.log(`证书申请列表-请求失败，${rsp.statusText}`, true);
+    [user.mayApply = [], user.awarded = []] = [json.data.mayApply.reduce(fun, {}), json.data.awarded.reduce(fun, {})];
+    utils.run(utils.updateUser, updateSubject, insertForm, showForm);
+    utils.log(`播放历史记录-证书申请列表-更新完成`);
+  }
+
+  function fun(obj, val) {
+    obj[val.event_info_id] = val;
+    return obj;
   }
 })();
