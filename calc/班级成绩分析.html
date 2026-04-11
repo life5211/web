@@ -20,7 +20,7 @@
 </head>
 <body>
 <div id="root">
-  <el-row>
+  <el-row id="home">
     <el-upload
         class="upload-demo"
         ref="upload"
@@ -32,16 +32,8 @@
         multiple
         :auto-upload="false">
       <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-      <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">导出汇总数据</el-button>
       <div slot="tip" class="el-upload__tip">只能上传.xls,.xlsx文件</div>
     </el-upload>
-  </el-row>
-
-  <h4>数据筛选项 （总数据量<{{allDataLen}}>）</h4>
-  <el-row>
-    <template v-for="(v, k) in keysObj">
-      <el-checkbox v-model="v.checked">{{k}}<{{v.num}}></el-checkbox>
-    </template>
   </el-row>
 
   <h4>文件列表<{{excelFiles.length}}></h4>
@@ -62,23 +54,25 @@
   <el-table
       :data="tableData"
       border
-      style="width: 100%">
+      style="width: 100%;max-height: 1080px;overflow: auto">
     <el-table-column v-for="(e) in tableCols"
                      :prop="e"
                      :label="e" :key="e"
                      sortable>
     </el-table-column>
   </el-table>
-
-  <h5>一维数据表<{{tableData2.length}}></h5>
+  <h4>一维数据表<{{tableData2.length}}></h4>
+  <el-button style="margin-left: 10px;" size="small" type="success" @click="exportResultExcel">导出汇总数据</el-button>
+  <el-button style="margin-left: 10px;" size="small" type="success" @click="clear">清空</el-button>
   <el-table
       :data="tableData2"
       border
       style="width: 100%">
-    <el-table-column v-for="(e) in ['学期','学校','年级','班级','科目','小分','val']"
+    <el-table-column v-for="(e) in ['标题','学期','学校','年级','班级','科目','小分','val']"
                      :prop="e"
                      :label="e"
                      :key="e"
+                     ref='table1'
                      sortable>
     </el-table-column>
   </el-table>
@@ -137,9 +131,20 @@
       sheetIdx: 0
     },
     methods: {
-      submitUpload() {
-        const innerHtml = "";
-        downloadTxt(`查询网站.html`, innerHtml);
+      clear() {
+        localStorage.clear();
+        this.tableData = [];
+        this.tableData2 = [];
+      },
+      async exportResultExcel() {
+        await (async function downloadExcelStudent(fileName, objArr) {
+          if (!objArr?.length) return alert("导出数据为空！");
+          if (!XLSX) (await fetch("https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js")).text().then(eval)
+          let workbook = XLSX.utils.book_new();
+          let worksheet = XLSX.utils.json_to_sheet(objArr);
+          XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
+          XLSX.writeFile(workbook, `${fileName}details_${Date.now()}.xlsx`);
+        })("成绩分析一维数据表", this.tableData2);
       },
       async handleFileChange({raw}, fileList) {
         const wb = await new Promise((resolve, reject) => {
@@ -180,9 +185,10 @@
         let arrOne = Object.values(workbookObj).flatMap(workbooks => Object.values(workbooks)).flatMap(sheetArr => {
           let title = sheetArr[0].join("");
           let grade = title.match(/.年级/)[0];
-          let semester = title.replace(/^.*([\d-]{4,}.+(学年度?|期)).+$/, '$1');
+          let semester = /([\d-]{4,}.*(学年度?|期))/.exec(title)[1];
           let totalNum = $val(title.replace(/^.*?(\d+)个.+$/, '$1'));
           let commons = ['区域', '校码', '学校', '类别', '年级', '班级'];
+          let startCols = [];
           sheetArr[1].forEach((e, i) => {
             if (e) sheetArr[1][i] = sheetArr[1][i].replaceAll(/\s*/g, "");
             if (e === '学校代码') sheetArr[1][i] = '校码';
@@ -190,29 +196,36 @@
             if (e === '学校类别') sheetArr[1][i] = '类别';
             if (e === '班级类别') sheetArr[1][i] = '类别';
             if (i && !e) sheetArr[1][i] = sheetArr[1][i - 1];
-          });
-          let startCols = [];
-          for (let c in sheetArr[1]) {
-            if (!commons.includes(sheetArr[1][c])) {
-              startCols = Array.from({length: c}, (val, i) => i);
-              break;
+            if (!commons.includes(sheetArr[1][i])) {
+              if (!startCols.length) startCols = Array.from({length: i}, (val, j) => j);
+              if ($empty(sheetArr[2][i]) || sheetArr[2][i] === sheetArr[1][i]) {
+                sheetArr[2][i] = sheetArr[1][i];
+                sheetArr[1][i] = '综合';
+              }
             }
-          }
+          });
+          /*if (totalNum)  // 各行数据加上总数
+            sheetArr.forEach((e, i) => {
+              if (i === 1) e.push("总数");
+              if (i > 2) e.push(totalNum);
+            });*/
           return sheetArr.flatMap((row, r) => {
             return row.map((val, c) => {
               if (c < startCols.length || r < 3 || $empty(val)) return '';
-              let obj = {val: $val(val)};
+              let obj = {};
               obj['标题'] = title;
-              obj['学期'] = semester;
               startCols.forEach((e, i) => obj[sheetArr[1][e]] = $val(sheetArr[r][e]));
+              if (semester) obj['学期'] = semester;
               obj['年级'] = grade;
               obj['科目'] = $val(sheetArr[1][c]);
+              if (totalNum) obj['总数'] = totalNum;
               if (sheetArr[2][c] && sheetArr[1][c] !== sheetArr[2][c]) obj['小分'] = $val(sheetArr[2][c]);
+              obj.val = $val(val);
               return obj;
             }).filter(e => e);
           });
         });
-        $localSet("sheetObj", arrOne);
+        $localSet("arrOne", arrOne);
         this.tableData2 = arrOne;
       },
       loadFileFn(fileIdx, sheetIdx) {
@@ -242,7 +255,7 @@
       }
     },
     created() {
-      this.tableData2 = $localGet("sheetObj", []);
+      this.tableData2 = $localGet("arrOne", []);
     }
   });
 </script>
