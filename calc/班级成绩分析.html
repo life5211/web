@@ -75,7 +75,7 @@
       :data="tableData2"
       border
       style="width: 100%">
-    <el-table-column v-for="(e) in tableCols2"
+    <el-table-column v-for="(e) in ['学期','学校','年级','班级','科目','小分','val']"
                      :prop="e"
                      :label="e"
                      :key="e"
@@ -166,7 +166,8 @@
       parseWorkbook(wb, filename) {
         let workbookObj = $localGet("workbookObj", {});
         workbookObj[filename] = wb.SheetNames.reduce((obj, sheetName) => {
-          let csv = XLSX.utils.sheet_to_csv(wb.Sheets[sheetName], {FS: ',,', RS: '[\n]', blankrows: false}).split('[\n]').map(line => line.split(',,'));
+          let csv = XLSX.utils.sheet_to_csv(wb.Sheets[sheetName], {FS: ',,', RS: '[\n]', blankrows: false})
+              .split('[\n]').map(line => line.split(',,'));
           let lens = csv.map(arr => {
             for (let i = arr.length - 1; i >= 0; i--) if (!$empty(arr[i])) return i;
             return 0;
@@ -178,35 +179,41 @@
         $localSet("workbookObj", workbookObj);
         let arrOne = Object.values(workbookObj).flatMap(workbooks => Object.values(workbooks)).flatMap(sheetArr => {
           let title = sheetArr[0].join("");
+          let grade = title.match(/.年级/)[0];
+          let semester = title.replace(/^.*([\d-]{4,}.+(学年度?|期)).+$/, '$1');
+          let totalNum = $val(title.replace(/^.*?(\d+)个.+$/, '$1'));
+          let commons = ['区域', '校码', '学校', '类别', '年级', '班级'];
           sheetArr[1].forEach((e, i) => {
+            if (e) sheetArr[1][i] = sheetArr[1][i].replaceAll(/\s*/g, "");
+            if (e === '学校代码') sheetArr[1][i] = '校码';
+            if (e === '学校名称') sheetArr[1][i] = '学校';
+            if (e === '学校类别') sheetArr[1][i] = '类别';
+            if (e === '班级类别') sheetArr[1][i] = '类别';
             if (i && !e) sheetArr[1][i] = sheetArr[1][i - 1];
           });
-          // sheetArr[2].forEach((e, i) => {
-          //   if (!e && sheetArr[1][i]) sheetArr[2][i] = sheetArr[1][i];
-          // });
-          let commons = ['区域', '校码', '学校', '类别', '班级', '班级类别', '学校代码', '学校名称', '学校类别'];
-          let subjectCols = [], commonCols = [];
-          sheetArr[1].forEach((e, i) => {
-            if (sheetArr[1][i] !== sheetArr[2][i]) subjectCols.push(i);
-            else commonCols.push(i);
-          });
-          let startCols = Array.from({length: subjectCols[0]}, (val, i) => i);
+          let startCols = [];
+          for (let c in sheetArr[1]) {
+            if (!commons.includes(sheetArr[1][c])) {
+              startCols = Array.from({length: c}, (val, i) => i);
+              break;
+            }
+          }
           return sheetArr.flatMap((row, r) => {
             return row.map((val, c) => {
-              if (c < subjectCols[0]) return '';
-              if (r < 3) return '';
-              if ($empty(val)) return '';
-              let obj = {};
+              if (c < startCols.length || r < 3 || $empty(val)) return '';
+              let obj = {val: $val(val)};
+              obj['标题'] = title;
+              obj['学期'] = semester;
               startCols.forEach((e, i) => obj[sheetArr[1][e]] = $val(sheetArr[r][e]));
+              obj['年级'] = grade;
               obj['科目'] = $val(sheetArr[1][c]);
               if (sheetArr[2][c] && sheetArr[1][c] !== sheetArr[2][c]) obj['小分'] = $val(sheetArr[2][c]);
-              obj.val = $val(val);
               return obj;
             }).filter(e => e);
           });
         });
-        this.tableData2 = arrOne;
         $localSet("sheetObj", arrOne);
+        this.tableData2 = arrOne;
       },
       loadFileFn(fileIdx, sheetIdx) {
         fileIdx = fileIdx || this.fileIdx;
@@ -222,8 +229,6 @@
     }, computed: {
       tableCols() {
         return Object.keys(this.tableData[3] || {});
-      }, tableCols2() {
-        return [...new Set(this.tableData2.flatMap(e => Object.keys(e || {})))];
       }
     },
     watch: {
