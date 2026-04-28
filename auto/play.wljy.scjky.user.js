@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         网络教研学习
 // @namespace    http://tampermonkey.net/
-// @version      2.18
+// @version      3.17
 // @description  自动化播放网络教研视频，支持设置学科和已经播放的课程过滤
 // @match        https://wljy.scsjky.cn/a*
 // @match        *wljy.scjks.net/*
@@ -21,23 +21,26 @@
 // ==/UserScript==
 
 (async function () {
+  window.GMSetValue = unsafeWindow.GMSetValue = GM_setValue;
+  window.GMGetValue = unsafeWindow.GMGetValue = GM_getValue;
+
   let usrName, usrKey, user, allSubjects, needSubjects, learned_kcs, subjectId, subjectName, r, logK, logs, utils = {
     rf: (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
     q: selector => document.querySelector(selector),
-    localGet: (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def,
-    localSet: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+    // localGet: (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def,
+    // localSet: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+    localGet: (key, def = {}) => JSON.parse(GMGetValue(key, JSON.stringify(def))),
+    localSet: (key, val) => GMSetValue(key, JSON.stringify(val)),
+    $GmGet: (key, def = {}) => JSON.parse(GMGetValue(key, JSON.stringify(def))),
+    $GmSet: (key, val) => GMSetValue(key, JSON.stringify(val)),
     updateUser: _ => utils.localSet(usrKey, user),
     run: (...fun) => fun.forEach(f => f()),
+    runInterval: (handler, min = 40, max = 60) => setInterval(_ => setTimeout(handler, this.rf(min, max)), this.rf(min, max)),
     getDateStr: date => {
       if (!date) return '';
       date = new Date(date);
       const [fullYear, month, day] = [date.getFullYear(), `${date.getMonth() + 1}`.padStart(2, '0'), `${date.getDate()}`.padStart(2, '0')];
       return `${fullYear}-${month}-${day}`
-    },
-    runInterval: function (min, max, handler) {
-      let number = setInterval(_ => setTimeout(handler, this.rf(min, max)), this.rf(min, max));
-      handler();
-      return number;
     },
     compareFn(a, b, ...fields) {
       const fnc = (m, n) => m === undefined ? -1 : n === undefined ? 1 : m.localeCompare ? m.localeCompare(n) : m > n ? 1 : m < n ? -1 : 0;
@@ -66,11 +69,16 @@
     user = utils.localGet(usrKey, {scriptKcIds: [], state: 1});
     if (!user.playLog) user.playLog = {}
     if (!user.join_kcs) user.join_kcs = [];
-    utils.run(updateSubject, insertForm, showForm);
+    (function () {
+      if (new Date().toDateString() === user.updateDate) return;
+      getAllKcs();
+      getAllHistory();
+      user.updateDate = new Date().toDateString();
+      user.scriptKcIds = [];
+    })();
+    utils.run(utils.updateUser, updateSubject, insertForm, showForm);
     utils.log("页面信息初始化完成");
     if (!user.state) return; // 暂停学习
-    // if (localStorage.getItem("_redirect"))
-    //   setTimeout(redirectPage, utils.rf(3, 8));
     if (location.hash.startsWith("#/activity/"))
       document.i_2 = setInterval(studyFun, utils.rf(60, 80));
   }, utils.rf(1, 2));
@@ -172,6 +180,7 @@
     if (user.awarded)
       all_kcs.filter(k => user.awarded[k.id]).filter(k => k.his = 'result')
           .forEach(k => [k.userHour, k.maxHour, k.rstHour] = getVal(user.awarded[k.id], 'userClassHour', 'maxClassHour', 'result_class_hour'));
+    all_kcs.filter(k => !k.rstHour).filter(k => k.userHour).filter(k => k.userHour < k.maxHour).forEach(k => k.his = '');
     learned_kcs = all_kcs.filter(k => k.his);
     let learned_kcsIds = learned_kcs.map(k => k.id);
     allSubjects = all_kcs.filter(k => !user.subject || k.name.includes(user.subject)).filter(k => !k.s);
@@ -213,6 +222,24 @@
           <div>结束<input type="date" id="date_e" onchange="infoUp(7)"></div>
           <button onclick="infoUp(8)">清空时间</button>
         </div>
+        <div>
+          <label><input type="radio" name="study_year" onchange="infoUp(2020)">2020-2021</label>
+          <label><input type="radio" name="study_year" onchange="infoUp(2021)">2021-2022</label>
+          <label><input type="radio" name="study_year" onchange="infoUp(2022)">2022-2023</label>
+          <label><input type="radio" name="study_year" onchange="infoUp(2023)">2023-2024</label>
+        </div>
+        <div>
+          <label><input type="radio" name="study_year" onchange="infoUp(2024)">2024-2025</label>
+          <label><input type="radio" name="study_year" onchange="infoUp(2025)">2025-2026</label>
+          <label><input type="radio" name="study_year" onchange="infoUp(2026)">2026-2027</label>
+          <label><input type="radio" name="study_year" onchange="infoUp(2027)">2027-2028</label>
+        </div>
+        <div>
+          <label><input type="radio" name="study_year" onchange="infoUp(2028)">2028-2029</label>
+          <label><input type="radio" name="study_year" onchange="infoUp(2029)">2029-2030</label>          
+          <label><input type="radio" name="study_year" onchange="infoUp(2030)">2030-2031</label>
+          <label><input type="radio" name="study_year" onchange="infoUp(2031)">2031-2032</label>
+         </div>
       </td>
       <td>
         <div onclick="downLog()">
@@ -270,6 +297,10 @@
     else if (n === 6) user.dateStart = utils.q("#date_s").value.replaceAll(/\D/g, '-');
     else if (n === 7) user.dateEnd = utils.q("#date_e").value.replaceAll(/\D/g, '-');
     else if (n === 8) user.dateStart = user.dateEnd = utils.q("#date_s").value = utils.q("#date_e").value = "";
+    else if (n > 2000) {
+      user.dateStart = `${n}-09-01`;
+      user.dateEnd = `${n + 1}-08-31`;
+    }
 
     utils.run(utils.updateUser, updateSubject, showForm, studyFun);
   }
@@ -322,13 +353,13 @@
 
   async function getAllKcs() {
     let api = "/sd-api/event/resourcePageNew/selectTeachInfoByPage/0?catalogId=-1&gradeId=-1&labelId=-1&noteId=-1&queryType=0&resourceFamily=-1&resourceName=&resourceType=0&sortType=1&stageId=-1&subjectId=-1&versionId=-1";
-    let pageNo = 1, totalPage = 1000, total = 100000, length = all_kcs.length;
+    let pageNo = 1, totalPage = 1000, total = 100000, length = all_kcs.length, pageSize = length > 1000 ? 20 : 500;
     while (all_kcs.length < total && pageNo <= totalPage) {
-      let rsp = await fetch(`${api}&pageSize=500&pageNo=${pageNo++}`, init);
+      let rsp = await fetch(`${api}&pageSize=${pageSize}&pageNo=${pageNo++}`, init);
       if (!rsp.ok) utils.log(`"课程列表请求失败，${rsp.statusText}`, true);
       let json = await rsp.json();
       total = json.data.accumulated;
-      totalPage = Math.ceil(total / 500);
+      totalPage = Math.ceil(total / pageSize);
       let subjects = json.data.resResourceList.map(e => ({id: e.id, name: e.name, crt: new Date(e.createTime).toLocaleString()}));
       let ids = all_kcs.map(k => k.id);
       for (let s of subjects) {
@@ -353,7 +384,6 @@
       let rsp = await fetch(`${api}?&pageSize=${pageSize}&pageNo=${pageNo++}`, init);
       if (!rsp.ok) utils.log(`播放历史记录-请求失败，${rsp.statusText}`, true);
       let json = await rsp.json();
-      console.log(json);
       count = json.totalDatas;
       totalPage = Math.ceil(count / pageSize);
       for (let h of json.data) {
