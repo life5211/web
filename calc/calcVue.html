@@ -39,7 +39,6 @@
     <el-form size="mini">
       <el-form-item>
         <el-input type="text" v-model="inputName" placeholder="Input Text"></el-input>
-        <el-button @click="inputInit" class="el-icon-delete">重置</el-button>
         <el-button type="primary" @click="addTeam" class="el-icon-plus">团队</el-button>
         <el-button type="primary" @click="addBill" class="el-icon-plus">账单</el-button>
         <el-button type="primary" @click="addUser" class="el-icon-plus">成员</el-button>
@@ -48,7 +47,7 @@
         <el-button type="primary" @click="save">保存</el-button>
         <el-button type="primary" class="el-icon-download" @click="exportFn">导出</el-button>
         <el-button class="el-icon-delete" @click="rmLogs">日志</el-button>
-        <el-button @click="rmAll" class="el-icon-delete">重置全部</el-button>
+        <el-button class="el-icon-delete" @click="rmAll" class="el-icon-delete">重置全部</el-button>
       </el-form-item>
 
       <el-form-item label="团队列表 ">
@@ -96,11 +95,12 @@
       </tbody>
     </table>
     <el-row>
-      <el-col :span="3">
-        <el-input type="text" v-model="inputName" placeholder="备注信息……" label="备注" size="mini"></el-input>
-      </el-col>
-      <el-col :span="3">
+      <el-col :span="4">
+        <el-button @click="inputInit" class="el-icon-delete" size="mini">重置</el-button>
         <el-button type="primary" @click="addLog" class="el-icon-plus" size="mini">添加</el-button>
+      </el-col>
+      <el-col :span="4">
+        <el-input type="text" v-model="inputName" placeholder="备注信息……" label="备注" size="mini"></el-input>
       </el-col>
     </el-row>
     <table class="table table-bordered" id="tableCalc" ref="tableCalc">
