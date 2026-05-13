@@ -1,7 +1,12 @@
 schtasks /delete /tn "daily1205shutdown" /f
 schtasks /delete /tn "daily1215shutdown" /f
 schtasks /delete /tn "daily1705shutdown" /f
+schtasks /delete /tn "daily1715shutdown" /f
 schtasks /delete /tn "daily1745shutdown" /f
+schtasks /delete /tn "daily1755shutdown" /f
 schtasks /delete /tn "daily2025shutdown" /f
 schtasks /delete /tn "daily2105shutdown" /f
 schtasks /delete /tn "daily2141shutdown" /f
+schtasks /delete /tn "daily1shutdown" /f
+schtasks /delete /tn "daily2shutdown" /f
+schtasks /delete /tn "daily3shutdown" /f

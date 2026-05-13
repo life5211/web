@@ -4,4 +4,4 @@ schtasks /delete /tn "daily3shutdown" /f
 
 schtasks /create /tn "daily1shutdown" /tr "shutdown /s /t 300" /sc daily /st 12:10:00
 schtasks /create /tn "daily2shutdown" /tr "shutdown /s /t 300" /sc daily /st 17:50:00
-schtasks /create /tn "daily3shutdown" /tr "shutdown /s /t 300" /sc daily /st 21:00:00
+schtasks /create /tn "daily3shutdown" /tr "shutdown /s /t 300" /sc daily /st 21:40:00
