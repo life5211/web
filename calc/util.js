@@ -17,14 +17,14 @@ export default {
   localGet: function (key) {
     return JSON.parse(localStorage.getItem(key + this.uuid));
   },
-  getDateStr: function (date) {
+  getDateStr: function (date = new Date()) {
     const [fullYear, month, day] = [date.getFullYear(), `${date.getMonth() + 1}`.padStart(2, '0'), `${date.getDate()}`.padStart(2, '0')];
     return `${fullYear}-${month}-${day}`;
   },
-  getTimeStr: function (date) {
+  getTimeStr: function (date = new Date()) {
     return date.toTimeString().substring(0, 8);
   },
-  getDateTimeStr: function (date) {
+  getDateTimeStr: function (date = new Date()) {
     return this.getDateStr(date) + ' ' + this.getTimeStr(date);
   },
   addCookie(key, value, {expires, path, maxAge, domain, secure}) {
@@ -52,6 +52,6 @@ export default {
     // var workbook = XLSX.utils.book_new();
     // XLSX.utils.book_append_sheet(workbook, sheet, "Sheet1");
     let workbook = XLSX.utils.table_to_book(tableEle);
-    XLSX.writeFile(workbook, "账单详情" + this.getDateTimeStr(new Date()) + '.xlsx');
+    XLSX.writeFile(workbook, "账单详情" + this.getDateTimeStr() + '.xlsx');
   }
 };
