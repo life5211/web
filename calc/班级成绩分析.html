@@ -62,8 +62,8 @@
     </el-table-column>
   </el-table>
   <h4>一维数据表<{{tableData2.length}}></h4>
+  <el-button style="margin-left: 10px;" size="small" type="danger" @click="clear">清空</el-button>
   <el-button style="margin-left: 10px;" size="small" type="success" @click="exportResultExcel">导出汇总数据</el-button>
-  <el-button style="margin-left: 10px;" size="small" type="success" @click="clear">清空</el-button>
   <el-table
       :data="tableData2"
       border

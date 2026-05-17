@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>成绩分析系统</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!--  <script src="dist/xlsx.core.min.js"></script>-->
+  <!--  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>-->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.mini.min.js"></script>
+  <!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.20.3/xlsx.core.min.js"></script>-->
+  <!-- import Vue before Element -->
+  <!--<script src="https://unpkg.com/vue@2/dist/vue.js"></script>-->
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.js"></script>
+  <!-- 生产环境版本，优化了尺寸和速度 -->
+  <!--<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>-->
+  <!--<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.9/vue.min.js"></script>-->
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="root">
+
+  <el-table
+      :data="tableData"
+      border
+      style="width: 100%;max-height: 1080px;overflow: auto">
+    <el-table-column v-for="(e) in tableCols"
+                     :prop="e"
+                     :label="e" :key="e"
+                     sortable>
+    </el-table-column>
+  </el-table>
+
+  <h4>一维数据表<{{tableData2.length}}></h4>
+  <el-table
+      :data="tableData2"
+      border
+      style="width: 100%;max-height: 1080px;overflow: auto">
+    <el-table-column v-for="(e) in ['标题','学期','学校','年级','班级','科目','小分','val']"
+                     :prop="e"
+                     :label="e"
+                     :key="e"
+                     sortable>
+    </el-table-column>
+  </el-table>
+</div>
+</body>
+
+<script>
+  let $q = s => document.querySelector(s),
+      $qa = s => Array.from(document.querySelectorAll(s)),
+      $localGet = (key, def = {}) => localStorage.hasOwnProperty(key) ? JSON.parse(localStorage[key]) : def,
+      $localSet = (key, val) => localStorage.setItem(key, JSON.stringify(val)),
+      $rf = (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
+      $log = (msg, f) => {
+        console.log(msg);
+        let k = `log_${new Date().getDate()}`;
+        let log = $localGet(k, []);
+        log.push(`[${new Date().toLocaleString()}]${msg}`);
+        $localSet(k, log);
+        if (f) alert(msg);
+      },
+      $val = e => isNaN(e) ? e : Number(e),
+      $empty = e => {
+        if (e === 0) return false;
+        if (e === false) return false;
+        return !e;
+      };
+
+  function downloadTxt(fileName, content) {
+    let blob = new Blob([content], {
+      type: "text/plain;charset=utf-8"
+    });
+    let reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onload = function (e) {
+      let a = document.createElement('a');
+      a.download = fileName;
+      a.href = e.target.result;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  }
+
+  document.VVue = new Vue({
+    el: '#root',
+    data: {
+      tableData: [],
+      tableData2: [],
+    },
+    methods: {
+      parseWorkbook(wb, filename) {
+
+      }
+    },
+    computed: {
+      tableCols() {
+        return Object.keys(this.tableData[3] || {});
+      }
+    },
+    watch: {
+      sheetIdx(index) {
+        this.loadFileFn(0, index);
+      }
+    },
+    created() {
+      this.tableData2 = $localGet("arrOne", []);
+    }
+  });
+</script>
+</html>
+
