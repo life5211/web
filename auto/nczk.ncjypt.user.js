@@ -99,7 +99,7 @@
 
   function importParse(infoTxt) {
     if (!infoTxt?.trim()) return alert("信息為空信息为空");
-    let stu = infoTxt.trim().split("\r\n")
+    let stu = infoTxt.trim().split(/\r?\n|\r/)
         .map((s) => s.split(/\s/))
         .filter((s) => (s.length > 3) && s[5]?.length === 18)
         .map(s => ({Name: s[6], ExamNo: s[24], IdNo: s[5]}));
@@ -128,19 +128,20 @@
   span.addEventListener("click", async function (params) {
     let sid = document.getElementById("selectschoolid").value;
     let tid = document.getElementById("selecttestid").value;
-    if (!tid) return alert("请选择考试名称");
+    if (!tid || tid === '0') return alert("请选择考试名称");
     let grade = document.getElementById("schoolgrade").value;
-    if (!grade) return alert("请选择年级");
-    let rsp = await fetch(`/nczk/admin/asp/querystudentinfo_e.asp?tid=${tid}&grade=${grade}&cid=&sid=${sid}&class=&key=&page=1&apply=0&poor=0&timestamp=${Date.now()}`);
-    if (!rsp.ok) return console.log(rsp.statusText);
+    let classId = document.getElementById('selectclassid').value;
+    let rsp = await fetch(`/nczk/admin/asp/querystudentinfo_e.asp?tid=${tid}&grade=${grade}&cid=&sid=${sid}&class=${classId}&key=&page=1&apply=0&poor=0&timestamp=${Date.now()}`);
+    if (!rsp.ok) return console.error(rsp.statusText);
     let text = await rsp.text();    // f0,temp/a8abb4bb284b5b27aa7cb790dc20f80b_学生信息表.csv
-    if (!text) return console.log("未获取到下载链接0");
+    if (!text) return console.error("未获取到下载链接0");
     let strings = text.split(",");
-    if (!strings[1]) return console.log("未解析到下载链接1");
+    if (!strings[1]) return console.error("未解析到下载链接1");
     // https://zk.ncedu.net.cn/nczk/admin/temp/a8abb4bb284b5b27aa7cb790dc20f80b_%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E8%A1%A8.csv?timestamp=1766929664131
     let response = await fetch(`/nczk/admin/${encodeURI(strings[1])}?timestamp=${Date.now()}`);
-    const decoder = new TextDecoder('gbk');
-    localStorage.csv = decoder.decode(await response.arrayBuffer());
+    // const decoder = new TextDecoder('gbk');
+    // localStorage.csv = decoder.decode(await response.arrayBuffer());
+    localStorage.csv = await response.text();
     importParse(localStorage.csv);
   });
 })();
