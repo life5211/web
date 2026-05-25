@@ -24,7 +24,7 @@
       $qa = s => Array.from(document.querySelectorAll(s)),
       $localGet = (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def,
       $localSet = (k, v) => localStorage.setItem(k, JSON.stringify(v)),
-      $rf = (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
+      $rf = (min, max) => Math.floor(1000 * (min + (max - min) * Math.random())),
       $log = (msg, k = `Log_${new Date().toLocaleDateString()}`) => {
         if (msg instanceof Object) msg.crt = new Date().toLocaleTimeString();
         else msg = {msg, crt: new Date().toLocaleTimeString()};
