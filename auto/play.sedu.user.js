@@ -27,7 +27,7 @@ let $q = s => document.querySelector(s),
     $localSet = (key, val) => localStorage.setItem(key, JSON.stringify(val)),
     $GmGet = (key, def = "") => JSON.parse(GMGetValue(key, JSON.stringify(def))),
     $GmSet = (key, val) => GMSetValue(key, JSON.stringify(val)),
-    $rf = (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
+    $rf = (min, max) => Math.floor(1000 * (min + (max - min) * Math.random())),
     $runInterval = (fun, min = 60, max = 180, ids = []) => {
       ids.unshift(setTimeout(_ => {
         fun();

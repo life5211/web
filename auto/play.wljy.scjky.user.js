@@ -25,7 +25,7 @@
   window.GMGetValue = unsafeWindow.GMGetValue = GM_getValue;
 
   let usrName, usrKey, user, allSubjects, needSubjects, learned_kcs, subjectId, subjectName, r, logK, logs, utils = {
-    rf: (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
+    rf: (min, max) => Math.floor(1000 * (min + (max - min) * Math.random())),
     q: selector => document.querySelector(selector),
     // localGet: (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def,
     // localSet: (k, v) => localStorage.setItem(k, JSON.stringify(v)),

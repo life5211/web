@@ -12,7 +12,7 @@
 // ==/UserScript==
 (function () {
   'use strict';
-  const rf = (min, max) => 1000 * Math.floor(min + (max - min) * Math.random());
+  const rf = (min, max) => Math.floor(1000 * (min + (max - min) * Math.random()));
   window.setTimeout(_ => {
     if (["/study/login", "/"].includes(location.pathname)) {
       document.cookie = "study_limit=false;path=/;max-age=0";

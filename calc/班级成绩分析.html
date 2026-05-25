@@ -84,7 +84,7 @@
       $qa = s => Array.from(document.querySelectorAll(s)),
       $localGet = (key, def = {}) => localStorage.hasOwnProperty(key) ? JSON.parse(localStorage[key]) : def,
       $localSet = (key, val) => localStorage.setItem(key, JSON.stringify(val)),
-      $rf = (min, max) => 1000 * Math.floor(min + (max - min) * Math.random()),
+      $rf = (min, max) => Math.floor(1000 * (min + (max - min) * Math.random())),
       $log = (msg, f) => {
         console.log(msg);
         let k = `log_${new Date().getDate()}`;
