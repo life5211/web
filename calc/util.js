@@ -1,4 +1,4 @@
-export default {
+const util = {
   uuid: '__c7bv0',
   alert: function (text) {
     alert(text);
@@ -27,15 +27,15 @@ export default {
     let cookie = `${key}=${value}`;
     if (path) cookie = `${cookie};path=${path}`
     if (domain) cookie = `${cookie};domain=${domain}`
-    if (expires) cookie = `${cookie};expires=${new Date(new Date().getTime() + expires * 1000).toUTCString()}`;
+    if (expires) cookie = `${cookie};expires=${new Date(Date.now() + expires * 1000).toUTCString()}`;
     if (maxAge) cookie = `${cookie};max-age=${maxAge}`;
     if (secure) cookie = `${cookie};secure`;
     console.log(`document.cookie = '${cookie}'`);
     document.cookie = cookie;
   },
   getCookie(key) {
-    for (let kv of document.cookie.split('; ').filter(e => e).map(e => e.split("=")))
-      if (kv && kv.length && kv[0] && key === kv[0]) return kv[1];
+    for (let [k, v] of document.cookie.split('; ').filter(e => e).map(e => e.split("=")))
+      if (v && key === k) return v;
     return null;
   },
   getCookies(key) {
@@ -43,6 +43,11 @@ export default {
   },
   delCookie(key) {
     this.addCookie(key, 0, {maxAge: "0"});
+  },
+  getSearchParams(k) {
+    let url = new URL(window.location.href);
+    let searchParams = new URLSearchParams(url.search);
+    return searchParams.get(k);
   },
   exportExcel(tableEle) {
     // let sheet = XLSX.utils.table_to_sheet(tableEle);
@@ -57,8 +62,8 @@ export default {
   times: (a, b) => parseFloat(new Big(a || 0).times(new Big(b || 0)).toString()),
   div: (a, b, x = 2) => parseFloat(new Big(a || 0).div(new Big(b || 1)).round(x).toString()),
   rf: (min, max) => Math.floor(1000 * (min + (max - min) * Math.random())),
-  q: selector => document.querySelector(selector),
-  qa: selector => Array.from(document.querySelectorAll(selector)),
+  q: (selector, ele = document) => ele.querySelector(selector),
+  qa: (selector, ele = document) => Array.from(ele.querySelectorAll(selector)),
   $GmGet: (key, def = {}) => JSON.parse(GM_getValue(key, JSON.stringify(def))),
   $GmSet: (key, val) => GM_setValue(key, JSON.stringify(val)),
   run: (...fun) => fun.forEach(f => f()),
@@ -97,5 +102,10 @@ export default {
     this.localSet('exp', exp);
     console.log(jwt, exp);
     return jwt; // 返回JSON对象
+  },
+  print(selector, ele) {
+    this.q(selector, ele).style.visibility = "visible"
+    document.body.style.visibility = "hidden"
   }
 };
+export default util;

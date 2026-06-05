@@ -11,6 +11,48 @@
 // @match        https://zk.ncedu.net.cn/*
 // @match        *zk.ncedu.net.cn/*
 // ==/UserScript==
+const util = {
+  uuid: '_nczk',
+  mathRandom() {
+    return `${Math.random()}`.substr(2);
+  },
+  localSet(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  },
+  localGet(key, def) {
+    return localStorage.hasOwnProperty(key) ? JSON.parse(localStorage.getItem(key)) : def;
+  },
+  getDateStr(date = new Date()) {
+    const [fullYear, month, day] = [date.getFullYear(), `${date.getMonth() + 1}`.padStart(2, '0'), `${date.getDate()}`.padStart(2, '0')];
+    return `${fullYear}-${month}-${day}`;
+  },
+  getTimeStr(date = new Date()) {
+    return date.toTimeString().substring(0, 8);
+  },
+  getDateTimeStr(date = new Date()) {
+    return this.getDateStr(date) + ' ' + this.getTimeStr(date);
+  },
+  getSearchParams(k) {
+    let url = new URL(window.location.href);
+    let searchParams = new URLSearchParams(url.search);
+    return searchParams.get(k);
+  },
+  exportExcel(tableEle) {
+    let workbook = XLSX.utils.table_to_book(tableEle);
+    XLSX.writeFile(workbook, this.getDateTimeStr() + '.xlsx');
+  },
+  rf: (min, max) => Math.floor(1000 * (min + (max - min) * Math.random())),
+  q: (selector, ele = document) => ele.querySelector(selector),
+  qa: (selector, ele = document) => Array.from(ele.querySelectorAll(selector)),
+  $GmGet: (key, def = {}) => JSON.parse(GM_getValue(key, JSON.stringify(def))),
+  $GmSet: (key, val) => GM_setValue(key, JSON.stringify(val)),
+  log(msg, k = `log_${new Date().getDate()}`) {
+    console.log(msg);
+    let log = this.localGet(k, []);
+    log.unshift(`[${new Date().toLocaleString()}]${msg}`);
+    $localSet(k, log);
+  }
+};
 
 (function () {
   if (document.querySelector("iframe")) return;
@@ -27,15 +69,15 @@
   document.body.insertBefore(div, document.body.firstChild);
 
 
-  let studentsGrades, titles, studentsArr, gradesObj, next;
+  let studentsGrades, titles, studentsArr, gradesObj, resultFlag;
 
   function dateUpdateShow() {
-    studentsArr = JSON.parse(localStorage.getItem("students_info") || "[]");
-    gradesObj = JSON.parse(localStorage.getItem("grades_info") || "{}");
+    studentsArr = util.localGet("students_info", []);
+    gradesObj = util.localGet("grades_info", {});
+    resultFlag = util.localGet("err_info", {});
     studentsGrades = studentsArr.map(stu => Object.assign({}, stu, gradesObj[stu.IdNo]));
     titles = ["Name", "IdNo", "ExamNo", ...new Set(Object.values(gradesObj).flatMap(grade => Object.keys(grade)))];
-    next = studentsArr.filter(s => s?.IdNo && !gradesObj[s.IdNo]).pop();
-    console.log([studentsGrades, titles, studentsArr, gradesObj, next]);
+    console.log([studentsGrades, titles, studentsArr, gradesObj]);
     //show view
     if (!document.getElementById("result")) return;
     document.querySelector("button#coll").innerText = sessionStorage.getItem("collect_state") ? `暂停采集` : '开始采集';
@@ -52,10 +94,16 @@
   function collect() {
     if (!location.pathname.startsWith("/nczk/zk/queryscoreby2img.asp")) return;
     if (document.querySelector("#showInfo>table")?.innerText?.includes("还未开通成绩查询")) return;
+    let [ExamNo, ExamName, IdNo] = util.getSearchParams('t').split(',');
+    if (document.querySelector("#showInfo>table>test")) { // TODO 信息错误
+      // '26050104919,王舒缘,511321201004089429'
+      resultFlag[ExamNo + IdNo] = 1;
+      util.localSet("err_info", resultFlag);
+      nextStu();
+    }
     let name = document.querySelector("tr.tr-02>.tdvalue")?.innerText;
     // if (!name) return alert("数据查询失败，请重试！");
-    // let idNumber = nameIds.substr(-19, 18);
-    let stuFilter = studentsArr?.filter(s => s?.Name?.trim() === name);
+    let stuFilter = studentsArr.filter(s => s.Name === ExamName && s.name === name).filter(s => s.IdNo === s.IdNo).filter(s => s.ExamNo === ExamNo);
     const stuObj = stuFilter?.length ? stuFilter[0] : {};
     //单科成绩采集
     const grades = Array.from(document.querySelectorAll("div.infobox>table>tbody td")).filter(e => e && e.innerText).map(e => e.innerText);
@@ -64,17 +112,20 @@
     stuObj.Name = name
     stuObj.GredeText = document.querySelector("div.infobox>table").innerText;
     gradesObj[stuObj.IdNo] = stuObj;
-    localStorage.setItem("grades_info", JSON.stringify(gradesObj));
+    resultFlag[stuObj.ExamNo] = 1;
+    util.localSet("grades_info", gradesObj);
+    util.localSet("err_info", resultFlag);
     nextStu();
   }
 
   function nextStu() {
     dateUpdateShow();
     if (!sessionStorage.getItem("collect_state")) return;
-    // 下一个考生成绩
     if (!studentsArr?.length) return alert("请导入考生名单");
+    // 下一个考生成绩
+    let next = studentsArr.filter(s => s?.IdNo && !gradesObj[s.IdNo] && !resultFlag[s.ExamNo + s.IdNo] && !resultFlag[s.ExamNo]).pop();
     if (!next) return alert("采集完成");
-    setTimeout(_ => location.href = `/nczk/zk/queryscoreby2img.asp?t=${next.ExamNo},${encodeURI(next.Name)},${next.IdNo}`, Math.random() * 1500 + 600);
+    setTimeout(_ => location.href = `/nczk/zk/queryscoreby2img.asp?t=${next.ExamNo},${encodeURI(next.Name)},${next.IdNo}`, Math.random() * 1000 + 600);
   }
 
   dateUpdateShow();
