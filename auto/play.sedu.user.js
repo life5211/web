@@ -28,11 +28,9 @@ let $q = s => document.querySelector(s),
     $GmGet = (key, def = "") => JSON.parse(GMGetValue(key, JSON.stringify(def))),
     $GmSet = (key, val) => GMSetValue(key, JSON.stringify(val)),
     $rf = (min, max) => Math.floor(1000 * (min + (max - min) * Math.random())),
-    $runInterval = (fun, min = 60, max = 180, ids = []) => {
-      ids.unshift(setTimeout(_ => {
-        fun();
-        $runInterval(fun, min, max, ids);
-      }, $rf(min, max)));
+    $runInterval = (handler, min = 600, max = 1000, ids = []) => {
+      handler();
+      ids.unshift(setTimeout(_ => $runInterval(handler, min, max, ids), $rf(min, max)));
       return ids;
     },
     $log = (msg, f) => {
@@ -94,7 +92,7 @@ function tokenExpireConfirmFun() {
 })();
 
 (function videoStudy() {
-  if (!location.href.startsWith("https://trplayer.sctce.cn/")) return;
+  if (!['trplayer.snddopen.cn', 'trplayer.sctce.cn'].includes(location.host)) return;
   let pauseTime = 0;
   $runInterval(_ => {
     tokenExpireConfirmFun();

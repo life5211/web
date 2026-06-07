@@ -2,7 +2,7 @@
 // @name         南充中考成绩采集
 // @icon         https://zk.ncedu.net.cn/nczk/png/logo-zk.png
 // @namespace    nczk
-// @version      2.17
+// @version      3.17
 // @description  高效、快捷、批量成绩查询与采集
 // @downloadURL  https://life5211.github.io/web/auto/nczk.ncjypt.user.js
 // @updateURL    https://life5211.github.io/web/auto/nczk.ncjypt.user.js
@@ -10,6 +10,9 @@
 // @match        *ncjypt.com/*
 // @match        https://zk.ncedu.net.cn/*
 // @match        *zk.ncedu.net.cn/*
+// @noframes
+// @grant        GM_setValue
+// @grant        GM_getValue
 // ==/UserScript==
 const util = {
   uuid: '_nczk',
@@ -36,10 +39,6 @@ const util = {
     let url = new URL(window.location.href);
     let searchParams = new URLSearchParams(url.search);
     return searchParams.get(k);
-  },
-  exportExcel(tableEle) {
-    let workbook = XLSX.utils.table_to_book(tableEle);
-    XLSX.writeFile(workbook, this.getDateTimeStr() + '.xlsx');
   },
   rf: (min, max) => Math.floor(1000 * (min + (max - min) * Math.random())),
   q: (selector, ele = document) => ele.querySelector(selector),
@@ -82,7 +81,7 @@ const util = {
     if (!document.getElementById("result")) return;
     document.querySelector("button#coll").innerText = sessionStorage.getItem("collect_state") ? `暂停采集` : '开始采集';
     if (!studentsGrades?.length) return;
-    document.querySelector('div#result').innerHTML = `<span>查询结果：${Object.values(gradesObj)?.length}</span>/<span>${studentsArr?.length || 0}</span>
+    document.querySelector('div#result').innerHTML = `<span>查询结果：${Object.keys(gradesObj)?.length}</span>/<span>${studentsArr?.length || 0}</span>
         <table border="1" style="border-collapse: collapse;border: 2px solid rgb(140 140 140);">
             <thead><tr>${titles.map(k => '<th>' + k + '</th>').join(" ")}</tr></thead>
             <tbody>
@@ -99,6 +98,7 @@ const util = {
       // '26050104919,王舒缘,511321201004089429'
       resultFlag[ExamNo + IdNo] = 1;
       util.localSet("err_info", resultFlag);
+      util.log(`${location.search}`);
       nextStu();
     }
     let name = document.querySelector("tr.tr-02>.tdvalue")?.innerText;

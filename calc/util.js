@@ -23,6 +23,12 @@ const util = {
   getDateTimeStr(date = new Date()) {
     return this.getDateStr(date) + ' ' + this.getTimeStr(date);
   },
+  importNode(src, attr = {}, tagName = 'script') {
+    let ele = document.createElement(tagName);
+    Object.entries(attr).forEach(([k, v]) => ele[k] = v);
+    ele.src = src;
+    document.head.appendChild(ele);
+  },
   addCookie(key, value, {expires, path, maxAge, domain, secure}) {
     let cookie = `${key}=${value}`;
     if (path) cookie = `${cookie};path=${path}`
@@ -49,12 +55,24 @@ const util = {
     let searchParams = new URLSearchParams(url.search);
     return searchParams.get(k);
   },
-  exportExcel(tableEle) {
-    // let sheet = XLSX.utils.table_to_sheet(tableEle);
-    // var workbook = XLSX.utils.book_new();
-    // XLSX.utils.book_append_sheet(workbook, sheet, "Sheet1");
+  downloadCsv(fileName, content) {
+    let blob = new Blob([`\ufeff${content}`], {type: "text/csv;charset=utf-8"});
+    let link = document.createElement('a');
+    link.download = `${fileName}details_${new Date().toLocaleString()}.csv`;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+  },
+  exportExcel(tableEle, fileName = this.getDateTimeStr()) {
     let workbook = XLSX.utils.table_to_book(tableEle);
-    XLSX.writeFile(workbook, this.getDateTimeStr(new Date()) + '.xlsx');
+    XLSX.writeFile(workbook, `${fileName}.xlsx`);
+  },
+  async downloadExcel(fileName, objArr) {
+    if (!objArr?.length) return alert("导出数据为空！");
+    if (!window.XLSX) await fetch("https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js").then(r => r.text()).then(eval).catch(console.log);
+    let workbook = XLSX.utils.book_new();
+    let worksheet = XLSX.utils.json_to_sheet(objArr);
+    XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
+    XLSX.writeFile(workbook, `${fileName}details_${new Date().getTime()}.xlsx`);
   },
   adds: (...args) => parseFloat(args.filter(e => e).map(e => new Big(e)).reduce((a, b) => a.plus(b), new Big(0)).toString()),
   add: (a, b) => parseFloat(new Big(a || 0).plus(new Big(b || 0)).toString()),
@@ -72,13 +90,8 @@ const util = {
   },
   $runInterval(fun, min = 60, max = 180, ids = []) {
     fun();
-    ids.push(setTimeout(_ => this.$runInterval(fun, min, max, ids), $rf(min, max)));
+    ids.push(setTimeout(_ => this.$runInterval(fun, min, max, ids), this.rf(min, max)));
     return ids;
-  },
-  runIntervalByTimeout(handler, min = this.rf(40, 50), max = this.rf(50, 60), nums = []) {
-    handler();
-    nums.push(setTimeout(_ => this.runIntervalByTimeout(handler, min, max, nums), this.rf(min, max)));
-    return nums;
   },
   compareFn(a, b, ...fields) {
     const fnc = (m, n) => m === undefined ? -1 : n === undefined ? 1 : m.localeCompare ? m.localeCompare(n) : m > n ? 1 : m < n ? -1 : 0;
@@ -95,8 +108,9 @@ const util = {
   parseJWT(token) {
     const base64Url = token.split('.')[1]; // 获取载荷部分
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // 替换Base64字符
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-    let jwt = JSON.parse(jsonPayload);
+    let jwt = JSON.parse(decodeURIComponent(escape(window.atob(base64))));
+    // const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+    // let jwt = JSON.parse(jsonPayload);
     this.localSet("jwt", jwt);
     let exp = new Date(jwt?.exp * 1000).toLocaleString();
     this.localSet('exp', exp);
