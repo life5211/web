@@ -13,6 +13,12 @@ const util = {
   localGet(key, def) {
     return localStorage.hasOwnProperty(key + this.uuid) ? JSON.parse(localStorage.getItem(key + this.uuid)) : def;
   },
+  sessionSet(key, value) {
+    sessionStorage.setItem(key + this.uuid, JSON.stringify(value));
+  },
+  sessionGet(key, def) {
+    return sessionStorage.hasOwnProperty(key + this.uuid) ? JSON.parse(sessionStorage.getItem(key + this.uuid)) : def;
+  },
   getDateStr(date = new Date()) {
     const [fullYear, month, day] = [date.getFullYear(), `${date.getMonth() + 1}`.padStart(2, '0'), `${date.getDate()}`.padStart(2, '0')];
     return `${fullYear}-${month}-${day}`;
@@ -103,7 +109,23 @@ const util = {
     console.log(msg);
     let log = this.localGet(k, []);
     log.unshift(`[${new Date().toLocaleString()}]${msg}`);
-    $localSet(k, log);
+    this.localSet(k, log);
+  },
+  clearCookie() {
+    GM_cookie.list({}, cookies => {
+      if (!cookies.length) return util.log(`当前无Cookie`);
+      cookies.forEach(cookie => {
+        GM_cookie.delete({
+          url: location.origin,
+          name: cookie.name,
+          domain: cookie.domain,
+          path: cookie.path
+        }, delErr => {
+          if (delErr) console.warn('删除失败：', cookie.name, delErr);
+          else console.log('已删除：', cookie.name);
+        });
+      });
+    });
   },
   parseJWT(token) {
     const base64Url = token.split('.')[1]; // 获取载荷部分

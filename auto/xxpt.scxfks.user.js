@@ -2,6 +2,7 @@
 // @name        四川学法考试模拟AI
 // @namespace   Javascript
 // @match       *://xxpt.scxfks.com/*
+// @match       https://www.scxfks.com/*
 // @version     V2.70
 // @author      null
 // @description 四川省，学习平台，工作人员学法考试平台，每日学习辅助，学完停止；
@@ -10,36 +11,60 @@
 // @updateURL    https://life5211.github.io/web/auto/xxpt.scxfks.user.js
 // @license MIT
 // ==/UserScript==
+
+const util = {
+  uuid: 'scxf',
+  alert: function (text) {
+    alert(text);
+    return false;
+  },
+  mathRandom() {
+    return `${Math.random()}`.substr(2);
+  },
+  localSet(key, value) {
+    localStorage.setItem(key + this.uuid, JSON.stringify(value));
+  },
+  localGet(key, def) {
+    return localStorage.hasOwnProperty(key + this.uuid) ? JSON.parse(localStorage.getItem(key + this.uuid)) : def;
+  },
+  sessionSet(key, value) {
+    sessionStorage.setItem(key + this.uuid, JSON.stringify(value));
+  },
+  sessionGet(key, def) {
+    return sessionStorage.hasOwnProperty(key + this.uuid) ? JSON.parse(sessionStorage.getItem(key + this.uuid)) : def;
+  }
+};
+
 (function () {
   'use strict';
   const rf = (min, max) => Math.floor(1000 * (min + (max - min) * Math.random()));
   window.setTimeout(_ => {
     if (["/study/login", "/"].includes(location.pathname)) {
-      document.cookie = "study_limit=false;path=/;max-age=0";
+      util.sessionSet('limit', 0);
       const checkBox = document.getElementById("know");
       if (checkBox && !checkBox.checked) checkBox.click(); // 选中登录须知
       return;
     }
-    const noLimit = new Date().toLocaleDateString() !== getCookie("study_limit");
+    const noLimit = new Date().toLocaleDateString() !== util.sessionGet('limit', 0);
     if (location.pathname.startsWith("/study/course") && noLimit) {
       if (location.pathname.startsWith("/study/courses")) { // 课程列表
         const studyBtn = Array.from(document.querySelectorAll("table.list-tab>tbody>tr"))
-          .filter(e => e && !["视频库", "练习题库"].includes(e.querySelector("td.tx-m").innerText))
-          .map(e => e.querySelector("a")).filter(e => e && e.innerText.includes("学习"))
-          .sort(() => Math.random() - 0.3);
+            .filter(e => e && !["视频库", "练习题库"].includes(e.querySelector("td.tx-m").innerText))
+            .map(e => e.querySelector("a")).filter(e => e && e.innerText.includes("学习"))
+            .sort(() => Math.random() - 0.3);
         if (studyBtn.length) return studyBtn[0].click();
         if (location.pathname.startsWith("/study/courses/all")) return;
         location.href = "/study/courses/all";
       }
       if (!location.pathname.includes("chapter")) { // 课程章节列表
         const studyLs = Array.from(document.querySelectorAll("ul.chapter>li>table > tbody>tr>td>:nth-child(2)"))
-          .filter(e => e.innerHTML.includes("&nbsp; &nbsp;"));
+            .filter(e => e.innerHTML.includes("&nbsp; &nbsp;"));
         if (studyLs && studyLs.length) return studyLs[0].click();
       }
-      setInterval(_ => window.scrollBy({ top: window.innerHeight / 3, behavior: "smooth", }), rf(1, 2));
+      setInterval(_ => window.scrollBy({top: window.innerHeight / 3, behavior: "smooth",}), rf(1, 2));
       if (location.pathname.includes("/chapter/")) { // 学习界面
         if (document.querySelector("div.chapter-score.limit"))
-          return document.cookie = `study_limit=${new Date().toLocaleDateString()};path=/`;
+          return util.sessionSet('limit', new Date().toLocaleDateString());
         if (document.querySelector("div.chapter-score.chapter-score-suc")) return document.querySelector("button").click();
         return setInterval(() => {
           if (!document.querySelector("div.chapter-score.chapter-score-suc")) return;
@@ -51,7 +76,7 @@
       location.href = "/study/courses/require";
       return;
     }
-    if (location.href.replace(location.origin,"")?.startsWith("/study/activity/question?")) {
+    if (location.href.replace(location.origin, "")?.startsWith("/study/activity/question?")) {
       // "http://xxpt.scxfks.com/study/activity/entry?id=57";
       const questionNode = document.querySelector("div.question");
       if (!questionNode) return;
@@ -75,4 +100,4 @@
       })
     }
   }, rf(0.5, 2));
-})()
+})();

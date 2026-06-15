@@ -6,13 +6,15 @@
 // @description  高效、快捷、批量成绩查询与采集
 // @downloadURL  https://life5211.github.io/web/auto/nczk.ncjypt.user.js
 // @updateURL    https://life5211.github.io/web/auto/nczk.ncjypt.user.js
-// @match        https://www.ncjypt.com/*
-// @match        *ncjypt.com/*
 // @match        https://zk.ncedu.net.cn/*
 // @match        *zk.ncedu.net.cn/*
+// @include      https://zk.ncedu.net.cn/
 // @noframes
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_cookie
+// @grant        GM_registerMenuCommand
+// @grant        GM_unregisterMenuCommand
 // ==/UserScript==
 const util = {
   uuid: '_nczk',
@@ -48,8 +50,8 @@ const util = {
   log(msg, k = `log_${new Date().getDate()}`) {
     console.log(msg);
     let log = this.localGet(k, []);
-    log.unshift(`[${new Date().toLocaleString()}]${msg}`);
-    $localSet(k, log);
+    log.unshift(`[${new Date().toLocaleString()}]${JSON.stringify(msg)}`);
+    this.localSet(k, log);
   }
 };
 
@@ -68,13 +70,14 @@ const util = {
   document.body.insertBefore(div, document.body.firstChild);
 
 
-  let studentsGrades, titles, studentsArr, gradesObj, resultFlag;
+  let studentsGrades, titles, studentsArr, gradesObj, rstFlag, errInfo;
 
   function dateUpdateShow() {
     studentsArr = util.localGet("students_info", []);
     gradesObj = util.localGet("grades_info", {});
-    resultFlag = util.localGet("err_info", {});
-    studentsGrades = studentsArr.map(stu => Object.assign({}, stu, gradesObj[stu.IdNo]));
+    rstFlag = util.localGet("rst_flag", {});
+    errInfo = util.localGet("err_info", {});
+    studentsGrades = studentsArr.map(stu => Object.assign({}, stu, gradesObj[stu.ExamNo]));
     titles = ["Name", "IdNo", "ExamNo", ...new Set(Object.values(gradesObj).flatMap(grade => Object.keys(grade)))];
     console.log([studentsGrades, titles, studentsArr, gradesObj]);
     //show view
@@ -96,9 +99,9 @@ const util = {
     let [ExamNo, ExamName, IdNo] = util.getSearchParams('t').split(',');
     if (document.querySelector("#showInfo>table>test")) { // TODO 信息错误
       // '26050104919,王舒缘,511321201004089429'
-      resultFlag[ExamNo + IdNo] = 1;
-      util.localSet("err_info", resultFlag);
-      util.log(`${location.search}`);
+      errInfo[ExamNo + IdNo] = 1;
+      util.localSet("err_info", errInfo);
+      util.log(`错误信息${location.search}`);
       nextStu();
     }
     let name = document.querySelector("tr.tr-02>.tdvalue")?.innerText;
@@ -111,10 +114,10 @@ const util = {
     for (let i = 0; i < grades.length; i++) if (isNaN(grades[i]) && !isNaN(grades[i + 1])) stuObj[grades[i]] = grades[i + 1];
     stuObj.Name = name
     stuObj.GredeText = document.querySelector("div.infobox>table").innerText;
-    gradesObj[stuObj.IdNo] = stuObj;
-    resultFlag[stuObj.ExamNo] = 1;
+    gradesObj[stuObj.ExamNo] = stuObj;
+    rstFlag[stuObj.ExamNo] = rstFlag[stuObj.IdNo] = 1;
     util.localSet("grades_info", gradesObj);
-    util.localSet("err_info", resultFlag);
+    util.localSet("rst_flag", rstFlag);
     nextStu();
   }
 
@@ -123,7 +126,7 @@ const util = {
     if (!sessionStorage.getItem("collect_state")) return;
     if (!studentsArr?.length) return alert("请导入考生名单");
     // 下一个考生成绩
-    let next = studentsArr.filter(s => s?.IdNo && !gradesObj[s.IdNo] && !resultFlag[s.ExamNo + s.IdNo] && !resultFlag[s.ExamNo]).pop();
+    let next = studentsArr.filter(s => s?.IdNo && !rstFlag[s.IdNo] && !rstFlag[s.ExamNo] && !errInfo[s.ExamNo + s.IdNo]).pop();
     if (!next) return alert("采集完成");
     setTimeout(_ => location.href = `/nczk/zk/queryscoreby2img.asp?t=${next.ExamNo},${encodeURI(next.Name)},${next.IdNo}`, Math.random() * 1000 + 600);
   }
