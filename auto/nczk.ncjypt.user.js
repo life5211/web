@@ -56,18 +56,20 @@ const util = {
 };
 
 (function () {
-  if (document.querySelector("iframe")) return;
-  const div = document.createElement("div");
-  div.innerHTML = `<div>
+  if (document.querySelector("iframe")) {
+    return setTimeout(_ => Array.from(document.querySelectorAll("div[key=set]"))
+        .forEach(e => e.parentNode.parentNode.insertAdjacentHTML('afterend', `<a href="${e.id}.asp?t=${Date.now()}" target="_blank">${e.innerText}</a>`)), 1001);
+  }
+  document.body.insertAdjacentHTML('afterbegin',
+      `<div>
         <textarea id="stuInfos" rows="2" cols="30" placeholder="学生信息表.csv中内容复制粘贴后点击导入"></textarea>
         <button onclick="importStuInfo()">信息导入</button> 
         <button onclick="downloadExportCsv()">查询结果导出</button>
         <button onclick="collectionStateChange()" id="coll">开始采集</button>
-        <hr/>
+        查询结果：<span id="s1"></span>/<span id="s2"></span>
         <div id="result" style="max-height: 300px; overflow: auto"></div>
         <hr/>
-      </div>`;
-  document.body.insertBefore(div, document.body.firstChild);
+      </div>`);
 
 
   let studentsGrades, titles, studentsArr, gradesObj, rstFlag, errInfo;
@@ -84,7 +86,9 @@ const util = {
     if (!document.getElementById("result")) return;
     document.querySelector("button#coll").innerText = sessionStorage.getItem("collect_state") ? `暂停采集` : '开始采集';
     if (!studentsGrades?.length) return;
-    document.querySelector('div#result').innerHTML = `<span>查询结果：${Object.keys(gradesObj)?.length}</span>/<span>${studentsArr?.length || 0}</span>
+    document.getElementById("s1").innerText = Object.keys(gradesObj)?.length;
+    document.getElementById("s2").innerText = studentsArr?.length;
+    document.querySelector('div#result').innerHTML = `
         <table border="1" style="border-collapse: collapse;border: 2px solid rgb(140 140 140);">
             <thead><tr>${titles.map(k => '<th>' + k + '</th>').join(" ")}</tr></thead>
             <tbody>

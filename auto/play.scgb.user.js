@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         四川网络干部学院学习
-// @version      0.17
+// @version      1.17
 // @icon         https://web.scgb.gov.cn/favicon.ico
 // @author       user
 // @description  try to take over the world!
@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 
-(function () {
+(async function () {
   let $q = s => document.querySelector(s);
   let $qa = s => Array.from(document.querySelectorAll(s));
   let $localGet = (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def;
@@ -42,41 +42,44 @@
       document.querySelector("video").title = "四川网络干部培训自动化";
     }
     $log({m: "播放进度", t: video.currentTime, l: video.duration});
-
+    if (video.paused) return video.play().then($log).catch($log);
     if (video.ended) {
       $log("当前课程学习结束");
       if (document.userI) clearInterval(document.userI);
-      let next = document.querySelector("div.tab-list div.item.active div").nextElementSibling;
-      if (next) return next.click();
-      let learned = await fetch("https://api.scgb.gov.cn/api/services/app/course/app/getCourseUserAutoLearnPage?maxResultCount=96&skipCount=0&pageIndex=1",
-          {"headers": {authorization: `Bearer ${$localGet("store")?.session.accessToken}`}}
-      ).then(r => r.json()).then(r => r.result.records);
-      learned.forEach(e => e.hours = Math.floor((e.curTimes / 3600) * 100) / 100);
-      let learnedObj = learned.reduce(function (obj, curr) {
-        obj[curr.id] = curr;
-        return obj;
-      }, {});
-      let resource = $localGet("resource", []).map(e => Object.assign({}, e, learnedObj[e.id]));
-      $localSet("learned", learned);
-      fun(resource.filter(e => ['理论教育', '党史教育'].includes(e.label)), 21)
-      && fun(resource.filter(e => ['能力培训', '知识培训'].includes(e.label)), 31)
-      && $log("全部学习完成啦；");
-
-      function fun(filterRecourse, hours) {
-        let reduce = filterRecourse.reduce((prev, cur) => prev + (cur.hours || 0), 0);
-        $log(`当前模块学习进度${reduce}/${hours}`);
-        if (reduce > hours) return true;
-        let next = filterRecourse.filter(e => !e.hours).shift();
-        if (!next) return true;
-        $log(next);
-        location.href = `/#/course?id=${next.id}&className=`;
-        location.reload();
-        return false;
-      }
+      let curr= document.querySelector("div.introduce-box  div.item.active")
+      if (curr?.nextElementSibling) return $log("等待下一小节课程……")
+      await nextVideo();
     }
-    if (video.ended) return $log("播放完毕，等待同步进度");
-    if (video.paused) return video.play().then($log).catch($log);
   }, 66666);
+
+  async function nextVideo() {
+    let learned = await fetch("https://api.scgb.gov.cn/api/services/app/course/app/getCourseUserAutoLearnPage?maxResultCount=256&skipCount=0&pageIndex=1",
+        {"headers": {authorization: `Bearer ${$localGet("store")?.session.accessToken}`}}
+    ).then(r => r.json()).then(r => r.result.records);
+    learned.forEach(e => e.hours = Math.floor((e.curTimes / 3600) * 100) / 100);
+    let learnedObj = learned.reduce(function (obj, curr) {
+      obj[curr.id] = curr;
+      return obj;
+    }, {});
+    let resource = $localGet("resource", []).map(e => Object.assign({}, e, learnedObj[e.id]));
+    $localSet("learned", learned);
+
+    fun(resource.filter(e => ['理论教育', '党史教育'].includes(e.label)), 21)
+    && fun(resource.filter(e => ['能力培训', '知识培训'].includes(e.label)), 31)
+    && $log("全部学习完成啦；");
+
+    function fun(filterRecourse, hours) {
+      let reduce = filterRecourse.reduce((prev, cur) => prev + (cur.hours || 0), 0);
+      $log(`当前模块学习进度${reduce}/${hours}`);
+      if (reduce > hours) return true;
+      let next = filterRecourse.filter(e => !e.hours).shift();
+      if (!next) return true;
+      $log(next);
+      location.href = `/#/course?id=${next.id}&className=`;
+      location.reload();
+      return false;
+    }
+  }
 
   (function parseJWT(token) {
     const base64Url = token.split('.')[1]; // 获取载荷部分
@@ -95,7 +98,7 @@
   })(JSON.parse(localStorage.store)?.session.accessToken);
 
   function resourceCache() {
-    fetch("https://api.scgb.gov.cn/api/services/app/course/site/getCoursePublicPage?maxResultCount=256&skipCount=0&pageIndex=1&filterString=&contentId=&orderByType=&tagName=&year=",
+    fetch("https://api.scgb.gov.cn/api/services/app/course/site/getCoursePublicPage?maxResultCount=512&skipCount=0&pageIndex=1&filterString=&contentId=&orderByType=&tagName=&year=",
         {"headers": {authorization: `Bearer ${JSON.parse(localStorage.store)?.session.accessToken}`}}
     ).then(r => r.json()).then(r => $localSet("resource", r.result.records));
   }
@@ -113,4 +116,5 @@
   if (!localStorage.resource) resourceCache();
   GM_registerMenuCommand("学习列表更新采集", resourceCache);
   GM_registerMenuCommand("全部列表采集", resourceCacheAll);
+  GM_registerMenuCommand("下一课程", nextVideo);
 })();
