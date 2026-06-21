@@ -61,8 +61,24 @@ const util = {
     let searchParams = new URLSearchParams(url.search);
     return searchParams.get(k);
   },
-  downloadCsv(fileName, content) {
-    let blob = new Blob([`\ufeff${content}`], {type: "text/csv;charset=utf-8"});
+  getVal(obj, k, val = obj[k]) {
+    if (!(k in obj)) return '';
+    if (['number', 'string', 'boolean'].includes(typeof val)) return val;
+    if (!val) return '';
+    if (val instanceof Date) return val.toLocaleDateString();
+    return JSON.stringify(val);
+  },
+  /**
+   * 导出csv文件
+   * @param arr 对象数组
+   * @param fileName 文件名
+   * @param titles 导出标题
+   */
+  downloadCsv(arr, fileName, titles) {
+    if (!arr?.length) return alert("导出数据为空");
+    if (!titles?.length) titles = new Set(arr.flatMap(obj => Object.keys(obj)));
+    let content = arr.map(stu => titles.map(title => `${this.getVal(stu, title, true)}`).join(",")).join("\r\n");
+    let blob = new Blob([`\ufeff${titles.join(",")}\r\n${content}`], {type: "text/csv;charset=utf-8"});
     let link = document.createElement('a');
     link.download = `${fileName}details_${new Date().toLocaleString()}.csv`;
     link.href = URL.createObjectURL(blob);
