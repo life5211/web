@@ -138,13 +138,6 @@ const util = {
   dateUpdateShow();
   collect();
 
-  function getVal(obj, k, f) {
-    if (obj[k] instanceof Date) return obj[k].toLocaleDateString();
-    // if (f && /\d{8,}/.test(obj[k])) return `${obj[k]}`;
-    if (k in obj) return obj[k];
-    return "";
-  }
-
   document.collectionStateChange = function () {
     if (sessionStorage.getItem("collect_state")) sessionStorage.removeItem("collect_state")
     else sessionStorage.setItem("collect_state", "run");
@@ -155,12 +148,28 @@ const util = {
     importParse(document.getElementById("stuInfos").value);
   }
 
+  function getVal(obj, k, val = obj[k]) {
+    if (!(k in obj)) return '';
+    if (['number', 'string', 'boolean'].includes(typeof val)) return val;
+    if (obj[k] instanceof Date) return obj[k].toLocaleDateString();
+    if (!val) return '';
+    return JSON.stringify(val);
+  }
+
   function importParse(infoTxt) {
     if (!infoTxt?.trim()) return alert("信息為空信息为空");
-    let stu = infoTxt.trim().split(/\r?\n|\r/)
-        .map((s) => s.split(/\s/))
-        .filter((s) => (s.length > 3) && s[5]?.length === 18)
-        .map(s => ({Name: s[6], ExamNo: s[24], IdNo: s[5]}));
+    let arr = infoTxt.trim().split(/\r?\n|\r/).map(s => s.split(/[\s,;]/));
+    if (!arr.length) return alert("导入数据为零")
+    let nameIdx = -1, idIdx = -1, examIdx = -1;
+    arr[0].forEach((e, i) => {
+      if (nameIdx < 0 && e.includes("姓名")) nameIdx = i;
+      if (idIdx < 0 && e.includes("身份证号")) idIdx = i;
+      if (examIdx < 0 && e.includes("准考证号")) examIdx = i;
+    });
+    if (nameIdx < 0 || idIdx < 0 || examIdx < 0) return alert("姓名|身份证号|准考证号缺失");
+    let stu = arr.filter(s => (s.length > 3) && s[idIdx]?.length === 18)
+        .map(s => ({Name: s[nameIdx], IdNo: s[idIdx], ExamNo: s[examIdx]}));
+    if (!stu.length) return alert("导入数据为零")
     localStorage.setItem("students_info", JSON.stringify(stu));
     dateUpdateShow();
   }
@@ -168,14 +177,14 @@ const util = {
   document.downloadExportCsv = function () {
     // csv 导出
     if (!studentsGrades.length) return alert("无成绩数据");
-    let student_string = studentsGrades.map(stu => titles.map(title => `${getVal(stu, title, true)}`).join("\t")).join("\r\n");
+    let student_string = studentsGrades.map(stu => titles.map(title => `${getVal(stu, title)}`).join(",")).join("\r\n");
     (function downloadCsv(fileName, content) {
       let blob = new Blob([`\ufeff${content}`], {type: "text/csv;charset=utf-8"});
       let link = document.createElement('a');
       link.download = `${fileName}details_${new Date().toLocaleString()}.csv`;
       link.href = URL.createObjectURL(blob);
       link.click();
-    })("学生中考成绩单", `${titles.join("\t")}\r\n${student_string}`);
+    })("学生中考成绩单", `${titles.join(",")}\r\n${student_string}`);
   }
 
   // 学生信息采集
