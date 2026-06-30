@@ -8,6 +8,7 @@
 // @match        https://www.sedu.net/student/*
 // @downloadURL  https://life5211.github.io/web/auto/play.sedu.user.js
 // @updateURL    https://life5211.github.io/web/auto/play.sedu.user.js
+// @updateURL    http://10.160.124.71/web/auto/play.sedu.user.js
 // @noframes
 // @grant        unsafeWindow
 // @grant        GM_setValue
@@ -28,18 +29,16 @@ let $q = s => document.querySelector(s),
     $GmGet = (key, def = "") => JSON.parse(GMGetValue(key, JSON.stringify(def))),
     $GmSet = (key, val) => GMSetValue(key, JSON.stringify(val)),
     $rf = (min, max) => Math.floor(1000 * (min + (max - min) * Math.random())),
-    $runInterval = (handler, min = 600, max = 1000, ids = []) => {
+    $runInterval = (handler, min = 60, max = 100, ids = []) => {
       handler();
       ids.unshift(setTimeout(_ => $runInterval(handler, min, max, ids), $rf(min, max)));
       return ids;
     },
-    $log = (msg, f) => {
+    $log = (msg, k = `Log_${new Date().toLocaleDateString()}`, crt = new Date().toLocaleTimeString()) => {
       console.log(msg);
-      let k = `log_${new Date().getDate()}`;
       let log = $localGet(k, []);
-      log.push(`[${new Date().toLocaleString()}]${msg}`);
+      log.push(`[${crt}]${msg}`);
       $localSet(k, log);
-      if (f) alert(msg);
     };
 
 (function tokenSetFun() {

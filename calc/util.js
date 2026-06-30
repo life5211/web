@@ -1,5 +1,5 @@
 const util = {
-  uuid: '__c7bv0',
+  uuid: '',
   alert: function (text) {
     alert(text);
     return false;
@@ -76,9 +76,9 @@ const util = {
    */
   downloadCsv(arr, fileName, titles) {
     if (!arr?.length) return alert("导出数据为空");
-    if (!titles?.length) titles = new Set(arr.flatMap(obj => Object.keys(obj)));
-    let content = arr.map(stu => titles.map(title => `${this.getVal(stu, title, true)}`).join(",")).join("\r\n");
-    let blob = new Blob([`\ufeff${titles.join(",")}\r\n${content}`], {type: "text/csv;charset=utf-8"});
+    if (!titles?.length) titles = [...new Set(arr.flatMap(obj => Object.keys(obj)))];
+    let content = arr.map(stu => titles.map(title => `"${this.getVal(stu, title)}"`).join(",")).join("\r\n");
+    let blob = new Blob([`\ufeff${titles.map(e=>`"${e}"`).join(",")}\r\n${content}`], {type: "text/csv;charset=utf-8"});
     let link = document.createElement('a');
     link.download = `${fileName}details_${new Date().toLocaleString()}.csv`;
     link.href = URL.createObjectURL(blob);

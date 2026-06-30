@@ -8,6 +8,9 @@
 // @updateURL    https://life5211.github.io/web/auto/nczk.ncjypt.user.js
 // @match        https://zk.ncedu.net.cn/*
 // @match        *zk.ncedu.net.cn/*
+// @match        https://zk.ncedu.net.cn/nczk/zk/queryscoreby2img.asp
+// @match        https://zk.ncedu.net.cn/nczk/zk/queryscoreby2img.asp*
+// @match        https://zk.ncedu.net.cn/
 // @include      https://zk.ncedu.net.cn/
 // @noframes
 // @grant        GM_setValue
@@ -23,10 +26,13 @@ const util = {
   },
   localSet(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
+    GM_setValue(key, JSON.stringify(value))
   },
   localGet(key, def) {
     return localStorage.hasOwnProperty(key) ? JSON.parse(localStorage.getItem(key)) : def;
   },
+  // localGet: (key, def = {}) => JSON.parse(GM_getValue(key, JSON.stringify(def))),
+  // localSet: (key, val) => GM_setValue(key, JSON.stringify(val)),
   getDateStr(date = new Date()) {
     const [fullYear, month, day] = [date.getFullYear(), `${date.getMonth() + 1}`.padStart(2, '0'), `${date.getDate()}`.padStart(2, '0')];
     return `${fullYear}-${month}-${day}`;
@@ -47,6 +53,23 @@ const util = {
   qa: (selector, ele = document) => Array.from(ele.querySelectorAll(selector)),
   $GmGet: (key, def = {}) => JSON.parse(GM_getValue(key, JSON.stringify(def))),
   $GmSet: (key, val) => GM_setValue(key, JSON.stringify(val)),
+  clearCookie() {
+    GM_cookie.list({}, cookies => {
+      if (!cookies.length) return util.log(`当前无Cookie`);
+      cookies.push("UserToken");
+      cookies.forEach(cookie => {
+        GM_cookie.delete({
+          url: location.origin,
+          name: cookie.name,
+          domain: cookie.domain,
+          path: cookie.path
+        }, delErr => {
+          if (delErr) console.warn('删除失败：', cookie.name, delErr);
+          else console.log('已删除：', cookie.name);
+        });
+      });
+    });
+  },
   log(msg, k = `log_${new Date().getDate()}`) {
     console.log(msg);
     let log = this.localGet(k, []);
@@ -55,6 +78,8 @@ const util = {
   }
 };
 
+window.GM_cookie = GM_cookie;
+
 (function () {
   if (document.querySelector("iframe")) {
     return setTimeout(_ => Array.from(document.querySelectorAll("div[key=set]"))
@@ -62,11 +87,15 @@ const util = {
   }
   document.body.insertAdjacentHTML('afterbegin',
       `<div>
+        <div>
         <textarea id="stuInfos" rows="2" cols="30" placeholder="学生信息表.csv中内容复制粘贴后点击导入"></textarea>
-        <button onclick="importStuInfo()">信息导入</button> 
+        <button onclick="importStuInfo()">CSV信息导入</button> 
+        <button onclick="importStuInfo(1)">备份导出</button> 
+        <button onclick="importStuInfo(2)">备份导入</button> 
         <button onclick="downloadExportCsv()">查询结果导出</button>
         <button onclick="collectionStateChange()" id="coll">开始采集</button>
         查询结果：<span id="s1"></span>/<span id="s2"></span>
+        </div>
         <div id="result" style="max-height: 300px; overflow: auto"></div>
         <hr/>
       </div>`);
@@ -87,21 +116,23 @@ const util = {
     document.querySelector("button#coll").innerText = sessionStorage.getItem("collect_state") ? `暂停采集` : '开始采集';
     if (!studentsGrades?.length) return;
     document.getElementById("s1").innerText = Object.keys(gradesObj)?.length;
-    document.getElementById("s2").innerText = studentsArr?.length;
+    document.getElementById("s2").innerText = studentsArr?.length - Object.keys(errInfo)?.length;
+    if (sessionStorage.getItem("collect_state")) return;
     document.querySelector('div#result').innerHTML = `
         <table border="1" style="border-collapse: collapse;border: 2px solid rgb(140 140 140);">
-            <thead><tr>${titles.map(k => '<th>' + k + '</th>').join(" ")}</tr></thead>
+            <thead><tr>${'<th></th>' + titles.map(k => '<th>' + k + '</th>').join(" ")}</tr></thead>
             <tbody>
-            ${studentsGrades.map(stu => '<tr>' + titles.map(k => '<td>' + getVal(stu, k) + '</td>') + '</tr>').join(" ")}
+            ${studentsGrades.map(stu => '<tr><td><a href="/nczk/zk/queryscoreby2img.asp?t='
+        + getVal(stu, 'ExamNo') + "," + getVal(stu, 'Name') + "," + getVal(stu, 'IdNo') + '">查询</a></td>'
+        + titles.map(k => '<td>' + getVal(stu, k) + '</td>') + '</tr>').join(" ")}
             </tbody>
         </table>`;
   }
 
   function collect() {
     if (!location.pathname.startsWith("/nczk/zk/queryscoreby2img.asp")) return;
-    if (document.querySelector("#showInfo>table")?.innerText?.includes("还未开通成绩查询")) return;
     let [ExamNo, ExamName, IdNo] = util.getSearchParams('t').split(',');
-    if (document.querySelector("#showInfo>table>test")) { // TODO 信息错误
+    if (document.querySelector("#showInfo>table")?.innerText?.includes("还未开通成绩查询")) {
       // '26050104919,王舒缘,511321201004089429'
       errInfo[ExamNo + IdNo] = 1;
       util.localSet("err_info", errInfo);
@@ -111,7 +142,7 @@ const util = {
     let name = document.querySelector("tr.tr-02>.tdvalue")?.innerText;
     // if (!name) return alert("数据查询失败，请重试！");
     let stuFilter = studentsArr.filter(s => s.Name === ExamName && s.name === name).filter(s => s.IdNo === s.IdNo).filter(s => s.ExamNo === ExamNo);
-    const stuObj = stuFilter?.length ? stuFilter[0] : {};
+    const stuObj = stuFilter?.length ? stuFilter[0] : {ExamNo, Name: ExamName, IdNo};
     //单科成绩采集
     const grades = Array.from(document.querySelectorAll("div.infobox>table>tbody td")).filter(e => e && e.innerText).map(e => e.innerText);
     for (let i = 0; i < grades.length; i++) if (!(i % 2)) stuObj[grades[i]] = grades[i + 1];
@@ -128,10 +159,13 @@ const util = {
   function nextStu() {
     dateUpdateShow();
     if (!sessionStorage.getItem("collect_state")) return;
+    util.clearCookie();
     if (!studentsArr?.length) return alert("请导入考生名单");
     // 下一个考生成绩
-    let next = studentsArr.filter(s => s?.IdNo && !rstFlag[s.IdNo] && !rstFlag[s.ExamNo] && !errInfo[s.ExamNo + s.IdNo]).pop();
-    if (!next) return alert("采集完成");
+    let nextStus = studentsArr.filter(s => s?.IdNo && !rstFlag[s.IdNo] && !rstFlag[s.ExamNo] && !errInfo[s.ExamNo + s.IdNo]);
+    util.localSet("no_grades", nextStus);
+    if (!nextStus?.length) return alert("采集完成");
+    let next = nextStus[Math.floor(Math.random() * nextStus.length)]
     setTimeout(_ => location.href = `/nczk/zk/queryscoreby2img.asp?t=${next.ExamNo},${encodeURI(next.Name)},${next.IdNo}`, Math.random() * 1000 + 600);
   }
 
@@ -144,8 +178,28 @@ const util = {
     nextStu();
   }
 
-  document.importStuInfo = function () {
-    importParse(document.getElementById("stuInfos").value);
+  document.importStuInfo = function (p) {
+    if (!p) importParse(document.getElementById("stuInfos").value);
+    if (p === 1) {
+      let out = {
+        studentsArr: util.localGet("students_info", []),
+        gradesObj: util.localGet("grades_info", {}),
+        rstFlag: util.localGet("rst_flag", {}),
+        errInfo: util.localGet("err_info", {})
+      };
+      document.getElementById("stuInfos").value = JSON.stringify(out);
+    }
+    if (p === 2) {
+      let out = JSON.parse(document.getElementById("stuInfos").value);
+      let studentsArr = util.localGet("students_info", []).concat(out.studentsArr);
+      let gradesObj = Object.assign(util.localGet("grades_info", {}), out.gradesObj);
+      let rstFlag = Object.assign(util.localGet("rst_flag", {}), out.rstFlag);
+      let errInfo = Object.assign(util.localGet("err_info", {}), out.errInfo);
+      util.localSet("students_info", studentsArr);
+      util.localSet("grades_info", gradesObj);
+      util.localSet("rst_flag", rstFlag);
+      util.localSet("err_info", errInfo);
+    }
   }
 
   function getVal(obj, k, val = obj[k]) {
@@ -163,21 +217,21 @@ const util = {
     let nameIdx = -1, idIdx = -1, examIdx = -1;
     arr[0].forEach((e, i) => {
       if (nameIdx < 0 && e.includes("姓名")) nameIdx = i;
-      if (idIdx < 0 && e.includes("身份证号")) idIdx = i;
+      if (idIdx < 0 && e.includes("身份证")) idIdx = i;
       if (examIdx < 0 && e.includes("准考证号")) examIdx = i;
     });
     if (nameIdx < 0 || idIdx < 0 || examIdx < 0) return alert("姓名|身份证号|准考证号缺失");
-    let stu = arr.filter(s => (s.length > 3) && s[idIdx]?.length === 18)
+    let stu = arr.filter(s => (s.length > 2) && s[idIdx]?.length === 18)
         .map(s => ({Name: s[nameIdx], IdNo: s[idIdx], ExamNo: s[examIdx]}));
     if (!stu.length) return alert("导入数据为零")
-    localStorage.setItem("students_info", JSON.stringify(stu));
+    util.localSet("students_info", stu);
     dateUpdateShow();
   }
 
   document.downloadExportCsv = function () {
     // csv 导出
     if (!studentsGrades.length) return alert("无成绩数据");
-    let student_string = studentsGrades.map(stu => titles.map(title => `${getVal(stu, title)}`).join(",")).join("\r\n");
+    let student_string = studentsGrades.map(stu => titles.map(title => `"${getVal(stu, title)}"`).join(",")).join("\r\n");
     (function downloadCsv(fileName, content) {
       let blob = new Blob([`\ufeff${content}`], {type: "text/csv;charset=utf-8"});
       let link = document.createElement('a');
@@ -208,7 +262,8 @@ const util = {
     let response = await fetch(`/nczk/admin/${encodeURI(strings[1])}?timestamp=${Date.now()}`);
     // const decoder = new TextDecoder('gbk');
     // localStorage.csv = decoder.decode(await response.arrayBuffer());
-    localStorage.csv = await response.text();
-    importParse(localStorage.csv);
+    let t = await response.text();
+    util.localSet("csv", t);
+    importParse(t);
   });
 })();

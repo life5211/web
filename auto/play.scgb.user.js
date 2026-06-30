@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         四川网络干部学院学习
-// @version      1.17
+// @version      2.17
 // @icon         https://web.scgb.gov.cn/favicon.ico
 // @author       user
 // @description  try to take over the world!
 // @match        https://web.scgb.gov.cn/*
 // @downloadURL  https://life5211.github.io/web/auto/play.scgb.user.js
 // @updateURL    https://life5211.github.io/web/auto/play.scgb.user.js
+// @updateURL    http://10.160.124.71/web/auto/play.scgb.user.js
 // @noframes
 // @grant        unsafeWindow
 // @grant        GM_setValue
@@ -22,6 +23,7 @@
 (async function () {
   let $q = s => document.querySelector(s);
   let $qa = s => Array.from(document.querySelectorAll(s));
+  let $rf = (min, max) => Math.floor(1000 * (min + (max - min) * Math.random()));
   let $localGet = (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def;
   let $localSet = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   let $log = (msg, k = `Log_${new Date().toLocaleDateString()}`, crt = new Date().toLocaleTimeString()) => {
@@ -36,23 +38,29 @@
   if (document.userI) clearInterval(document.userI);
   document.userI = setInterval(async function () {
     let video = document.querySelector("video");
-    if (!video) return $log("没有video元素");
+    if (!video) return $log("没有video元素", "play_log", new Date().toLocaleString());
     if (!video.title) {
       $log("播放器初始化设置");
       document.querySelector("video").title = "四川网络干部培训自动化";
+      video.addEventListener('ended', next);
     }
-    $log({m: "播放进度", t: video.currentTime, l: video.duration});
-    if (video.paused) return video.play().then($log).catch($log);
+    $log({m: "播放进度", t: video.currentTime, l: video.duration}, "play_log", new Date().toLocaleString());
     if (video.ended) {
       $log("当前课程学习结束");
-      if (document.userI) clearInterval(document.userI);
-      let curr= document.querySelector("div.introduce-box  div.item.active")
-      if (curr?.nextElementSibling) return $log("等待下一小节课程……")
-      await nextVideo();
+      await next();
     }
-  }, 66666);
+    if (video.paused) return video.play().then($log).catch($log);
+  }, $rf(50, 70));
+
+  async function next() {
+    let curr = document.querySelector("div.introduce-box  div.item.active")
+    if (curr?.nextElementSibling) return $log("等待下一小节课程……")
+    setTimeout(nextVideo, $rf(1, 6));
+  }
 
   async function nextVideo() {
+    if (document.userI) clearInterval(document.userI);
+    $log("下一章节课程……")
     let learned = await fetch("https://api.scgb.gov.cn/api/services/app/course/app/getCourseUserAutoLearnPage?maxResultCount=256&skipCount=0&pageIndex=1",
         {"headers": {authorization: `Bearer ${$localGet("store")?.session.accessToken}`}}
     ).then(r => r.json()).then(r => r.result.records);
@@ -64,8 +72,8 @@
     let resource = $localGet("resource", []).map(e => Object.assign({}, e, learnedObj[e.id]));
     $localSet("learned", learned);
 
-    fun(resource.filter(e => ['理论教育', '党史教育'].includes(e.label)), 21)
-    && fun(resource.filter(e => ['能力培训', '知识培训'].includes(e.label)), 31)
+    fun(resource.filter(e => ['理论教育', '党史教育'].includes(e.label)), 31)
+    && fun(resource.filter(e => ['能力培训', '知识培训'].includes(e.label)), 41)
     && $log("全部学习完成啦；");
 
     function fun(filterRecourse, hours) {
