@@ -195,11 +195,18 @@ window.GM_cookie = GM_cookie;
       let gradesObj = Object.assign(util.localGet("grades_info", {}), out.gradesObj);
       let rstFlag = Object.assign(util.localGet("rst_flag", {}), out.rstFlag);
       let errInfo = Object.assign(util.localGet("err_info", {}), out.errInfo);
-      util.localSet("students_info", studentsArr);
+      util.localSet("students_info", uniqueObj(studentsArr, 'ExamNo', 'Name', 'IdNo'));
       util.localSet("grades_info", gradesObj);
       util.localSet("rst_flag", rstFlag);
       util.localSet("err_info", errInfo);
     }
+  }
+
+  function uniqueObj(arr, ...fields) {
+   return  Object.values(arr.reduce((obj, b) => {
+     obj[fields.map(f => b[f]).join("")] = b;
+     return obj;
+   }, {}));
   }
 
   function getVal(obj, k, val = obj[k]) {
@@ -224,7 +231,7 @@ window.GM_cookie = GM_cookie;
     let stu = arr.filter(s => (s.length > 2) && s[idIdx]?.length === 18)
         .map(s => ({Name: s[nameIdx], IdNo: s[idIdx], ExamNo: s[examIdx]}));
     if (!stu.length) return alert("导入数据为零")
-    util.localSet("students_info", stu);
+    util.localSet("students_info", uniqueObj(stu, 'ExamNo', 'Name', 'IdNo'));
     dateUpdateShow();
   }
 
