@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         网络教研学习
 // @namespace    http://tampermonkey.net/
-// @version      3.17
+// @version      17.01
 // @description  自动化播放网络教研视频，支持设置学科和已经播放的课程过滤
 // @match        https://wljy.scsjky.cn/a*
 // @match        *wljy.scjks.net/*
@@ -255,16 +255,11 @@
         </div>
       </td>
     </div></tbody>
-    <hr/>
-    <tr>
-      <td colspan="3">
-        页面运行日志
-        <div>
-          <pre id="_logs"></pre>
-        </div>
-      </td>
-    </tr>
   </table>
+  <div>
+    页面运行日志
+    <pre id="_logs"></pre>
+  </div>
   <table border="1" style="border-collapse: collapse;border: 2px solid rgb(140 140 140);">
     <caption>课程列表</caption>
     <thead>
