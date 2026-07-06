@@ -42,7 +42,7 @@
     if (!video.title) {
       $log("播放器初始化设置");
       document.querySelector("video").title = "四川网络干部培训自动化";
-      video.addEventListener('ended', next);
+      video.addEventListener('ended', () => setTimeout(next, $rf(4, 8)));
     }
     $log({m: "播放进度", t: video.currentTime, l: video.duration}, "play_log", new Date().toLocaleString());
     if (video.ended) {

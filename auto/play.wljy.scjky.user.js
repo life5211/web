@@ -84,6 +84,7 @@
   }, utils.rf(1, 2));
 
   function studyFun() {
+    if (!location.hash.startsWith("#/activity/")) return;
     if (!user.state) return; // 暂停学习
     let video = document.querySelector('video');
     if (!video) return utils.log("没有video媒体"); // 没在播放界面，不处理直接退出
@@ -92,7 +93,8 @@
     if (!video.title) {
       video.muted = true;
       video.title = "脚本运行中";
-      video.scrollIntoView({behavior: 'smooth'});
+      video.addEventListener("ended", e => setTimeout(next, utils.rf(10, 22)));
+      video.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
       utils.log("视频播放初始化完成");
       if (user.playLog[subjectId]) return setTimeout(function jump() {
         utils.log("恢复播放记录");
@@ -108,13 +110,14 @@
       return utils.updateUser();
     }
     if (document.querySelector("div.video-list div.live.current")) return recordList[0].click();
-    if (video.ended) {
+    if (video.ended) return next();
+    if (video.paused) video.play().then(utils.log).catch(utils.log); // 意外暂停
+    function next() {
       user.playLog[subjectId] = {currIdx, currentTime: video.currentTime, length: video.duration}
       utils.updateUser();
       if (recordList[currIdx + 1]) return recordList[currIdx + 1].click(); // 单页多个视频 且存在下一个视频就播放
       return nextProject('课程学习完成');
     }
-    if (video.paused) video.play().then(utils.log).catch(utils.log); // 意外暂停
   }
 
   /**
@@ -193,7 +196,7 @@
     document.body.insertBefore(div, document.body.firstChild);
     div.innerHTML = `<div style="width: 100%;max-height: 720px;overflow: auto;margin-top: 66px;text-align: -webkit-center;" id="insertDiv">
   <table>
-    <tr>
+    <tbody><div>
       <td>
         <div>主动学习列表</div>
         <div><select id="join_kcs" style="width: 120px"></select></div>
@@ -251,7 +254,7 @@
           <button onclick="fNext()">下一课程</button>
         </div>
       </td>
-    </tr>
+    </div></tbody>
     <hr/>
     <tr>
       <td colspan="3">
@@ -328,7 +331,7 @@
     document.getElementById('learnedTable').innerHTML = allSubjects.map(k => `<tr>
           <td>${k.crt}</td>
           <td>${k.id}</td>
-          <td>${k.name}</td>
+          <td><a href="${location.pathname.length === 4 ? '/a/' : '/a//'}#/activity/${k.id}?dingToken=${localStorage.Authorization.substring(7)}">${k.name}</a></td>
           <td>${k.zbgk}</td>
           <td>${k.dbgk}</td>
           <td>${k.userHour || ''}</td>
