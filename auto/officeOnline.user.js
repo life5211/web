@@ -9,7 +9,7 @@
 // @match        *.scpta.com.cn/*
 // @match        *.gov.cn/*
 // @match        *.edu.cn/*
-// @icon         https://media-cdn.microsoftstore.com.cn/media/category/office2019/icon-word.png
+// @icon         https://www.mohrss.gov.cn/favicon.ico
 // @downloadURL  https://life5211.github.io/web/auto/officeOnline.user.js
 // @updateURL    https://life5211.github.io/web/auto/officeOnline.user.js
 // @noframes
@@ -53,12 +53,10 @@
     aTag.append(element);
     element.innerHTML = `
       <a target="_blank" style="color: red" href="https://api.idocv.com/view/url?url=${encodeUri}"> [[idoc]] </a>
-      <a target="_blank" style="color: red" href="http://www.pfile.com.cn/api/profile/onlinePreview?url=${encodeUri}">[[pdoc]]</a>
+      <a target="_blank" style="color: blue" href="http://www.pfile.com.cn/api/profile/onlinePreview?url=${encodeUri}">[[pdoc]]</a>
       <a target="_blank" style="color: red" href="https://view.xdocin.com/view?src=${encodeUri}"> [[xdoc]] </a>
       <a target="_blank" style="color: green" href="https://view.officeapps.live.com/op/view.aspx?src=${encodeUri}">[microsoft]</a>
-      <a target="_blank" style="color: blue" href="https://file.kkview.cn/onlinePreview?url=${eu(
-      btoa(href)
-    )}"> [[kkView]] </a>
+      <a target="_blank" style="color: blue" href="https://file.kkview.cn/onlinePreview?url=${eu(btoa(href))}&key=000"> [[kkView]] </a>
     `;
   }
 
