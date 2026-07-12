@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         网络教研学习
 // @namespace    http://tampermonkey.net/
-// @version      17.01
+// @version      17.02
 // @description  自动化播放网络教研视频，支持设置学科和已经播放的课程过滤
 // @match        https://wljy.scsjky.cn/a*
 // @match        *wljy.scjks.net/*
@@ -111,7 +111,7 @@
     }
     if (document.querySelector("div.video-list div.live.current")) return recordList[0].click();
     if (video.ended) return next();
-    if (video.paused) video.play().then(utils.log).catch(utils.log); // 意外暂停
+    if (video.paused) video.play().then(e => utils.log(`继续播放${e}`)).catch(e => utils.log(`播放失败${e}`)); // 意外暂停
     function next() {
       user.playLog[subjectId] = {currIdx, currentTime: video.currentTime, length: video.duration}
       utils.updateUser();
