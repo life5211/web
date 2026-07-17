@@ -11,7 +11,7 @@
 // @license    GPL-3.0-only
 // @create     2015-11-25
 // @run-at     document-start
-// @version    27.19
+// @version    27.20
 // @connect    baidu.com
 // @connect    google.com
 // @connect    google.com.hk
@@ -49,8 +49,9 @@
 // @home-url2  https://github.com/langren1353/GM_script
 // @homepageURL  https://greasyfork.org/zh-TW/scripts/14178
 // @copyright  2015-2026, AC
-// @lastmodified  2026-01-06
+// @lastmodified  2026-06-18
 // @feedback-url  https://github.com/langren1353/GM_script
+// @note    2026.06-18-V27.20 修复百度错位的问题
 // @note    2026.01-06-V27.19 修复百度、谷歌、必应的一些bug，增加页面加载动画，优化页面资源占用，避免大量的资源占用
 // @note    2025.10-22-V27.18 修复谷歌、百度在不同缩放屏幕下导致的错位问题
 // @note    2025.07-12-V27.17 修复谷歌单双列样式表问题、优化百度样式表；增加less.js资源，避免jsdelivr异常无法加载
@@ -104,27 +105,27 @@
 // @note    2015.12.01-V5.0 加入搜狗的支持，但是支持不是很好
 // @note    2015.11.25-V2.0 优化，已经是真实地址的不再尝试获取
 // @note    2015.11.25-V1.0 完成去掉百度重定向的功能
-// @resource  baiduCommonStyle   https://ibaidu.tujidu.com/newcss/baiduCommonStyle.less?t=27.18
-// @resource  baiduOnePageStyle  https://ibaidu.tujidu.com/newcss/baiduOnePageStyle.less?t=27.18
-// @resource  baiduTwoPageStyle  https://ibaidu.tujidu.com/newcss/baiduTwoPageStyle.less?t=27.18
-// @resource  googleCommonStyle  https://ibaidu.tujidu.com/newcss/googleCommonStyle.less?t=27.18
-// @resource  googleOnePageStyle https://ibaidu.tujidu.com/newcss/googleOnePageStyle.less?t=27.18
-// @resource  googleTwoPageStyle https://ibaidu.tujidu.com/newcss/googleTwoPageStyle.less?t=27.18
-// @resource  bingCommonStyle    https://ibaidu.tujidu.com/newcss/bingCommonStyle.less?t=27.14
-// @resource  bingOnePageStyle   https://ibaidu.tujidu.com/newcss/bingOnePageStyle.less?t=27.14
-// @resource  bingTwoPageStyle   https://ibaidu.tujidu.com/newcss/bingTwoPageStyle.less?t=27.14
-// @resource  duckCommonStyle    https://ibaidu.tujidu.com/newcss/duckCommonStyle.less?t=27.14
-// @resource  duckOnePageStyle   https://ibaidu.tujidu.com/newcss/duckOnePageStyle.less?t=27.14
-// @resource  duckTwoPageStyle   https://ibaidu.tujidu.com/newcss/duckTwoPageStyle.less?t=27.14
-// @resource  dogeCommonStyle    https://ibaidu.tujidu.com/newcss/dogeCommonStyle.less?t=27.14
-// @resource  dogeOnePageStyle   https://ibaidu.tujidu.com/newcss/dogeOnePageStyle.less?t=27.14
-// @resource  dogeTwoPageStyle   https://ibaidu.tujidu.com/newcss/dogeTwoPageStyle.less?t=27.14
-// @resource  haosouCommonStyle    https://ibaidu.tujidu.com/newcss/haosouCommonStyle.less?t=27.14
-// @resource  haosouOnePageStyle   https://ibaidu.tujidu.com/newcss/haosouOnePageStyle.less?t=27.14
-// @resource  haosouTwoPageStyle   https://ibaidu.tujidu.com/newcss/haosouTwoPageStyle.less?t=27.14
-// @resource  HuYanStyle         https://ibaidu.tujidu.com/newcss/HuYanStyle.less?t=27.14
-// @resource  BgAutoFit          https://ibaidu.tujidu.com/newcss/BgAutoFit.less?t=27.14
-// @resource  HuaHua-ACDrakMode  https://ibaidu.tujidu.com/newcss/HuaHua-ACDrakMode.less?t=27.14
+// @resource  baiduCommonStyle   https://ibaidu.tujidu.com/newcss/baiduCommonStyle.less?t=27.20
+// @resource  baiduOnePageStyle  https://ibaidu.tujidu.com/newcss/baiduOnePageStyle.less?t=27.20
+// @resource  baiduTwoPageStyle  https://ibaidu.tujidu.com/newcss/baiduTwoPageStyle.less?t=27.20
+// @resource  googleCommonStyle  https://ibaidu.tujidu.com/newcss/googleCommonStyle.less?t=27.20
+// @resource  googleOnePageStyle https://ibaidu.tujidu.com/newcss/googleOnePageStyle.less?t=27.20
+// @resource  googleTwoPageStyle https://ibaidu.tujidu.com/newcss/googleTwoPageStyle.less?t=27.20
+// @resource  bingCommonStyle    https://ibaidu.tujidu.com/newcss/bingCommonStyle.less?t=27.20
+// @resource  bingOnePageStyle   https://ibaidu.tujidu.com/newcss/bingOnePageStyle.less?t=27.20
+// @resource  bingTwoPageStyle   https://ibaidu.tujidu.com/newcss/bingTwoPageStyle.less?t=27.20
+// @resource  duckCommonStyle    https://ibaidu.tujidu.com/newcss/duckCommonStyle.less?t=27.20
+// @resource  duckOnePageStyle   https://ibaidu.tujidu.com/newcss/duckOnePageStyle.less?t=27.20
+// @resource  duckTwoPageStyle   https://ibaidu.tujidu.com/newcss/duckTwoPageStyle.less?t=27.20
+// @resource  dogeCommonStyle    https://ibaidu.tujidu.com/newcss/dogeCommonStyle.less?t=27.20
+// @resource  dogeOnePageStyle   https://ibaidu.tujidu.com/newcss/dogeOnePageStyle.less?t=27.20
+// @resource  dogeTwoPageStyle   https://ibaidu.tujidu.com/newcss/dogeTwoPageStyle.less?t=27.20
+// @resource  haosouCommonStyle    https://ibaidu.tujidu.com/newcss/haosouCommonStyle.less?t=27.20
+// @resource  haosouOnePageStyle   https://ibaidu.tujidu.com/newcss/haosouOnePageStyle.less?t=27.20
+// @resource  haosouTwoPageStyle   https://ibaidu.tujidu.com/newcss/haosouTwoPageStyle.less?t=27.20
+// @resource  HuYanStyle         https://ibaidu.tujidu.com/newcss/HuYanStyle.less?t=27.20
+// @resource  BgAutoFit          https://ibaidu.tujidu.com/newcss/BgAutoFit.less?t=27.20
+// @resource  HuaHua-ACDrakMode  https://ibaidu.tujidu.com/newcss/HuaHua-ACDrakMode.less?t=27.20
 // @resource  baiduLiteStyle     https://gitcode.net/-/snippets/1906/raw/master/LiteStyle.css?inline=false
 // @require   https://registry.npmmirror.com/less_browser_fix/4.2.2/files/dist/less.min.js
 // @require   https://registry.npmmirror.com/vue/3.5.26/files/dist/vue.runtime.global.prod.js
@@ -142,6 +143,7 @@
 // @grant    GM_registerMenuCommand
 // @grant    GM_addValueChangeListener
 // @grant    unsafeWindow
+// @namespace 1353464539@qq.com
 // ==/UserScript==
 ~(async () => {
   Object.defineProperty(console, 'mylog', {
@@ -688,7 +690,7 @@
         pager: {
           nextLink: "//a[contains(@class,\"sb_pagN\")]",
           pageElement: "id(\"b_results\")/li[not(contains(@class,\"b_pag\") or contains(@class,\"b_ans b_top\"))]",
-          HT_insert: ["id(\"b_results\")/li[@class=\"b_pag\"]", 1], // 1 = beforebegin; 2 = beforeend
+          HT_insert: ["id(\"b_results\")/li[contains(@class,\"b_pag\")]", 1], // 1 = beforebegin; 2 = beforeend
           replaceE: "id(\"b_results\")//nav[@role=\"navigation\"]",
         }
       }
@@ -714,7 +716,7 @@
         pager: {
           nextLink: "id('pnnext')|id('navbar navcnt nav')//td[span]/following-sibling::td[1]/a|id('nn')/parent::a",
           pageElement: "id('rso')|id('center_col')/style[contains(.,'relative')][id('rso')]",
-          HT_insert: ["css;#res", 2], // 1 = beforebegin; 2 = beforeend
+          HT_insert: ["id('botstuff')", 1], // 1 = beforebegin; 2 = beforeend
           replaceE: '//div[@id="navcnt"] | //div[@id="rcnt"]//div[@role="navigation"]',
           afertPagerAutoCallFunc: (pageElements, scriptElements, toElement) => {
             // 插入scripts & style - 保证js加载
@@ -1628,6 +1630,20 @@
             hasDealHrefSet.add(linkHref);
             let len2 = hasDealHrefSet.size;
             if (len1 === len2) continue; // 说明数据已经处理过，存在相同的记录
+            // 处理Bing重定向
+            const handleBingRedirect = () => {
+              if (linkHref.search("bing.com/(ck|a|aclick)") > 0) {
+                const urlObj = new URL(linkHref);
+                const uParam = urlObj.searchParams.get('u');
+                if (uParam) {
+                  // 去掉前缀a1，并解码Base64
+                  const base64Str = uParam.substring(2).replace(/-/g, '+').replace(/_/g, '/');
+                  const trueUrl = atob(base64Str);
+                  DealRedirect(null, linkHref, trueUrl);
+                  return true;
+                }
+              }
+            }
             const isLinkNeedDeal = () => {
               // 如果当前节点存在mu参数，或者link节点存在data-mdurl，那么就算直接成功，不用重新请求一遍了
               let trueLink = curNode.getAttribute('mu') || linkNode.getAttribute('data-mdurl')
@@ -1646,7 +1662,7 @@
               return resLink
             }
             // 如果不需要处理，那么跳过后续逻辑
-            if (!isLinkNeedDeal()) {
+            if (handleBingRedirect() || isLinkNeedDeal()) {
               continue
             }
             // 走接口重定向处理
