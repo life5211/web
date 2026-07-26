@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         网络教研学习
 // @namespace    http://tampermonkey.net/
-// @version      17.02
+// @version      17.03
 // @description  自动化播放网络教研视频，支持设置学科和已经播放的课程过滤
 // @match        https://wljy.scsjky.cn/a*
 // @match        *wljy.scjks.net/*
@@ -53,6 +53,10 @@
       logs.unshift([new Date().toLocaleString(), msg, location.href.replace(location.origin, '')]);
       this.localSet(logK, logs);
       document.getElementById("_logs").innerText = logs.map(JSON.stringify).join('\n');
+    },
+    clearLog() {
+      logs = [];
+      this.log("清空页面日志");
     }
   }, all_kcs = utils.localGet("all_kcs", []);
   logK = `log_${location.hash}`;
@@ -80,7 +84,7 @@
     utils.log("页面信息初始化完成");
     if (!user.state) return; // 暂停学习
     if (location.hash.startsWith("#/activity/"))
-      document.i_2 = setInterval(studyFun, utils.rf(60, 80));
+      document.i_2 = setInterval(_ => setTimeout(studyFun, utils.rf(0, 20)), utils.rf(50, 65));
   }, utils.rf(1, 2));
 
   function studyFun() {
@@ -93,16 +97,30 @@
     if (!video.title) {
       video.muted = true;
       video.title = "脚本运行中";
-      video.addEventListener("ended", e => setTimeout(next, utils.rf(10, 22)));
+      video.addEventListener("ended", e => setTimeout(next, utils.rf(5, 12)));
       video.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
+      try {
+        utils.log('1 强制页面永远visible');
+        Object.defineProperty(document, "hidden", {get: () => false, configurable: true});
+        Object.defineProperty(document, "visibilityState", {get: () => "visible", configurable: true});
+        window.addEventListener('visibilitychange', e => e.stopImmediatePropagation(), true);
+      } catch (e) {
+        utils.log(e);
+      }
+      window.IdleDetector = undefined;  // 2 直接干掉浏览器原生IdleDetector（重中之重）
       utils.log("视频播放初始化完成");
       if (user.playLog[subjectId]) return setTimeout(function jump() {
         utils.log("恢复播放记录");
         recordList[user.playLog[subjectId].currIdx].click();
-        setTimeout(video.play, utils.rf(2, 4));
-        setTimeout(_ => video.currentTime = user.playLog[subjectId].currentTime, utils.rf(6, 8));
+        // setTimeout(video.play, utils.rf(2, 4));
+        setTimeout(_ => video.currentTime = user.playLog[subjectId].currentTime, utils.rf(1, 3));
       }, utils.rf(3, 5));
     }
+    document.dispatchEvent(new MouseEvent("mousemove", {
+      bubbles: true,
+      clientX: Math.floor(-3 + 6 * Math.random()),
+      clientY: Math.floor(-2 + 4 * Math.random())
+    })); // 微小移动
     let currIdx = recordList.map(e => e.className.includes("current")).indexOf(true);
     utils.log({t: video.currentTime, i: currIdx, subjectId, subjectName, usrName, length: video.duration});
     if (!video.paused) {// 正在播放，break，继续等待，否者判断暂停原因
@@ -110,11 +128,13 @@
       return utils.updateUser();
     }
     if (document.querySelector("div.video-list div.live.current")) return recordList[0].click();
-    if (video.ended) return next();
-    if (video.paused) video.play().then(e => utils.log(`继续播放${e}`)).catch(e => utils.log(`播放失败${e}`)); // 意外暂停
-    function next() {
+    if (video.ended) return next(`setInterval`);
+    if (video.paused) document.querySelector('video').play().then(e => utils.log(`继续播放${e}`)).catch(e => utils.log(`播放失败${e}`)); // 意外暂停
+    function next(msg) {
+      window.clearInterval(document.i_2);
       user.playLog[subjectId] = {currIdx, currentTime: video.currentTime, length: video.duration}
       utils.updateUser();
+      utils.log(`${msg || 'ended'}-视频播放结束，判断下一小节${recordList[currIdx + 1]}`);
       if (recordList[currIdx + 1]) return recordList[currIdx + 1].click(); // 单页多个视频 且存在下一个视频就播放
       return nextProject('课程学习完成');
     }
@@ -128,7 +148,7 @@
     user.scriptKcIds.push(subjectId);
     utils.updateUser();
     updateSubject();
-    utils.log("页面视频播放完毕，下一条");
+    utils.log("页面视频全部播放完毕，下一页面视频");
     let next = null;
     if (user.join_kcs?.length) next = user.join_kcs.pop();
     else if (needSubjects?.length) next = needSubjects[0];
@@ -138,7 +158,11 @@
       utils.updateUser();
       utils.log("当前科目学习完成；");
     } else
-      window.open(`${location.pathname.length === 4 ? '/a/' : '/a//'}#/activity/${next.id}?dingToken=${localStorage.Authorization.substring(7)}`, "_top");
+      setTimeout(_ => window.open(getUrl(next.id), "_top"), utils.rf(4, 22));
+  }
+
+  function getUrl(id) {
+    return `${location.pathname.length === 4 ? '/a/' : '/a//'}#/activity/${id}?dingToken=${localStorage.Authorization.substring(7)}`;
   }
 
   function getMin(...arr) {
@@ -257,6 +281,7 @@
     </div></tbody>
   </table>
   <div>
+    <button onclick="infoUp(2)">清空</button>
     页面运行日志
     <pre id="_logs"></pre>
   </div>
@@ -284,6 +309,7 @@
   document.infoUp = function (n) {
     if (n === 0) user.state = !user.state;
     else if (n === 1) user.subject = document.getElementById("form_subject").value;
+    else if (n === 2) utils.clearLog();
     // 搜索
     else if (n === 4) {
       let joinTxt = document.getElementById("form_join").value;
@@ -326,7 +352,7 @@
     document.getElementById('learnedTable').innerHTML = allSubjects.map(k => `<tr>
           <td>${k.crt}</td>
           <td>${k.id}</td>
-          <td><a href="${location.pathname.length === 4 ? '/a/' : '/a//'}#/activity/${k.id}?dingToken=${localStorage.Authorization.substring(7)}">${k.name}</a></td>
+          <td><a href="${getUrl(k.id)}">${k.name}</a></td>
           <td>${k.zbgk}</td>
           <td>${k.dbgk}</td>
           <td>${k.userHour || ''}</td>
