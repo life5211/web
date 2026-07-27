@@ -61,8 +61,17 @@ const util = {
     let searchParams = new URLSearchParams(url.search);
     return searchParams.get(k);
   },
-  getVal(obj, k, val = obj[k]) {
-    if (!(k in obj)) return '';
+  flatObj(obj) {
+    return (function flat(obj, pre, result) {
+      Object.entries(obj).forEach(([k, val]) => {
+        let preKey = pre ? `${pre}.${k}` : k;
+        if (val && 'object' === typeof val) flat(val, preKey, result);
+        else if (val || val === 0 || val === false) result[preKey] = val;
+      });
+      return result;
+    })(obj, '', {});
+  },
+  val(val) {
     if (['number', 'string', 'boolean'].includes(typeof val)) return val;
     if (!val) return '';
     if (val instanceof Date) return val.toLocaleDateString();
@@ -74,27 +83,27 @@ const util = {
    * @param fileName 文件名
    * @param titles 导出标题
    */
-  downloadCsv(arr, fileName, titles) {
+  downloadCsv(arr, fileName = '导出', titles) {
     if (!arr?.length) return alert("导出数据为空");
     if (!titles?.length) titles = [...new Set(arr.flatMap(obj => Object.keys(obj)))];
-    let content = arr.map(stu => titles.map(title => `"${this.getVal(stu, title)}"`).join(",")).join("\r\n");
-    let blob = new Blob([`\ufeff${titles.map(e=>`"${e}"`).join(",")}\r\n${content}`], {type: "text/csv;charset=utf-8"});
+    let content = arr.map(stu => titles.map(title => `"${this.val(stu[title])}"`).join(",")).join("\r\n");
+    let blob = new Blob([`\ufeff${titles.map(e => `"${e}"`).join(",")}\r\n${content}`], {type: "text/csv;charset=utf-8"});
     let link = document.createElement('a');
     link.download = `${fileName}details_${new Date().toLocaleString()}.csv`;
     link.href = URL.createObjectURL(blob);
     link.click();
   },
-  exportExcel(tableEle, fileName = this.getDateTimeStr()) {
-    let workbook = XLSX.utils.table_to_book(tableEle);
-    XLSX.writeFile(workbook, `${fileName}.xlsx`);
-  },
-  async downloadExcel(fileName, objArr) {
+  async downloadExcel(objArr, fileName = '导出') {
     if (!objArr?.length) return alert("导出数据为空！");
     if (!window.XLSX) await fetch("https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js").then(r => r.text()).then(eval).catch(console.log);
     let workbook = XLSX.utils.book_new();
     let worksheet = XLSX.utils.json_to_sheet(objArr);
     XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
     XLSX.writeFile(workbook, `${fileName}details_${new Date().getTime()}.xlsx`);
+  },
+  exportExcel(tableEle, fileName = this.getDateTimeStr()) {
+    let workbook = XLSX.utils.table_to_book(tableEle);
+    XLSX.writeFile(workbook, `${fileName}.xlsx`);
   },
   adds: (...args) => parseFloat(args.filter(e => e).map(e => new Big(e)).reduce((a, b) => a.plus(b), new Big(0)).toString()),
   add: (a, b) => parseFloat(new Big(a || 0).plus(new Big(b || 0)).toString()),
