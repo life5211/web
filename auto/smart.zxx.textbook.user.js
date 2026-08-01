@@ -11,8 +11,6 @@
 // @noframes
 // @match        https://basic.smartedu.cn/*
 // @run-at       document-start
-// @grant        GM_setClipboard
-// @grant        unsafeWindow
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // ==/UserScript==
@@ -54,8 +52,8 @@
         }
         if (url.includes(`/trains/${localStorage.train_id}/courses_period/actions/list`)) {
           localStorage.train_courses_user_list = xhr.responseText;
+          localStorage.train_courses_user_list_url = url;
         }
-        // console.log(url);
       });
       return originSend.apply(this, arguments);
     };
