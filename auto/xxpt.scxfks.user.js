@@ -47,6 +47,7 @@ const util = {
     }
     const noLimit = new Date().toLocaleDateString() !== util.sessionGet('limit', 0);
     if (location.pathname.startsWith("/study/course") && noLimit) {
+      let intervalScroll = setInterval(_ => window.scrollBy({top: window.innerHeight / 3, behavior: "smooth",}), rf(2, 3));
       if (location.pathname.startsWith("/study/courses")) { // 课程列表
         const studyBtn = Array.from(document.querySelectorAll("table.list-tab>tbody>tr"))
             .filter(e => e && !["视频库", "练习题库"].includes(e.querySelector("td.tx-m").innerText))
@@ -61,10 +62,11 @@ const util = {
             .filter(e => e.innerHTML.includes("&nbsp; &nbsp;"));
         if (studyLs && studyLs.length) return studyLs[0].click();
       }
-      setInterval(_ => window.scrollBy({top: window.innerHeight / 3, behavior: "smooth",}), rf(1, 2));
       if (location.pathname.includes("/chapter/")) { // 学习界面
-        if (document.querySelector("div.chapter-score.limit"))
+        if (document.querySelector("div.chapter-score.limit")) {
+          clearInterval(intervalScroll);
           return util.sessionSet('limit', new Date().toLocaleDateString());
+        }
         if (document.querySelector("div.chapter-score.chapter-score-suc")) return document.querySelector("button").click();
         return setInterval(() => {
           if (!document.querySelector("div.chapter-score.chapter-score-suc")) return;
@@ -99,5 +101,5 @@ const util = {
         })
       })
     }
-  }, rf(0.5, 2));
+  }, rf(2, 4));
 })();
