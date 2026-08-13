@@ -26,7 +26,10 @@
       $localGet = (key, def) => localStorage.hasOwnProperty(key) ? JSON.parse(localStorage[key]) : def,
       $localSet = (key, val) => localStorage.setItem(key, JSON.stringify(val)),
       $GmGet = (key, def = "") => JSON.parse(GMGetValue(key, JSON.stringify(def))),
-      $GmSet = (key, val) => GMSetValue(key, JSON.stringify(val)),
+      $GmSet = (key, val) => {
+        GMSetValue(key, JSON.stringify(val))
+        $localSet(key, val);
+      },
       $path = location.pathname,
       $curr = GMGetValue("userSubject", "temp"),
       $play,
@@ -43,11 +46,13 @@
       };
   $playGet();
 
-  let playId = GM_registerMenuCommand("一键开始学习", nextVideo, "");
-  let subjectId = GM_registerMenuCommand("学习列表采集", collect, "");
+  GM_registerMenuCommand("一键开始学习", nextVideo, "");
+  GM_registerMenuCommand("结束播放，下一课", endNext, "");
+  GM_registerMenuCommand("学习列表采集", collect, "");
 
   function collect() {
     // 课程学习采集界面
+    if (document._collect) return alert("已采集；请刷新页面")
     if ($q("div.con_table_pxkc_gztb2020b>table")) {
       let userName = $q("div.container_user_gztb2020b>h4").innerText;
       let grade = $q("select#stage>[selected]").innerText;
@@ -61,10 +66,12 @@
       $play.urls = studyLinks.map(a => a.href);
       studyLinks.forEach(link => {
         let ele = document.createElement("div");
-        ele.innerHTML = `<a href="javascript:#" onclick="studyFun('${link.href}')">脚本学习</a>`;
+        ele.innerHTML = `<a style="color: ${$play.ended[link.href] ? 'green' : 'red'}" href="javascript:#" onclick="studyFun('${link.href}')">脚本学习</a>`
+        if ($play.ended[link.href]) ele.innerHTML += `<a href="javascript:#" onclick="re_studyFun(this,'${link.href}')">重新加入</a>`;
         link.parentElement.appendChild(ele);
       });
       $playSet();
+      document._collect = true;
     }
   }
 
@@ -73,11 +80,16 @@
     $playSet();
     setTimeout(_ => window.open(url, target), 300);
   };
+  document.re_studyFun = function (el, url) {
+    $play.ended[url] = '';
+    el.style.color = 'blue';
+    $playSet();
+  };
 
   function nextVideo(target) {
-    let next = $play.urls.filter(a => !$play.ended[$play.urlPath[a]])[0];
+    let next = $play.urls.find(url => !$play.ended[url]);
     if (!next) {
-      location.href = "/web/index.php"
+      location.href = "https://wp.pep.com.cn/web/index.php"
       return $log("学习完成，没有下一课程", true);
     }
     $log(`播放下一课程"${next}`);
@@ -85,9 +97,9 @@
   }
 
   function endNext() {
-    $play.ended[$path] = `${document.title}-${new Date().toLocaleString()}`;
+    clearInterval(document.videoI);
+    $play.ended[$path] = $play.ended[$play.urlPath[$path]] = `[${new Date().toLocaleString()}]${document.title}`;
     $playSet();
-    $log($play.ended);
     $log("播放结束，查询下一课程继续播放；")
     nextVideo("_top");
   }
@@ -132,7 +144,6 @@
     if (panel && panel.style.display === 'block') {
       if (panel.innerText.includes("本视频已播放结束")) {
         $q("button.stop-reporting-btn").click();
-        clearInterval(document.videoI);
         return endNext();
       }
       if (panel.innerText.includes("请重新进入继续观看")) {
