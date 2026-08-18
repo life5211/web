@@ -29,6 +29,27 @@ const util = {
   getDateTimeStr(date = new Date()) {
     return this.getDateStr(date) + ' ' + this.getTimeStr(date);
   },
+  getWeekStr(date) {
+    if (!date) return '';
+    return `星期${["日", "一", "二", "三", "四", "五", "六"][date.getDay()]}`;
+  },
+  getDateWeekStr(date) {
+    return this.getDateStr(date) + ' ' + this.getWeekStr(date);
+  },
+  formatterDate(date) {
+    return (date instanceof Date) ? this.getDateStr(date) : date
+  },
+  isSameDay(s, e) {
+    return this.getDateStr(s) === this.getDateStr(e);
+  },
+  getCalcDate(date = new Date(), day, month, year) {
+    if (!date instanceof Date) return null;
+    let dateIncrease = new Date(date);
+    if (day) dateIncrease.setDate(date.getDate() + day);
+    if (month) dateIncrease.setMonth(date.getMonth() + month);
+    if (year) dateIncrease.setFullYear(date.getFullYear() + year);
+    return dateIncrease;
+  },
   importNode(src, attr = {}, tagName = 'script') {
     let ele = document.createElement(tagName);
     Object.entries(attr).forEach(([k, v]) => ele[k] = v);
@@ -99,11 +120,11 @@ const util = {
     let workbook = XLSX.utils.book_new();
     let worksheet = XLSX.utils.json_to_sheet(objArr);
     XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
-    XLSX.writeFile(workbook, `${fileName}details_${new Date().getTime()}.xlsx`);
+    XLSX.writeFile(workbook, `${fileName}details_${new Date().toLocaleString()}.xlsx`);
   },
-  exportExcel(tableEle, fileName = this.getDateTimeStr()) {
+  exportExcel(tableEle, fileName = '导出') {
     let workbook = XLSX.utils.table_to_book(tableEle);
-    XLSX.writeFile(workbook, `${fileName}.xlsx`);
+    XLSX.writeFile(workbook, `${fileName}details_${new Date().toLocaleString()}.xlsx`);
   },
   adds: (...args) => parseFloat(args.filter(e => e).map(e => new Big(e)).reduce((a, b) => a.plus(b), new Big(0)).toString()),
   add: (a, b) => parseFloat(new Big(a || 0).plus(new Big(b || 0)).toString()),
