@@ -126,6 +126,15 @@ const util = {
     let workbook = XLSX.utils.table_to_book(tableEle);
     XLSX.writeFile(workbook, `${fileName}details_${new Date().toLocaleString()}.xlsx`);
   },
+  getTableHtml(arr, titles = [{label: '', prop: ''}]) {
+    let ths = titles.map(e => `<th>${e.label}</th>`).join('');
+    let tds = d => titles.map(e => `<td>${this.val(d[e.prop])}</td>`).join('');
+    let trs = arr.map(d => `<tr>${tds(d)}</tr>`);
+    return `<table style="border-collapse: collapse;border: 2px solid rgb(140 140 140);">
+      <thead><tr>${ths}</tr></thead>
+      <tbody>${trs}</tbody>
+      </table>`;
+  },
   adds: (...args) => parseFloat(args.filter(e => e).map(e => new Big(e)).reduce((a, b) => a.plus(b), new Big(0)).toString()),
   add: (a, b) => parseFloat(new Big(a || 0).plus(new Big(b || 0)).toString()),
   minus: (a, b) => parseFloat(new Big(a || 0).minus(new Big(b || 0)).toString()),

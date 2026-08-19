@@ -30,7 +30,10 @@
     // localGet: (k, def) => localStorage.hasOwnProperty(k) ? JSON.parse(localStorage.getItem(k)) : def,
     // localSet: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
     localGet: (key, def = {}) => JSON.parse(GMGetValue(key, JSON.stringify(def))),
-    localSet: (key, val) => GMSetValue(key, JSON.stringify(val)),
+    localSet: (key, val) => {
+      GMSetValue(key, JSON.stringify(val))
+      localStorage.setItem(key, JSON.stringify(val))
+    },
     $GmGet: (key, def = {}) => JSON.parse(GMGetValue(key, JSON.stringify(def))),
     $GmSet: (key, val) => GMSetValue(key, JSON.stringify(val)),
     updateUser: _ => utils.localSet(usrKey, user),
@@ -73,13 +76,13 @@
     user = utils.localGet(usrKey, {scriptKcIds: [], state: 1});
     if (!user.playLog) user.playLog = {}
     if (!user.join_kcs) user.join_kcs = [];
-    (function () {
+    /*(function () {
       if (new Date().toDateString() === user.updateDate) return;
       getAllKcs();
       getAllHistory();
       user.updateDate = new Date().toDateString();
       user.scriptKcIds = [];
-    })();
+    })();*/
     utils.run(utils.updateUser, updateSubject, insertForm, showForm);
     utils.log("页面信息初始化完成");
     if (!user.state) return; // 暂停学习
@@ -214,6 +217,9 @@
     needSubjects = allSubjects.filter(k => !learned_kcsIds.includes(k.id));
   }
 
+  let getRadio = (e, i) => `<label><input type="radio" name="r0" id="radio${e}" onchange="infoUp(${e})">${e}-${e + 1}</label>${(i + 1) % 4 === 0 ? '</div><div>' : ''}`;
+  let studyYear = 20;
+
   function insertForm() {
     if (document.getElementById('insertDiv')) return;
     const div = document.createElement("div");
@@ -250,23 +256,8 @@
           <button onclick="infoUp(8)">清空时间</button>
         </div>
         <div>
-          <label><input type="radio" name="study_year" onchange="infoUp(2020)">2020-2021</label>
-          <label><input type="radio" name="study_year" onchange="infoUp(2021)">2021-2022</label>
-          <label><input type="radio" name="study_year" onchange="infoUp(2022)">2022-2023</label>
-          <label><input type="radio" name="study_year" onchange="infoUp(2023)">2023-2024</label>
+          ${Array.from({length: studyYear}).map((e, i) => i + 2020).map(getRadio).join('')}
         </div>
-        <div>
-          <label><input type="radio" name="study_year" onchange="infoUp(2024)">2024-2025</label>
-          <label><input type="radio" name="study_year" onchange="infoUp(2025)">2025-2026</label>
-          <label><input type="radio" name="study_year" onchange="infoUp(2026)">2026-2027</label>
-          <label><input type="radio" name="study_year" onchange="infoUp(2027)">2027-2028</label>
-        </div>
-        <div>
-          <label><input type="radio" name="study_year" onchange="infoUp(2028)">2028-2029</label>
-          <label><input type="radio" name="study_year" onchange="infoUp(2029)">2029-2030</label>          
-          <label><input type="radio" name="study_year" onchange="infoUp(2030)">2030-2031</label>
-          <label><input type="radio" name="study_year" onchange="infoUp(2031)">2031-2032</label>
-         </div>
       </td>
       <td>
         <div onclick="downLog()">
@@ -342,9 +333,16 @@
     document.getElementById("form_subject").value = user.subject || '';
     document.getElementById("date_s").value = utils.getDateStr(user.dateStart);
     document.getElementById("date_e").value = utils.getDateStr(user.dateEnd);
-    document.getElementById("date_s").max = utils.getDateStr(user.dateEnd);
-    document.getElementById("date_e").min = utils.getDateStr(user.dateStart);
+    document.getElementById("date_s").min = '2020-09-01';
+    document.getElementById("date_s").max = utils.getDateStr(user.dateEnd) || `${2020 + studyYear}-08-31`;
+    document.getElementById("date_e").min = utils.getDateStr(user.dateStart) || `2020-09-01`;
+    document.getElementById("date_e").max = `${2020 + studyYear}-08-31`;
     document.getElementById("study_state").innerText = `${user.state ? '暂停' : '开始'}运行`;
+    if (user.dateStart && user.dateEnd && user.dateStart.substr(5) === '09-01' && user.dateEnd.substr(5) === '08-31'
+        && user.dateEnd.substr(0, 4) - 2 === user.dateStart.substr(0, 4) - 1)
+      document.getElementById(`radio${user.dateStart.substr(0, 4)}`).checked = true;
+    else if (document.querySelector('input[type=radio][name=r0]:checked'))
+      document.querySelector('input[type=radio][name=r0]:checked').checked = false;
     document.getElementById("learned").innerHTML = learned_kcs.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
     document.getElementById("noStudy").innerHTML = needSubjects.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
     document.getElementById("join_kcs").innerHTML = user.join_kcs?.map(k => `<option value="${k.id}">${k.name}</option>`).join('\n');
@@ -378,9 +376,14 @@
   async function getAllKcs() {
     let api = "/sd-api/event/resourcePageNew/selectTeachInfoByPage/0?catalogId=-1&gradeId=-1&labelId=-1&noteId=-1&queryType=0&resourceFamily=-1&resourceName=&resourceType=0&sortType=1&stageId=-1&subjectId=-1&versionId=-1";
     let pageNo = 1, totalPage = 1000, total = 100000, length = all_kcs.length, pageSize = length > 1000 ? 20 : 500;
+    if (length < 2000) {
+      let rsp = await fetch("https://life5211.github.io/web/data/scjky.jy.json");
+      if (rsp.ok) all_kcs = await rsp.json();
+      else utils.log(`"github请求失败-${rsp.statusText}`, true);
+    }
     while (all_kcs.length < total && pageNo <= totalPage) {
       let rsp = await fetch(`${api}&pageSize=${pageSize}&pageNo=${pageNo++}`, init);
-      if (!rsp.ok) utils.log(`"课程列表请求失败，${rsp.statusText}`, true);
+      if (!rsp.ok) alert(`"课程列表请求失败，${rsp.statusText}`);
       let json = await rsp.json();
       total = json.data.accumulated;
       totalPage = Math.ceil(total / pageSize);
@@ -393,8 +396,7 @@
       }
       all_kcs.forEach(k => k.t = new Date(k.crt).getTime());
       all_kcs.sort((a, b) => -1 * utils.compareFn(a, b, 't', 'name'));
-      all_kcs.forEach(k => delete k.t);
-      utils.localSet("all_kcs", all_kcs);
+      utils.localSet("all_kcs", all_kcs.map(k => ({id: k.id, name: k.name, crt: k.crt})));
       utils.run(updateSubject, insertForm, showForm);
     }
     utils.log(`课程更新完成，课程数量${length} - ${all_kcs.length}`);
