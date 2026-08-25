@@ -61,9 +61,22 @@
   async function nextVideo() {
     if (document.userI) clearInterval(document.userI);
     $log("下一章节课程……")
+    let init = {"headers": {authorization: `Bearer ${$localGet("store")?.session.accessToken}`}};
+    let classArr = await fetch("https://api.scgb.gov.cn/api/services/app/class/app/getClassSumPageListByUserId?maxResultCount=8&skipCount=0&pageIndex=1&studyStatus=2",
+        init).then(r => r.json()).then(r => r.result.records);
+    let nextClass = classArr.find(e => e.autoClassRequiredTimes < e.classTimes * 3600);
+    if (nextClass) {
+      $log("下一节专题班必修课……")
+      let classResource = await fetch(`https://api.scgb.gov.cn/api/services/app/course/getCourseTimeListPage?maxResultCount=24&skipCount=0&pageIndex=1&id=&classId=${nextClass.id}&studyType=1`,
+          init).then(r => r.json()).then(r => r.result.items);
+      let next = classResource.find(e => e.curTimes < e.totalPeriod);
+      location.href = `/#/course?id=${next.id}&className=&classId=${nextClass.id}`;
+      location.reload();
+      return $log(next);
+    }
+    //选修课程
     let learned = await fetch("https://api.scgb.gov.cn/api/services/app/course/app/getCourseUserAutoLearnPage?maxResultCount=256&skipCount=0&pageIndex=1",
-        {"headers": {authorization: `Bearer ${$localGet("store")?.session.accessToken}`}}
-    ).then(r => r.json()).then(r => r.result.records);
+        init).then(r => r.json()).then(r => r.result.records);
     learned.forEach(e => e.hours = Math.floor((e.curTimes / 3600) * 100) / 100);
     let learnedObj = learned.reduce(function (obj, curr) {
       obj[curr.id] = curr;

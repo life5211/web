@@ -1,14 +1,14 @@
 // ==UserScript==
-// @name         四川继续教育自动播放
+// @name         四川继教网学习
 // @namespace    http://tampermonkey.net/
-// @version      2.17
+// @version      17.2
 // @description  四川继续教育多课程自动连续播放
+// @author       user
 // @icon         https://www.sedu.net/apppc/login/static/jjw-bj-bf11c0d7.png
 // @match        https://trplayer.sctce.cn/*
 // @match        https://www.sedu.net/student/*
 // @downloadURL  https://life5211.github.io/web/auto/play.sedu.user.js
 // @updateURL    https://life5211.github.io/web/auto/play.sedu.user.js
-// @updateURL    http://10.160.124.71/web/auto/play.sedu.user.js
 // @noframes
 // @grant        unsafeWindow
 // @grant        GM_setValue
@@ -19,82 +19,74 @@
 // @grant        GM_unregisterMenuCommand
 // ==/UserScript==
 
-window.GMSetValue = unsafeWindow.GMSetValue = GM_setValue;
-window.GMGetValue = unsafeWindow.GMGetValue = GM_getValue;
-
-let $q = s => document.querySelector(s),
-    $qa = s => Array.from(document.querySelectorAll(s)),
-    $localGet = (key, def = "") => localStorage.hasOwnProperty(key) ? JSON.parse(localStorage[key]) : def,
-    $localSet = (key, val) => localStorage.setItem(key, JSON.stringify(val)),
-    $GmGet = (key, def = "") => JSON.parse(GMGetValue(key, JSON.stringify(def))),
-    $GmSet = (key, val) => GMSetValue(key, JSON.stringify(val)),
-    $rf = (min, max) => Math.floor(1000 * (min + (max - min) * Math.random())),
-    $runInterval = (handler, min = 60, max = 100, ids = []) => {
-      handler();
-      ids.unshift(setTimeout(_ => $runInterval(handler, min, max, ids), $rf(min, max)));
-      return ids;
-    },
-    $log = (msg, k = `Log_${new Date().toLocaleDateString()}`, crt = new Date().toLocaleTimeString()) => {
-      console.log(msg);
-      let log = $localGet(k, []);
-      log.push(`[${crt}]${msg}`);
-      $localSet(k, log);
-    };
-
-(function tokenSetFun() {
-  if (!location.href.startsWith("https://www.sedu.net/student/")) return;
-  $GmSet("token", $localGet("STUDENT-TOKEN"));
-  tokenExpireConfirmFun();
-  document.reloadNo = $runInterval(tokenExpireConfirmFun, 1300, 1700);
-})();
-
-function tokenExpireConfirmFun() {
-  let token = $GmGet("token");
-  $log(`当前时间【${new Date()}】，Token过期时间 【${new Date(token.expiry)}】`);
-  if (token.expiry - Date.now() < 3600000) {
-    $log(`Token临近过期，主动刷新，转到学时平台`);
-    location.href = `https://www.sedu.net/student/#/wx-login-result?loginOrgId=1&token=${token.value}`;
-  }
-}
-
-(async function redirectNext() {
-  let next = $GmGet("nextStudy");
-  if ("nextStudy" === next && location.href.startsWith("https://www.sedu.net/student/")) {
-    if ("#/our-course" !== location.hash) {
-      document.querySelector('a[href="#/our-course"]').click()
-    }
-    $GmSet("nextStudy", "");
-    // document.getElementById("tab-study").click();
-    await fetch("https://xdgp-learn.sctce.cn/api/app/stuCourse/getRecordsByPage?pageIndex=1&pageSize=10&stuCourseStatus=0", {
-      "headers": {
-        "accept": "application/json, text/plain, */*",
-        "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-        "authorization": `Bearer ${$localGet("STUDENT-TOKEN")?.value || $localGet("STUDENT-USER-STORE")?.token}`,
-        "content-type": "application/json",
-        "priority": "u=1, i",
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "cross-site"
+(async function () {
+  let $q = s => document.querySelector(s),
+      $qa = s => Array.from(document.querySelectorAll(s)),
+      $localGet = (key, def = "") => localStorage.hasOwnProperty(key) ? JSON.parse(localStorage[key]) : def,
+      $localSet = (key, val) => localStorage.setItem(key, JSON.stringify(val)),
+      $GmGet = (key, def = "") => JSON.parse(GM_getValue(key, JSON.stringify(def))),
+      $GmSet = (key, val) => {
+        GM_setValue(key, JSON.stringify(val));
+        $localSet(key, val);
       },
-      "method": "GET",
-      "mode": "cors",
-      "credentials": "include"
-    }).then(r => r.json()).then(json => {
-      //https://learn.ourteacher.com.cn
-      //https://trplayer.sctce.cn/?token={TOKEN}&stuCourseId=41614455-3963-497e-888f-b35100b1e7e0&ts=1757226026207#/70dcb28e-7135-48da-8f73-b03b00a2b6c7/26f4b295-bcbb-f6d5-1c0c-3a03cea87741/pc/teachlearn
-      if (json.totalRecordCount) {
-        let urls = json.listData.map(e => e.pcStudyUrl).filter(e => e.startsWith("https://trplayer.sctce.cn"));
-        setTimeout(_ => window.open(urls[0], "_top"), 662);
-      } else $log("学习完成");
-    }).catch(err => console.log(err));
-  }
-})();
+      $rf = (min, max) => Math.floor(1000 * (min + (max - min) * Math.random())),
+      sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms)),
+      $runInterval = (handler, min = 40, max = 60) =>
+          setInterval(_ => setTimeout(handler, $rf(min, max)), $rf(min, max)),
+      $log = (msg, k = `Log_${new Date().toLocaleDateString()}`, crt = new Date().toLocaleTimeString()) => {
+        console.log(msg);
+        let log = $localGet(k, []);
+        log.push(`[${crt}]${msg}`);
+        $localSet(k, log);
+      };
 
-(function videoStudy() {
+  if (location.href.startsWith("https://www.sedu.net/student/"))
+    $GmSet("token", $localGet("STUDENT-TOKEN"));
+  let token = $GmGet("token");
+
+  $runInterval(function tokenExpireConfirmFun() {
+    if (!token) return;
+    $log(`当前时间【${new Date()}】，Token过期时间 【${new Date(token.expiry)}】`);
+    if (token.expiry - Date.now() > 3600000) return;
+    $log(`Token临近过期，主动刷新，转到学时平台`);
+    $GmSet("nextStudy", "nextStudy");
+    location.href = `https://www.sedu.net/student/#/wx-login-result?loginOrgId=1&token=${token.value}`;
+  }, 1000, 1500);
+
+  async function redirectNext() {
+    $GmSet("nextStudy", "");
+    let headers = {
+      "authorization": `Bearer ${token.value}`,
+      "content-type": "application/json",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "cross-site"
+    };
+    let home = await fetch('https://xdgp-learn.sctce.cn/api/app/Stu/GetHomeData', {headers}).then(r => r.json());
+    if (home.studyingCourseList?.length) {
+      await sleep(1111);
+      return location.href = home.studyingCourseList[0].pcStudyUrl;
+    }
+    // if ("#/our-course" !== location.hash) {
+    //   document.querySelector('a[href="#/our-course"]').click();
+    //   await sleep(999);
+    // }
+    // // document.getElementById("tab-study").click();
+    // let json = await fetch("https://xdgp-learn.sctce.cn/api/app/stuCourse/getRecordsByPage?pageIndex=1&pageSize=10&stuCourseStatus=0",
+    //     {headers}).then(r => r.json());
+    // if (json.totalRecordCount) {
+    //   let next = json.listData.map(e => e.pcStudyUrl).find(e => e.startsWith("https://trplayer.sctce.cn"));
+    //   await sleep(1222);
+    //   return location.href = next;
+    // }
+    $log("学习完成");
+  }
+
+  GM_registerMenuCommand("点击下一课程", redirectNext)
+  if ("nextStudy" === $GmGet("nextStudy") && location.href.startsWith("https://www.sedu.net/student/")) await redirectNext();
   if (!['trplayer.snddopen.cn', 'trplayer.sctce.cn'].includes(location.host)) return;
+  $GmSet("nextStudy", ""); //以下为视频播放器程序
   let pauseTime = 0;
-  $runInterval(_ => {
-    tokenExpireConfirmFun();
+  $runInterval(function videoStudy() {
     let subjectPackStatus = document.querySelector("span>span.light-white").innerText;
     $log(subjectPackStatus);
     if ("完成100.00%" === subjectPackStatus) {
