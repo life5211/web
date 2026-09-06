@@ -170,15 +170,31 @@
       },
       parseWorkbook(wb, filename) {
         let workbookObj = $localGet("workbookObj", {});
+        let commons = ['区域', '校码', '学校', '类别', '年级', '班级'];
         workbookObj[filename] = wb.SheetNames.reduce((obj, sheetName) => {
           let csv = XLSX.utils.sheet_to_csv(wb.Sheets[sheetName], {FS: ',,', RS: '[\n]', blankrows: false})
               .split('[\n]').map(line => line.split(',,'));
           let lens = csv.map(arr => {
-            for (let i = arr.length - 1; i >= 0; i--) if (!$empty(arr[i])) return i;
+            for (let i = arr.length; i >= 0; i--) if (!$empty(arr[i - 1])) return i;
             return 0;
           });
-          let col = Math.max(...lens) + 1;
-          obj[sheetName] = csv.filter((arr, idx) => lens[idx]).map(arr => arr.slice(0, col));
+          let col = Math.max(...lens);
+          let sheetArr = csv.filter((arr, idx) => lens[idx]).map(arr => arr.slice(0, col));
+          sheetArr[1].forEach((e, i) => {
+            if (e) sheetArr[1][i] = sheetArr[1][i].replaceAll(/\s*/g, "");
+            if (e.includes("督导")) sheetArr[1][i] = '区域';
+            if (e === '学校代码') sheetArr[1][i] = '校码';
+            if (e === '学校名称') sheetArr[1][i] = '学校';
+            if (e.includes("类别")) sheetArr[1][i] = '类别';
+            if (i && !e) sheetArr[1][i] = sheetArr[1][i - 1];
+            if (!commons.includes(sheetArr[1][i])) {
+              if ($empty(sheetArr[2][i]) || sheetArr[2][i] === sheetArr[1][i]) {
+                sheetArr[2][i] = sheetArr[1][i];
+                sheetArr[1][i] = '综合';
+              }
+            }
+          });
+          obj[sheetName] = sheetArr;
           return obj;
         }, workbookObj[filename] || {});
         $localSet("workbookObj", workbookObj);
@@ -186,29 +202,8 @@
           let title = sheetArr[0].join("");
           let grade = title.match(/.年级/)[0];
           let semester = /([\d-]{4,}.*(学年度?|期))/.exec(title)[1];
-          let totalNum = $val(title.replace(/^.*?(\d+)个.+$/, '$1'));
-          let commons = ['区域', '校码', '学校', '类别', '年级', '班级'];
-          let startCols = [];
-          sheetArr[1].forEach((e, i) => {
-            if (e) sheetArr[1][i] = sheetArr[1][i].replaceAll(/\s*/g, "");
-            if (e === '学校代码') sheetArr[1][i] = '校码';
-            if (e === '学校名称') sheetArr[1][i] = '学校';
-            if (e === '学校类别') sheetArr[1][i] = '类别';
-            if (e === '班级类别') sheetArr[1][i] = '类别';
-            if (i && !e) sheetArr[1][i] = sheetArr[1][i - 1];
-            if (!commons.includes(sheetArr[1][i])) {
-              if (!startCols.length) startCols = Array.from({length: i}, (val, j) => j);
-              if ($empty(sheetArr[2][i]) || sheetArr[2][i] === sheetArr[1][i]) {
-                sheetArr[2][i] = sheetArr[1][i];
-                sheetArr[1][i] = '综合';
-              }
-            }
-          });
-          /*if (totalNum)  // 各行数据加上总数
-            sheetArr.forEach((e, i) => {
-              if (i === 1) e.push("总数");
-              if (i > 2) e.push(totalNum);
-            });*/
+          let totalNum = title.replace(/^.*?(\d+)个.+$/, '$1');
+          let startCols = sheetArr[1].map((e, i) => commons.includes(e) ? i : -1).filter(e => e > -1);
           return sheetArr.flatMap((row, r) => {
             return row.map((val, c) => {
               if (c < startCols.length || r < 3 || $empty(val)) return '';
@@ -218,7 +213,7 @@
               if (semester) obj['学期'] = semester;
               obj['年级'] = grade;
               obj['科目'] = $val(sheetArr[1][c]);
-              if (totalNum) obj['总数'] = totalNum;
+              if (/^\d+(\.\d+)?$/.test(totalNum)) obj['总班数'] = $val(totalNum);
               if (sheetArr[2][c] && sheetArr[1][c] !== sheetArr[2][c]) obj['小分'] = $val(sheetArr[2][c]);
               obj.val = $val(val);
               return obj;
